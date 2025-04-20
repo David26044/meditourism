@@ -21,12 +21,4 @@ public class AccountStateServiceImpl implements AccountStateService {
         return accountStateRepository.save(accountStateEntity);
     }
 
-    @Override
-    public AccountStateEntity getAccountStateById(String id) {
-        try {
-            return getAccountStateById(Long.parseLong(id));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
 }
