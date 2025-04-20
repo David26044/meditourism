@@ -11,6 +11,7 @@ public class AccountStateServiceImpl implements AccountStateService {
     @Autowired
     private AccountStateRepository accountStateRepository;
 
+    //Retorna el Account State buscando por su ID y si no existe retorna null
     @Override
     public AccountStateEntity getAccountStateById(Long id) {
         return accountStateRepository.findById(id).orElse(null);

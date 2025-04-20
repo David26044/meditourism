@@ -35,12 +35,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserEntity> getAllUsers() {
+    public List<UserEntity> findAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public UserEntity getUserById(Long id) {
+    public UserEntity findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
@@ -49,17 +49,22 @@ public class UserServiceImpl implements UserService {
     * */
     @Override
     public UserEntity updateUser(UserEntity user) {
-        return userRepository;
+        if(userRepository.findById(user.getId()).isPresent()) {
+            userRepository.save(user);
+        }else{
+            return null;
+        }
+        return user;
     }
 
     @Override
     public void deleteUser(Long id) {
-
+        userRepository.deleteById(id);
     }
 
     @Override
-    public UserEntity getUserByEmail(String email) {
-        return null;
+    public UserEntity findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     @Override
