@@ -8,9 +8,9 @@ public interface UserService {
     UserEntity saveUser(UserEntity user);
     UserEntity updateUser(UserEntity user);
     void deleteUser(Long id);
-    UserEntity findUserById(Long id);
+    UserEntity getUserById(Long id);
     //void verifyEmail();
-    UserEntity findUserByEmail(String email);
+    UserEntity getUserByEmail(String email);
     UserEntity updatePassword(Long id, String newPassword);
-    List<UserEntity> findAllUsers();
+    List<UserEntity> getAllUsers();
 }

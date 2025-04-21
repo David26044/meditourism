@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/role")
 public class RoleController {
@@ -19,9 +21,14 @@ public class RoleController {
         RoleEntity role = roleService.getRoleById(id);
         if (role != null) {
             return ResponseEntity.ok(role);
-        } else {
-            return ResponseEntity.notFound().build();
         }
+        return ResponseEntity.notFound().build();
+    }
+
+    /*Obtener todos los roles*/
+    @GetMapping
+    public ResponseEntity<List<RoleEntity>> getAllRoles() {
+        return ResponseEntity.ok(roleService.getAllRoles());
     }
 
     // Crear o actualizar un rol

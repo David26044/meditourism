@@ -5,6 +5,8 @@ import com.meditourism.meditourism.repository.AccountStateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class AccountStateServiceImpl implements AccountStateService {
 
@@ -17,9 +19,16 @@ public class AccountStateServiceImpl implements AccountStateService {
         return accountStateRepository.findById(id).orElse(null);
     }
 
+
+
     @Override
     public AccountStateEntity saveAccountState(AccountStateEntity accountStateEntity) {
         return accountStateRepository.save(accountStateEntity);
+    }
+
+    @Override
+    public List<AccountStateEntity> getAllAccountState() {
+        return accountStateRepository.findAll();
     }
 
 }

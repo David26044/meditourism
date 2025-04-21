@@ -1,6 +1,7 @@
 package com.meditourism.meditourism.service;
 
 import com.meditourism.meditourism.entity.UserEntity;
+import com.meditourism.meditourism.repository.AccountStateRepository;
 import com.meditourism.meditourism.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +18,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AccountStateRepository accountStateRepository;
+
+
     /*
     * Lanza una excepcion si el correo ya ha sido usado con un usuario
     * encripta la contraseña, se la asigna al objeto y lo guarda en la db
@@ -24,23 +29,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserEntity saveUser(UserEntity user) {
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email ya registrado");
+            return null;
         }
 
         //Encripta contraseña
         String hashedPassword = passwordEncoder.encode(user.getPassword());
+        //Lo agrega con el estado de cuenta 1, que es activo.
+        user.setAccountStateEntity(accountStateRepository.findById(1L).get());
         user.setPassword(hashedPassword);
 
         return userRepository.save(user);
     }
 
     @Override
-    public List<UserEntity> findAllUsers() {
+    public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 
     @Override
-    public UserEntity findUserById(Long id) {
+    public UserEntity getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
@@ -63,7 +70,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity findUserByEmail(String email) {
+    public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
 
