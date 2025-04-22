@@ -1,8 +1,9 @@
 package com.meditourism.meditourism.controller;
 
-
 import com.meditourism.meditourism.dto.AuthenticationRequest;
+import com.meditourism.meditourism.dto.JwtResponse;
 import com.meditourism.meditourism.service.AuthenticationService;
+import com.meditourism.meditourism.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,21 +19,31 @@ public class AuthController {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @Autowired
+    private JwtService jwtService;
+
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
         int result = authenticationService.authenticate(request);
 
         switch (result) {
             case 0:
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); //rmail no encontrado
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Correo electrónico no encontrado. Por favor, verifique el correo ingresado.");
             case 1:
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); //clave incorrecta
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("La contraseña es incorrecta. Intente nuevamente.");
             case 2:
-                return ResponseEntity.ok().build(); // Login exitoso
+                // Si la autenticación es exitosa, generar el token
+                String token = jwtService.generateToken(request.getEmail());
+                JwtResponse jwtResponse = new JwtResponse(token); // Creamos el objeto JwtResponse
+                return ResponseEntity.ok(jwtResponse); // Devolvemos el token con respuesta 200 OK
             default:
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); //otro error inesperado
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Ocurrió un error inesperado. Intente nuevamente más tarde.");
         }
     }
 }
+
 
 
