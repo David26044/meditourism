@@ -1,0 +1,81 @@
+package com.meditourism.meditourism.user.service;
+
+import com.meditourism.meditourism.user.entity.UserEntity;
+import com.meditourism.meditourism.accountState.repository.AccountStateRepository;
+import com.meditourism.meditourism.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class UserService implements IUserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private AccountStateRepository accountStateRepository;
+
+
+    /*
+    * Lanza una excepcion si el correo ya ha sido usado con un usuario
+    * encripta la contraseña, se la asigna al objeto y lo guarda en la db
+    * */
+    @Override
+    public UserEntity saveUser(UserEntity user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            return null;
+        }
+
+        //Encripta contraseña
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        //Lo agrega con el estado de cuenta 1, que es activo.
+        user.setAccountStateEntity(accountStateRepository.findById(1L).get());
+        user.setPassword(hashedPassword);
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public UserEntity getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    /*
+    * Hay que usar .save, este meetodo buscara el ID, si existe lo actualiza y si no existe lo guarda
+    * */
+    @Override
+    public UserEntity updateUser(UserEntity user) {
+        if(userRepository.findById(user.getId()).isPresent()) {
+            userRepository.save(user);
+        }else{
+            return null;
+        }
+        return user;
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    @Override
+    public UserEntity updatePassword(Long id, String newPassword) {
+        return null;
+    }
+}

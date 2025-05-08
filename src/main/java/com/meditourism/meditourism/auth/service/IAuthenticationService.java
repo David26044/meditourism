@@ -1,0 +1,14 @@
+package com.meditourism.meditourism.auth.service;
+
+import com.meditourism.meditourism.auth.dto.AuthenticationRequest;
+
+public interface IAuthenticationService {
+    /**
+     * Retorna:
+     * 0 -> Email no encontrado
+     * 1 -> Clave incorrecta
+     * 2 -> Login exitoso
+     */
+    int authenticate(AuthenticationRequest request);
+}
+
