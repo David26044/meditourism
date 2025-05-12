@@ -3,7 +3,9 @@ package com.meditourism.meditourism.comment.entity;
 import com.meditourism.meditourism.review.entity.ReviewEntity;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,8 +18,9 @@ public class CommentEntity {
 
     private String content;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
+    @Column
+    @CreationTimestamp
+    private LocalDateTime date = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id")

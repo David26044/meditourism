@@ -1,11 +1,12 @@
 package com.meditourism.meditourism.user.entity;
-import com.meditourism.meditourism.accountState.entity.AccountStateEntity;
 import com.meditourism.meditourism.role.entity.RoleEntity;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "users")
-public class UserEntity {
+public class UserEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,13 +21,20 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(name="is_verified")
+    private boolean isVerified;
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "account_state_id")
-    private AccountStateEntity accountStateEntity;
 
 
 
@@ -60,14 +68,6 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public AccountStateEntity getAccountStateEntity() {
-        return accountStateEntity;
-    }
-
-    public void setAccountStateEntity(AccountStateEntity accountStateEntity) {
-        this.accountStateEntity = accountStateEntity;
     }
 
     public RoleEntity getRoleEntity() {

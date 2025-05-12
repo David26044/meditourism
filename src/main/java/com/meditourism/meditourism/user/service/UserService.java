@@ -1,7 +1,8 @@
 package com.meditourism.meditourism.user.service;
 
+import com.meditourism.meditourism.exception.ResourceAlreadyExistsException;
+import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.user.entity.UserEntity;
-import com.meditourism.meditourism.accountState.repository.AccountStateRepository;
 import com.meditourism.meditourism.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,28 +19,23 @@ public class UserService implements IUserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AccountStateRepository accountStateRepository;
-
-
     /*
     * Lanza una excepcion si el correo ya ha sido usado con un usuario
     * encripta la contraseña, se la asigna al objeto y lo guarda en la db
     * */
     @Override
     public UserEntity saveUser(UserEntity user) {
+        // Verifica si el email ya está en uso
         if (userRepository.existsByEmail(user.getEmail())) {
-            return null;
+            throw new ResourceAlreadyExistsException("El correo ya está registrado: " + user.getEmail());
         }
-
-        //Encripta contraseña
+        // Encripta la contraseña
         String hashedPassword = passwordEncoder.encode(user.getPassword());
-        //Lo agrega con el estado de cuenta 1, que es activo.
-        user.setAccountStateEntity(accountStateRepository.findById(1L).get());
         user.setPassword(hashedPassword);
-
+        // Guarda y retorna
         return userRepository.save(user);
     }
+
 
     @Override
     public List<UserEntity> getAllUsers() {
@@ -48,9 +44,9 @@ public class UserService implements IUserService {
 
     @Override
     public UserEntity getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
     }
-
     /*
     * Hay que usar .save, este meetodo buscara el ID, si existe lo actualiza y si no existe lo guarda
     * */
@@ -65,13 +61,18 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public UserEntity deleteUser(Long id) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
         userRepository.deleteById(id);
+        return user;
     }
 
     @Override
     public UserEntity getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
+        return user;
     }
 
     @Override

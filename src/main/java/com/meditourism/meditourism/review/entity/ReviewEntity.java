@@ -1,9 +1,12 @@
 package com.meditourism.meditourism.review.entity;
 
+import com.meditourism.meditourism.clinic.entity.ClinicEntity;
 import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,16 +19,20 @@ public class ReviewEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false) // contenido no nulo
-    private String content;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "publication_date", nullable = false)
-    private Date publicationDate;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", nullable = false)
+    private ClinicEntity clinicEntity;
+
+    @Column(nullable = false) // contenido no nulo
+    private String content;
+
+    @Column
+    @CreationTimestamp
+    private LocalDateTime date = LocalDateTime.now();
 
     @Transient
     private List<CommentEntity> comments = new ArrayList<>();
@@ -51,12 +58,12 @@ public class ReviewEntity {
         this.content = content;
     }
 
-    public Date getPublicationDate() {
-        return publicationDate;
+    public LocalDateTime getPublicationDate() {
+        return date;
     }
 
-    public void setPublicationDate(Date publicationDate) {
-        this.publicationDate = publicationDate;
+    public void setPublicationDate(LocalDateTime publicationDate) {
+        this.date = date;
     }
 
     public UserEntity getUserEntity() {
