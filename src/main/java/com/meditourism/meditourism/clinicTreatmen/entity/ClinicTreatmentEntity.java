@@ -27,6 +27,36 @@ public class ClinicTreatmentEntity implements Serializable {
     @Column
     private BigDecimal price;
 
-    // getters y setters
+    public ClinicTreatmentEntityPK getId() {
+        return id;
+    }
+
+    public void setId(ClinicTreatmentEntityPK id) {
+        this.id = id;
+    }
+
+    public ClinicEntity getClinic() {
+        return clinic;
+    }
+
+    public void setClinic(ClinicEntity clinic) {
+        this.clinic = clinic;
+    }
+
+    public TreatmentEntity getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(TreatmentEntity treatment) {
+        this.treatment = treatment;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
 }
 

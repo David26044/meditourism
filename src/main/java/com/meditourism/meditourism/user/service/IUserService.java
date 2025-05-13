@@ -7,7 +7,7 @@ import java.util.List;
 public interface IUserService {
     UserEntity saveUser(UserEntity user);
     UserEntity updateUser(UserEntity user);
-    UserEntity deleteUser(Long id);
+    UserEntity deleteUserById(Long id);
     UserEntity getUserById(Long id);
     //void verifyEmail();
     UserEntity getUserByEmail(String email);

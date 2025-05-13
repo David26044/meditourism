@@ -7,7 +7,6 @@ import com.meditourism.meditourism.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -36,7 +35,6 @@ public class UserService implements IUserService {
         return userRepository.save(user);
     }
 
-
     @Override
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
@@ -52,16 +50,14 @@ public class UserService implements IUserService {
     * */
     @Override
     public UserEntity updateUser(UserEntity user) {
-        if(userRepository.findById(user.getId()).isPresent()) {
-            userRepository.save(user);
-        }else{
-            return null;
+        if(!userRepository.existsById(user.getId())) {
+            new ResourceNotFoundException("Usuario no encontrado con ID: " + user.getId());
         }
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
-    public UserEntity deleteUser(Long id) {
+    public UserEntity deleteUserById(Long id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
         userRepository.deleteById(id);
