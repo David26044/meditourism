@@ -6,6 +6,8 @@ import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClinicService implements IClinicService {
 
@@ -29,6 +31,11 @@ public class ClinicService implements IClinicService {
     public ClinicEntity getClinicById(Long id) {
         return clinicRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Clínica no encontrada con ID: " + id));
+    }
+
+    @Override
+    public List<ClinicEntity> getAllClinics() {
+        return clinicRepository.findAll();
     }
 
     @Override

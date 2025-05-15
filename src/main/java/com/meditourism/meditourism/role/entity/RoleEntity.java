@@ -1,5 +1,6 @@
 package com.meditourism.meditourism.role.entity;
 
+import ch.qos.logback.core.model.INamedModel;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,10 +11,17 @@ public class RoleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
+    private String name;
+
     @Column(nullable = false, unique = true)
     private String description;
 
     // Getters y Setters
+
+    public String getName(){return name;}
+
+    public void setName(String name){this.name = name;}
 
     public Long getId() {
         return id;

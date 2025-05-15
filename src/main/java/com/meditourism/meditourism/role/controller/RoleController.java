@@ -5,11 +5,12 @@ import com.meditourism.meditourism.role.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/role")
+@RequestMapping("/role")
 public class RoleController {
 
     @Autowired
@@ -31,23 +32,26 @@ public class RoleController {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    // Crear o actualizar un rol
+    // Crear un rol
     @PostMapping
     public ResponseEntity<RoleEntity> saveRole(@RequestBody RoleEntity role) {
         RoleEntity savedRole = roleService.saveRole(role);
-        return ResponseEntity.ok(savedRole);
+        return ResponseEntity.created(ServletUriComponentsBuilder
+                        .fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(savedRole.getId())
+                        .toUri())
+                .body(savedRole);
     }
 
-//    // Eliminar un rol
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
-//        RoleEntity existingRole = roleService.getRoleById(id);
-//        if (existingRole != null) {
-//            roleService.deleteRole(id);
-//            return ResponseEntity.noContent().build();
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<RoleEntity> deleteRoleById(@PathVariable Long id){
+        return ResponseEntity.ok(roleService.deleteRoleById(id));
+    }
+
+    @PutMapping
+    public ResponseEntity<RoleEntity> updateRole(@RequestBody RoleEntity role){
+        return ResponseEntity.ok(roleService.updateRole(role));
+    }
 }
 

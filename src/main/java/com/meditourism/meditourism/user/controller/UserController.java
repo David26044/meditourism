@@ -6,18 +6,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 public class UserController {
 
     @Autowired
     private IUserService userService;
 
     /* Para obtener todos los usuarios en la base de datos.
-     * Llama al metodo de userService que llama e un metodo de repository*/
+     * Llama al metodo de userService que llama un metodo de repository*/
     @GetMapping
     public ResponseEntity<List<UserEntity>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -26,24 +27,25 @@ public class UserController {
     /*Metodo para obtener usuario por su ID*/
     @GetMapping("/{id}")
     public ResponseEntity<UserEntity> getUserById(@PathVariable Long id) {
-        UserEntity user = userService.getUserById(id);
-        if (user != null){
-            return ResponseEntity.ok(user);
-        }
-        return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(userService.getUserById(id));
+
     }
 
     /*Metodo para guardar un usuario nuevo*/
     @PostMapping
     public ResponseEntity<UserEntity> saveUser(@RequestBody UserEntity user) {
         UserEntity savedUser = userService.saveUser(user);
+        return ResponseEntity.created(ServletUriComponentsBuilder
+                        .fromCurrentRequest()
+                        .path("/{id}")
+                        .buildAndExpand(savedUser.getId())
+                        .toUri())
+                .body(savedUser);
+    }
 
-        // Retorna 409 Conflict si ya existe
-        if (savedUser == null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+    @PutMapping
+    public ResponseEntity<UserEntity> updateUser(@RequestBody UserEntity user){
+        return ResponseEntity.ok(userService.updateUser(user));
     }
 
 }

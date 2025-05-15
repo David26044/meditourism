@@ -9,14 +9,13 @@ import com.meditourism.meditourism.clinicTreatmen.repository.ClinicTreatmentRepo
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.treatment.entity.TreatmentEntity;
 import com.meditourism.meditourism.treatment.repository.TreatmentRepository;
-import com.meditourism.meditourism.treatment.service.TreatmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class ClinicTreatmentService implements IClinicTreatmentService{
+public class ClinicTreatmentService implements IClinicTreatmentService {
 
     @Autowired
     private ClinicTreatmentRepository clinicTreatmentRepository;
@@ -26,11 +25,11 @@ public class ClinicTreatmentService implements IClinicTreatmentService{
     private ClinicRepository clinicRepository;
 
     @Override
-    public List<ClinicEntity> getClinicByTreatmentId(Long id) {
+    public List<ClinicEntity> getClinicsByTreatmentId(Long id) {
         List<ClinicEntity> clinics = clinicTreatmentRepository.findClinicByTreatment(id);
 
         if (clinics.isEmpty()) {
-            throw new ResourceNotFoundException("El tratamiento con ID "+ id +" no existe o no es prestado por ninguna clínica");
+            throw new ResourceNotFoundException("El tratamiento con ID " + id + " no existe o no es prestado por ninguna clínica");
         }
 
         return clinics;
@@ -38,7 +37,7 @@ public class ClinicTreatmentService implements IClinicTreatmentService{
 
 
     @Override
-    public List<TreatmentEntity> getTreatmentByClinicId(Long id) {
+    public List<TreatmentEntity> getTreatmentsByClinicId(Long id) {
         List<TreatmentEntity> treatments = clinicTreatmentRepository.findTreatmentByClinic(id);
 
         if (treatments.isEmpty()) {
@@ -61,9 +60,9 @@ public class ClinicTreatmentService implements IClinicTreatmentService{
 
         // Buscar tratamiento
         TreatmentEntity treatment = treatmentRepository.findById(dto.getTreatmentId())
-                .orElseThrow(() -> new ResourceNotFoundException("TRatamiento no encontrado con ID: " + dto.getTreatmentId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Tratamiento no encontrado con ID: " + dto.getTreatmentId()));
 
-        // Crear la clave compuesta
+        // Crear la llave compuesta
         ClinicTreatmentEntityPK pk = new ClinicTreatmentEntityPK();
         pk.setClinicId(dto.getClinicId());
         pk.setTreatmentId(dto.getTreatmentId());
@@ -90,5 +89,5 @@ public class ClinicTreatmentService implements IClinicTreatmentService{
         return clinicTreatmentRepository.findById(pk)
                 .orElseThrow(() -> new ResourceNotFoundException("Relación no encontrada con clinic_id: " + pk.getClinicId() + " treatment_id: " + pk.getTreatmentId()));
 
-}
+    }
 }

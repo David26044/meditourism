@@ -8,4 +8,6 @@ public interface IRoleService {
     RoleEntity getRoleById(Long id);
     RoleEntity saveRole(RoleEntity role);
     List<RoleEntity> getAllRoles();
+    RoleEntity deleteRoleById(Long id);
+    RoleEntity updateRole(RoleEntity role);
 }

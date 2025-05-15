@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface IClinicTreatmentService {
 
-    List<ClinicEntity> getClinicByTreatmentId(Long id);
-    List<TreatmentEntity> getTreatmentByClinicId(Long id);
+    List<ClinicEntity> getClinicsByTreatmentId(Long id);
+    List<TreatmentEntity> getTreatmentsByClinicId(Long id);
     List<ClinicTreatmentEntity> getAllClinicTreatments();
     ClinicTreatmentEntity saveClinicTreatment(ClinicTreatmentDTO clinicTreatment);
     ClinicTreatmentEntity getClinicTreatmentById(ClinicTreatmentDTO dto);

@@ -51,7 +51,7 @@ public class UserService implements IUserService {
     @Override
     public UserEntity updateUser(UserEntity user) {
         if(!userRepository.existsById(user.getId())) {
-            new ResourceNotFoundException("Usuario no encontrado con ID: " + user.getId());
+            throw new ResourceNotFoundException("Usuario no encontrado con ID: " + user.getId());
         }
         return userRepository.save(user);
     }
