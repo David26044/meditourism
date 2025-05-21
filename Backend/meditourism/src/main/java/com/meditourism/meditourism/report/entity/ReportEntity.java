@@ -18,11 +18,11 @@ public class ReportEntity {
     private UserEntity reporterUser;
 
     @ManyToOne
-    @JoinColumn(name = "target_review_id", nullable = true)
+    @JoinColumn(name = "target_review_id")
     private ReviewEntity targetReview;
 
     @ManyToOne
-    @JoinColumn(name = "target_comment_id", nullable = true)
+    @JoinColumn(name = "target_comment_id")
     private CommentEntity targetComment;
 
     @ManyToOne

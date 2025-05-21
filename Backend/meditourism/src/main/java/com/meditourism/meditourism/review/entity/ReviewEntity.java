@@ -32,7 +32,7 @@ public class ReviewEntity {
 
     @Column
     @CreationTimestamp
-    private LocalDateTime date = LocalDateTime.now();
+    private LocalDateTime date;
 
     @Transient
     private List<CommentEntity> comments = new ArrayList<>();

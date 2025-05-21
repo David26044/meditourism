@@ -7,7 +7,5 @@ public class ReviewDTO {
     private Long id;
     private Long clinicId;
     private int rating;
-    private LocalDateTime date;
-
 
 }

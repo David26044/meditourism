@@ -2,6 +2,7 @@ package com.meditourism.meditourism.auth.controller;
 
 import com.meditourism.meditourism.auth.dto.AuthenticationRequest;
 import com.meditourism.meditourism.auth.dto.JwtResponse;
+import com.meditourism.meditourism.auth.service.AuthenticationService;
 import com.meditourism.meditourism.auth.service.IAuthenticationService;
 import com.meditourism.meditourism.auth.service.IJwtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
