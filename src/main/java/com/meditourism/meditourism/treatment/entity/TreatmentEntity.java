@@ -3,6 +3,7 @@ package com.meditourism.meditourism.treatment.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name="treatments")
 public class TreatmentEntity {
 
     @Id

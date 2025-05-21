@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
+@Table(name = "blocked_user")
 public class BlockedUserEntity {
 
     @Id

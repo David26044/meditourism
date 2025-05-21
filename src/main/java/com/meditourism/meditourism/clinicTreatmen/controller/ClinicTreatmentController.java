@@ -23,10 +23,17 @@ public class ClinicTreatmentController {
         return ResponseEntity.ok(clinicTreatmentService.getAllClinicTreatments());
     }
 
-    @GetMapping()
-    public ResponseEntity<ClinicTreatmentEntity> getClinicTreatmentById(@RequestBody ClinicTreatmentDTO clinicTreatment){
-        return ResponseEntity.ok(clinicTreatmentService.getClinicTreatmentById(clinicTreatment));
+    @GetMapping("/clinic-treatment")
+    public ResponseEntity<ClinicTreatmentEntity> getClinicTreatmentByIds(
+            @RequestParam Long clinicId,
+            @RequestParam Long treatmentId
+    ) {
+        ClinicTreatmentDTO dto = new ClinicTreatmentDTO();
+        dto.setClinicId(clinicId);
+        dto.setTreatmentId(treatmentId);
+        return ResponseEntity.ok(clinicTreatmentService.getClinicTreatmentById(dto));
     }
+
 
     @GetMapping("/clinics/{id}")
     public ResponseEntity<List<ClinicEntity>> getClinicsByTreatmentId(@PathVariable Long id){

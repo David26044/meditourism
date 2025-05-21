@@ -7,6 +7,7 @@ import com.meditourism.meditourism.user.entity.UserEntity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name="reports")
 public class ReportEntity {
 
     @Id

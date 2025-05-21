@@ -14,6 +14,8 @@ public class ClinicTreatmentDTO {
         this.price = price;
     }
 
+    public ClinicTreatmentDTO(){}
+
     public Long getClinicId() {
         return clinicId;
     }
