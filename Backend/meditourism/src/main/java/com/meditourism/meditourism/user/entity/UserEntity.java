@@ -1,12 +1,17 @@
 package com.meditourism.meditourism.user.entity;
 import com.meditourism.meditourism.role.entity.RoleEntity;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class UserEntity implements Serializable {
+public class UserEntity implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,6 +80,55 @@ public class UserEntity implements Serializable {
 
     public void setRoleEntity(RoleEntity roleEntity) {
         this.roleEntity = roleEntity;
+    }
+
+
+    /**
+     * @return 
+     */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(roleEntity.getName()));
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    /**
+     * @return 
+     */
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    /**
+     * @return 
+     */
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    /**
+     * @return 
+     */
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    /**
+     * @return 
+     */
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }

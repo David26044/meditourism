@@ -1,6 +1,6 @@
 package com.meditourism.meditourism.auth.service;
 
-import com.meditourism.meditourism.auth.dto.AuthenticationRequest;
+import com.meditourism.meditourism.auth.dto.AuthRequest;
 
 public interface IAuthenticationService {
     /**
@@ -9,6 +9,6 @@ public interface IAuthenticationService {
      * 1 -> Clave incorrecta
      * 2 -> Login exitoso
      */
-    int authenticate(AuthenticationRequest request);
+    int authenticate(AuthRequest request);
 }
 

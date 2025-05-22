@@ -4,6 +4,7 @@ import com.meditourism.meditourism.user.dto.UserDTO;
 import com.meditourism.meditourism.user.dto.UserResponseDTO;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.service.IUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class UserController {
 
     /*Metodo para guardar un usuario nuevo*/
     @PostMapping
-    public ResponseEntity<UserResponseDTO> saveUser(@RequestBody UserDTO dto) {
+    public ResponseEntity<UserResponseDTO> saveUser(@RequestBody @Valid UserDTO dto) {
         UserResponseDTO savedUser = userService.saveUser(dto);
         return ResponseEntity.created(ServletUriComponentsBuilder
                         .fromCurrentRequest()

@@ -13,7 +13,7 @@ public class TreatmentEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = true)
+    @Column
     private String description;
 
     public Long getId() {

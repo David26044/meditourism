@@ -1,6 +1,6 @@
 package com.meditourism.meditourism.auth.service;
 
-import com.meditourism.meditourism.auth.dto.AuthenticationRequest;
+import com.meditourism.meditourism.auth.dto.AuthRequest;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class AuthenticationService implements IAuthenticationService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public int authenticate(AuthenticationRequest request) {
+    public int authenticate(AuthRequest request) {
         UserEntity user = userService.getUserByEmail(request.getEmail());
 
         if (user == null) {

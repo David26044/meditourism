@@ -1,15 +1,13 @@
 package com.meditourism.meditourism.auth.dto;
 
-public class AuthenticationRequest {
+public class AuthRequest {
     private String email;
     private String password;
 
-    // Constructor vacío (requerido por Spring para deserializar)
-    public AuthenticationRequest() {
+    public AuthRequest() {
     }
 
-    // Constructor con parámetros (opcional)
-    public AuthenticationRequest(String email, String password) {
+    public AuthRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }
