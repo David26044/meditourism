@@ -44,9 +44,9 @@ public class ReviewController {
                 .body(savedReview);
     }
 
-    @PatchMapping
-    public ResponseEntity<ReviewEntity> patchReview(@RequestBody ReviewDTO dto){
-        return ResponseEntity.ok(reviewService.updateReview(dto));
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReviewEntity> patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto){
+        return ResponseEntity.ok(reviewService.updateReview(id, dto));
     }
 
     @DeleteMapping

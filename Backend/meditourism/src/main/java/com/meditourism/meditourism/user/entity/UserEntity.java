@@ -24,13 +24,14 @@ public class UserEntity implements Serializable {
     @Column(name="is_verified")
     private boolean isVerified;
 
-    public boolean isVerified() {
-        return isVerified;
-    }
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
+
+    public boolean isVerified() {
+        return isVerified;
+    }
 
     public void setVerified(boolean verified) {
         isVerified = verified;

@@ -9,7 +9,7 @@ public interface IReviewService {
     List<ReviewEntity> getAllReviews();
     ReviewEntity getReviewById(Long id);
     List<ReviewEntity> getReviewsByClinicId(Long id);
-    ReviewEntity updateReview(ReviewDTO review);
+    ReviewEntity updateReview(Long id, ReviewDTO review);
     ReviewEntity saveReview(ReviewDTO review);
     ReviewEntity deleteReview(Long id);
 }

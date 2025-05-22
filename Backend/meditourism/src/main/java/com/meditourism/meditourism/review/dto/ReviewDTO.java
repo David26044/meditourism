@@ -2,26 +2,16 @@ package com.meditourism.meditourism.review.dto;
 
 public class ReviewDTO {
 
-    private Long reviewId;
     private Long userId;
     private Long clinicId;
     private String content;
     private Integer rating;
 
-    public ReviewDTO(Long reviewId, Long userId, Long clinicId, String content, Integer rating) {
-        this.reviewId = reviewId;
+    public ReviewDTO(Long userId, Long clinicId, String content, Integer rating) {
         this.userId = userId;
         this.clinicId = clinicId;
         this.content = content;
         this.rating = rating;
-    }
-
-    public Long getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(Long reviewId) {
-        this.reviewId = reviewId;
     }
 
     public ReviewDTO(){}

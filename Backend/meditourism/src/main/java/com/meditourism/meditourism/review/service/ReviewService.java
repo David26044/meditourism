@@ -56,9 +56,9 @@ public class ReviewService implements IReviewService{
      * @return
      */
     @Override
-    public ReviewEntity updateReview(ReviewDTO dto) {
-        ReviewEntity review = reviewRepository.findById(dto.getReviewId())
-                .orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + dto.getReviewId()));
+    public ReviewEntity updateReview(Long id, ReviewDTO dto) {
+        ReviewEntity review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + id));
 
         review.setContent(dto.getContent());
         return reviewRepository.save(review);
@@ -78,7 +78,7 @@ public class ReviewService implements IReviewService{
 
         //El service lanza la excepcion si el usuario no existe
         review.setUser(userService
-                .getUserById(dto.getUserId()));
+                .getUserEntityById(dto.getUserId()));
 
         //El service de clinica lanza excepcion si la clinica no existe.
         review.setClinic(clinicService.getClinicById(dto.getClinicId()));
