@@ -8,8 +8,8 @@ import java.util.List;
 public interface IReviewService {
     List<ReviewEntity> getAllReviews();
     ReviewEntity getReviewById(Long id);
-    List<ReviewEntity> getReviewByClinicId(Long id);
+    List<ReviewEntity> getReviewsByClinicId(Long id);
     ReviewEntity updateReview(ReviewDTO review);
     ReviewEntity saveReview(ReviewDTO review);
-    void deleteReview(Long id);
+    ReviewEntity deleteReview(Long id);
 }

@@ -46,8 +46,8 @@ public class ReviewService implements IReviewService{
      * @return
      */
     @Override
-    public List<ReviewEntity> getReviewByClinicId(Long id) {
-        return reviewRepository.findByClinicEntityId(id)
+    public List<ReviewEntity> getReviewsByClinicId(Long id) {
+        return reviewRepository.findAllByClinicId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No hay reseñas asociadas a la clinica con ID: "+ id));
     }
 
@@ -90,7 +90,11 @@ public class ReviewService implements IReviewService{
      * @param id 
      */
     @Override
-    public void deleteReview(Long id) {
-
+    public ReviewEntity deleteReview(Long id) {
+        ReviewEntity review = reviewRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + id));
+        reviewRepository.delete(review);
+        return review;
     }
+
 }

@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
-    Optional<List<ReviewEntity>> findByClinicEntityId(Long id);
+    Optional<List<ReviewEntity>> findAllByClinicId(Long id);
 
 }
