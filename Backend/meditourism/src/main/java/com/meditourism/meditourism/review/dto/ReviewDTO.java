@@ -1,11 +1,60 @@
 package com.meditourism.meditourism.review.dto;
 
-import java.time.LocalDateTime;
-
 public class ReviewDTO {
 
-    private Long id;
+    private Long reviewId;
+    private Long userId;
     private Long clinicId;
-    private int rating;
+    private String content;
+    private Integer rating;
 
+    public ReviewDTO(Long reviewId, Long userId, Long clinicId, String content, Integer rating) {
+        this.reviewId = reviewId;
+        this.userId = userId;
+        this.clinicId = clinicId;
+        this.content = content;
+        this.rating = rating;
+    }
+
+    public Long getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(Long reviewId) {
+        this.reviewId = reviewId;
+    }
+
+    public ReviewDTO(){}
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getClinicId() {
+        return clinicId;
+    }
+
+    public void setClinicId(Long clinicId) {
+        this.clinicId = clinicId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 }

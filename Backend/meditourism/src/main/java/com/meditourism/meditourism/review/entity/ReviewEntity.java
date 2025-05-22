@@ -1,15 +1,11 @@
 package com.meditourism.meditourism.review.entity;
 
 import com.meditourism.meditourism.clinic.entity.ClinicEntity;
-import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "reviews")
@@ -21,11 +17,11 @@ public class ReviewEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity userEntity;
+    private UserEntity user;
 
     @ManyToOne
     @JoinColumn(name = "clinic_id", nullable = false)
-    private ClinicEntity clinicEntity;
+    private ClinicEntity clinic;
 
     @Column(nullable = false) // contenido no nulo
     private String content;
@@ -34,20 +30,27 @@ public class ReviewEntity {
     @CreationTimestamp
     private LocalDateTime date;
 
-    @Transient
-    private List<CommentEntity> comments = new ArrayList<>();
     // Getters y Setters
+
+
+    public ClinicEntity getClinic() {
+        return clinic;
+    }
+
+    public void setClinic(ClinicEntity clinic) {
+        this.clinic = clinic;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
 
     public Long getId() {
         return id;
-    }
-
-    public List<CommentEntity> getComments() {
-        return comments;
-    }
-
-    public void addComment(CommentEntity comment) {
-        comments.add(comment);
     }
 
     public String getContent() {
@@ -66,11 +69,11 @@ public class ReviewEntity {
         this.date = date;
     }
 
-    public UserEntity getUserEntity() {
-        return userEntity;
+    public UserEntity getUser() {
+        return user;
     }
 
-    public void setUserEntity(UserEntity userEntity) {
-        this.userEntity = userEntity;
+    public void setUser(UserEntity userEntity) {
+        this.user = userEntity;
     }
 }
