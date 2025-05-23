@@ -1,13 +1,16 @@
 package com.meditourism.meditourism.user.controller;
 
+import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.user.dto.UserDTO;
 import com.meditourism.meditourism.user.dto.UserResponseDTO;
 import com.meditourism.meditourism.user.entity.UserEntity;
+import com.meditourism.meditourism.user.repository.UserRepository;
 import com.meditourism.meditourism.user.service.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -34,6 +37,13 @@ public class UserController {
 
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMyUser(Authentication authentication) {
+        String email = authentication.getName();
+        return ResponseEntity.ok(userService.getMyUser(email));
+    }
+
+
     /*Metodo para guardar un usuario nuevo*/
     @PostMapping
     public ResponseEntity<UserResponseDTO> saveUser(@RequestBody @Valid UserDTO dto) {
@@ -47,8 +57,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO dto){
-        return ResponseEntity.ok(userService.updateUser(id, dto));
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO dto, Authentication authenticate){
+        return ResponseEntity.ok(userService.updateUser(id, dto, authenticate));
     }
 
     @DeleteMapping("/{id}")

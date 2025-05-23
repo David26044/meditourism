@@ -20,8 +20,7 @@ public class SecurityConfig {
     private final AuthenticationProvider authProvider;
 
     // Constructor para la inyección de dependencias
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          AuthenticationProvider authProvider) {
+    public SecurityConfig(AuthenticationProvider authProvider) {
         this.authProvider = authProvider;
     }
 
@@ -35,7 +34,7 @@ public class SecurityConfig {
         return http.csrf(csrf ->
                         csrf.disable())//Medida de seguridad que pide token csrf para los post
                 .authorizeHttpRequests(authRequest ->
-                        authRequest.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        authRequest.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/email/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->

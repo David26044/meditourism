@@ -56,5 +56,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<Object> UnauthorizedAccessException(UnauthorizedAccessException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("error", "No estas autorizado para acceder a este recurso");
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
 
 }

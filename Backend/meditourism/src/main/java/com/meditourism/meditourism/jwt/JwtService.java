@@ -25,19 +25,7 @@ public class JwtService implements IJwtService {
     // ✅ Clave secreta segura (256 bits - 32 caracteres)
     private static final String SECRET = "4f8c1e2b3d5f6a7e8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2"; // Asegúrate de que esta clave tenga al menos 32 caracteres
 
-    @Override
-    public String generateToken(String email) {
-        UserEntity user = userService.getUserByEmail(email);
-        return Jwts.builder()
-                .setSubject(String.valueOf(user.getId()))
-                .claim("email", user.getEmail())
-                .claim("name", user.getName()) // Ajusta el nombre del atributo
-                .claim("roleId", user.getRoleEntity().getId())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
-                .signWith(getKey(), SignatureAlgorithm.HS256) // Usa la clave segura
-                .compact();
-    }
+
 
     @Override
     public String getToken(UserDetails user) {
@@ -104,5 +92,16 @@ public class JwtService implements IJwtService {
     public boolean isTokenExpired(String token){
         return getExpiration(token).before(new Date());
     }
+
+    @Override
+    public String generateVerificationToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
 
 }

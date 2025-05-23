@@ -1,15 +1,13 @@
 package com.meditourism.meditourism.user.service;
 
-import com.meditourism.meditourism.exception.ResourceAlreadyExistsException;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
-import com.meditourism.meditourism.role.entity.RoleEntity;
-import com.meditourism.meditourism.role.service.IRoleService;
+import com.meditourism.meditourism.exception.UnauthorizedAccessException;
 import com.meditourism.meditourism.user.dto.UserDTO;
 import com.meditourism.meditourism.user.dto.UserResponseDTO;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +27,28 @@ public class UserService implements IUserService {
             responseUsers.add(new UserResponseDTO(savedUser));
         }
         return responseUsers;
+    }
+
+    /**
+     * @param email 
+     * @return
+     */
+    @Override
+    public UserResponseDTO getMyUser(String email) {
+        return new UserResponseDTO(userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró al usuario con email: " + email)));
+    }
+
+    /**
+     * @param email
+     */
+    @Override
+    public void verifyEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("No se pudo verificar el correo: " + email));
+        user.setVerified(true);
+        userRepository.save(user);
+
     }
 
     @Override
@@ -94,9 +114,12 @@ public class UserService implements IUserService {
     * Hay que usar .save, este meetodo buscara el ID, si existe lo actualiza y si no existe lo guarda
     * */
     @Override
-    public UserResponseDTO updateUser(Long id, UserDTO dto) {
-        UserEntity updateUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No existe el usuario con ID: " + id));
+    public UserResponseDTO updateUser(Long id, UserDTO dto, Authentication authenticate) {
+        UserEntity updateUser = userRepository.findByEmail(authenticate.getName())
+                .orElseThrow(() ->new ResourceNotFoundException("No existe usuario con email: " + authenticate.getName()));
+        if (!updateUser.getId().equals(id)){
+            throw new UnauthorizedAccessException("Estas editando un recurso al que no tienes acceso");
+        }
         if(dto.getEmail() != null){
             updateUser.setEmail(dto.getEmail());
         }

@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.function.Function;
 
 public interface IJwtService {
-    String generateToken(String email);
 
     String getToken(UserDetails user);
 
@@ -28,4 +27,6 @@ public interface IJwtService {
     Date getExpiration(String token);
 
     boolean isTokenExpired(String token);
+
+    String generateVerificationToken(String email);
 }
