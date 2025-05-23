@@ -26,11 +26,16 @@ public class SecurityConfig {
     }
 
     @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http.csrf(csrf ->
                         csrf.disable())//Medida de seguridad que pide token csrf para los post
                 .authorizeHttpRequests(authRequest ->
-                        authRequest.requestMatchers("/auth/**").permitAll()
+                        authRequest.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->

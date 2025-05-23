@@ -2,12 +2,18 @@ package com.meditourism.meditourism.auth.service;
 
 import com.meditourism.meditourism.auth.dto.AuthRequest;
 import com.meditourism.meditourism.auth.dto.AuthResponse;
+import com.meditourism.meditourism.exception.ResourceAlreadyExistsException;
+import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.jwt.IJwtService;
 import com.meditourism.meditourism.role.service.IRoleService;
 import com.meditourism.meditourism.user.dto.UserDTO;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,18 +26,29 @@ public class AuthService implements IAuthService{
     private UserRepository userRepository;
     @Autowired
     private IJwtService jwtService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
 
     @Override
     public AuthResponse login(AuthRequest request){
-        return new AuthResponse();
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        UserDetails user=userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("No existe usuario registrado con el correo: " + request.getEmail()));
+        String token = jwtService.getToken(user);
+        return new AuthResponse(token);
     }
 
     @Override
     public AuthResponse register(UserDTO request){
+        if(userRepository.existsByEmail(request.getEmail())){
+            throw new ResourceAlreadyExistsException("Ya hay un usuario registrado con el correo:  " + request.getEmail());
+        }
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
         user.setRoleEntity(roleService.getRoleById(request.getRoleId()));
         user.setVerified(false);
@@ -41,5 +58,4 @@ public class AuthService implements IAuthService{
         response.setToken(jwtService.getToken(user));
         return response;
     }
-
 }

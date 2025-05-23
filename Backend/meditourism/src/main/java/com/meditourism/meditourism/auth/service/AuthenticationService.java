@@ -10,24 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService implements IAuthenticationService {
 
-    @Autowired
-    private IUserService userService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
+    /**
+     * @param request 
+     * @return
+     */
     @Override
     public int authenticate(AuthRequest request) {
-        UserEntity user = userService.getUserByEmail(request.getEmail());
-
-        if (user == null) {
-            return 0; // Email no encontrado
-        }
-
-        if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return 2; // Login exitoso
-        }
-
-        return 1; // Clave incorrecta
+        return 0;
     }
 }

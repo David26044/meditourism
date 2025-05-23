@@ -4,7 +4,9 @@ import com.meditourism.meditourism.auth.dto.AuthResponse;
 import com.meditourism.meditourism.auth.dto.AuthRequest;
 import com.meditourism.meditourism.auth.service.IAuthService;
 import com.meditourism.meditourism.user.dto.UserDTO;
+import com.meditourism.meditourism.user.service.IUserService;
 import com.meditourism.meditourism.user.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,10 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-
-    @Autowired
-    private UserService userService;
-
 
     @Autowired
     private IAuthService authService;
@@ -27,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> login(@RequestBody UserDTO request){
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid UserDTO request){
         return ResponseEntity.ok(authService.register(request));
     }
 
