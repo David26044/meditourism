@@ -14,12 +14,12 @@ public class ClinicTreatmentEntity implements Serializable {
     @EmbeddedId
     private ClinicTreatmentEntityPK id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("clinicId")  // nombre del campo en ClinicTreatmentId
     @JoinColumn(name = "clinic_id")
     private ClinicEntity clinic;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("treatmentId")
     @JoinColumn(name = "treatment_id")
     private TreatmentEntity treatment;

@@ -1,9 +1,12 @@
 package com.meditourism.meditourism.clinic.controller;
 
+import com.meditourism.meditourism.clinic.dto.ClinicDTO;
 import com.meditourism.meditourism.clinic.entity.ClinicEntity;
 import com.meditourism.meditourism.clinic.service.ClinicService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -17,18 +20,19 @@ public class ClinicController{
     private ClinicService clinicService;
 
     @GetMapping
-    public ResponseEntity<List<ClinicEntity>> getAllClinics() {
+    public ResponseEntity<List<ClinicDTO>> getAllClinics() {
         return ResponseEntity.ok(clinicService.getAllClinics());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClinicEntity> getClinicById(@PathVariable Long id){
+    public ResponseEntity<ClinicDTO> getClinicById(@PathVariable Long id){
         return ResponseEntity.ok(clinicService.getClinicById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ClinicEntity> saveClinic(@RequestBody ClinicEntity clinicEntity){
-        ClinicEntity savedClinic = clinicService.saveCLinic(clinicEntity);
+    public ResponseEntity<ClinicDTO> saveClinic(@RequestBody @Valid ClinicDTO dto){
+        ClinicDTO savedClinic = clinicService.saveClinic(dto);
         return ResponseEntity.created(
                 ServletUriComponentsBuilder
                         .fromCurrentRequest()
@@ -38,13 +42,15 @@ public class ClinicController{
                 .body(savedClinic);
     }
 
-    @PutMapping
-    public ResponseEntity<ClinicEntity> updateClinic(@RequestBody ClinicEntity clinic){
-        return ResponseEntity.ok(clinicService.updateCLinic(clinic));
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}")
+    public ResponseEntity<ClinicDTO> updateClinic(@PathVariable Long id, @RequestBody ClinicDTO clinic){
+        return ResponseEntity.ok(clinicService.updateClinic(id, clinic));
     }
 
-    @DeleteMapping
-    public ResponseEntity<ClinicEntity> deleteClinicById(@PathVariable Long id){
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ClinicDTO> deleteClinicById(@PathVariable Long id){
         return ResponseEntity.ok(clinicService.deleteClinicById(id));
     }
 

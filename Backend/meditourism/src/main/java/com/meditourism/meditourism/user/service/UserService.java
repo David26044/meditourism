@@ -8,9 +8,11 @@ import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -115,25 +117,52 @@ public class UserService implements IUserService {
     * */
     @Override
     public UserResponseDTO updateUser(Long id, UserDTO dto, Authentication authenticate) {
-        UserEntity updateUser = userRepository.findByEmail(authenticate.getName())
-                .orElseThrow(() ->new ResourceNotFoundException("No existe usuario con email: " + authenticate.getName()));
-        if (!updateUser.getId().equals(id)){
-            throw new UnauthorizedAccessException("Estas editando un recurso al que no tienes acceso");
+        UserEntity authenticatedUser = ((UserEntity) authenticate.getPrincipal());
+
+        // Verificar permisos
+        if (!authenticatedUser.getId().equals(id)) {
+            throw new UnauthorizedAccessException("No tienes permiso para editar este usuario");
         }
+
+        // Obtener el usuario a actualizar (el mismo que el autenticado en este caso)
+        UserEntity userToUpdate = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+
+        // Actualizar campos si vienen en el DTO
         if(dto.getEmail() != null){
-            updateUser.setEmail(dto.getEmail());
+            userToUpdate.setEmail(dto.getEmail());
         }
         if(dto.getName() != null){
-            updateUser.setName(dto.getName());
+            userToUpdate.setName(dto.getName());
         }
-        userRepository.save(updateUser);
-        return new UserResponseDTO(updateUser);
+
+        // Guardar cambios
+        UserEntity updatedUser = userRepository.save(userToUpdate);
+        return new UserResponseDTO(updatedUser);
     }
 
     @Override
-    public UserResponseDTO deleteUserById(Long id) {
+    public UserResponseDTO deleteUserById(Long id, Authentication authenticate) {
+        UserEntity authenticatedUser = ((UserEntity) authenticate.getPrincipal());
+
+        boolean isOwner = authenticatedUser.getId().equals(id);
+
+        boolean isAdmin = false;
+        Collection<? extends GrantedAuthority> authorities = authenticate.getAuthorities(); // ← aquí
+
+        for (GrantedAuthority auth : authorities) {
+            if (auth.getAuthority().equals("ROLE_ADMIN")) {
+                isAdmin = true;
+                break;
+            }
+        }
+        if (!isOwner && !isAdmin) {
+            throw new UnauthorizedAccessException("No tienes permiso para eliminar este usuario");
+        }
+
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el usuario con ID: " + id));
+
         userRepository.deleteById(id);
         return new UserResponseDTO(user);
     }

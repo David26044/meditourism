@@ -16,9 +16,6 @@ public class UserDTO {
     @NotBlank(message = "El nomre no puede estar vacio")
     private String name;
 
-    @NotNull(message = "Debe especificar un rol")
-    private Long roleId;
-
     @NotBlank(message = "La clave no puede estar vacia")
     private String password;
 
@@ -28,14 +25,6 @@ public class UserDTO {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Long getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Long roleId) {
-        this.roleId = roleId;
     }
 
     public String getEmail() {

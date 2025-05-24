@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 @Service
@@ -34,7 +35,8 @@ public class JwtService implements IJwtService {
         HashMap<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("name", userEntity.getName());
         extraClaims.put("id", userEntity.getId());
-        extraClaims.put("roleId", userEntity.getRoleEntity().getId());
+        extraClaims.put("authorities", List.of("ROLE_" + userEntity.getRoleEntity().getName()));
+
 
         return getToken(extraClaims, user);
     }

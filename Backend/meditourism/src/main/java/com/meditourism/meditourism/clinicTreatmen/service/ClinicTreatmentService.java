@@ -1,12 +1,15 @@
 package com.meditourism.meditourism.clinicTreatmen.service;
 
+import com.meditourism.meditourism.clinic.dto.ClinicDTO;
 import com.meditourism.meditourism.clinic.entity.ClinicEntity;
 import com.meditourism.meditourism.clinic.repository.ClinicRepository;
 import com.meditourism.meditourism.clinicTreatmen.dto.ClinicTreatmentDTO;
+import com.meditourism.meditourism.clinicTreatmen.dto.ClinicTreatmentResponseDTO;
 import com.meditourism.meditourism.clinicTreatmen.entity.ClinicTreatmentEntity;
 import com.meditourism.meditourism.clinicTreatmen.entity.ClinicTreatmentEntityPK;
 import com.meditourism.meditourism.clinicTreatmen.repository.ClinicTreatmentRepository;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
+import com.meditourism.meditourism.treatment.dto.TreatmentDTO;
 import com.meditourism.meditourism.treatment.entity.TreatmentEntity;
 import com.meditourism.meditourism.treatment.repository.TreatmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,35 +28,23 @@ public class ClinicTreatmentService implements IClinicTreatmentService {
     private ClinicRepository clinicRepository;
 
     @Override
-    public List<ClinicEntity> getClinicsByTreatmentId(Long id) {
-        List<ClinicEntity> clinics = clinicTreatmentRepository.findClinicByTreatment(id);
-
-        if (clinics.isEmpty()) {
-            throw new ResourceNotFoundException("El tratamiento con ID " + id + " no existe o no es prestado por ninguna clínica");
-        }
-
-        return clinics;
+    public List<ClinicDTO> getClinicsByTreatmentId(Long id) {
+        return ClinicDTO.fromEntityList(clinicTreatmentRepository.findClinicByTreatment(id));
     }
 
 
     @Override
-    public List<TreatmentEntity> getTreatmentsByClinicId(Long id) {
-        List<TreatmentEntity> treatments = clinicTreatmentRepository.findTreatmentByClinic(id);
-
-        if (treatments.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron tratamientos asociados a la clínica con ID: " + id);
-        }
-
-        return treatments;
+    public List<TreatmentDTO> getTreatmentsByClinicId(Long id) {
+        return TreatmentDTO.fromEntityList(clinicTreatmentRepository.findTreatmentByClinic(id));
     }
 
     @Override
-    public List<ClinicTreatmentEntity> getAllClinicTreatments() {
-        return clinicTreatmentRepository.findAll();
+    public List<ClinicTreatmentResponseDTO> getAllClinicTreatments() {
+        return ClinicTreatmentResponseDTO.fromEntityList(clinicTreatmentRepository.findAll());
     }
 
     @Override
-    public ClinicTreatmentEntity saveClinicTreatment(ClinicTreatmentDTO dto) {
+    public ClinicTreatmentResponseDTO saveClinicTreatment(ClinicTreatmentDTO dto) {
         // Buscar clínica
         ClinicEntity clinic = clinicRepository.findById(dto.getClinicId())
                 .orElseThrow(() -> new ResourceNotFoundException("Clinica no encontrada con ID: " + dto.getClinicId()));
@@ -75,19 +66,55 @@ public class ClinicTreatmentService implements IClinicTreatmentService {
         entity.setPrice(dto.getPrice());
 
         // Guardar
-        return clinicTreatmentRepository.save(entity);
+        return new ClinicTreatmentResponseDTO(clinicTreatmentRepository.save(entity));
     }
 
     @Override
-    public ClinicTreatmentEntity getClinicTreatmentById(ClinicTreatmentDTO dto) {
+    public ClinicTreatmentResponseDTO getClinicTreatmentById(ClinicTreatmentDTO dto) {
         //Crea llave compuesta
         ClinicTreatmentEntityPK pk = new ClinicTreatmentEntityPK();
         pk.setClinicId(dto.getClinicId());
         pk.setTreatmentId(dto.getTreatmentId());
 
         //La busca en el repository
-        return clinicTreatmentRepository.findById(pk)
-                .orElseThrow(() -> new ResourceNotFoundException("Relación no encontrada con clinic_id: " + pk.getClinicId() + " treatment_id: " + pk.getTreatmentId()));
+        return new ClinicTreatmentResponseDTO(clinicTreatmentRepository.findById(pk)
+                .orElseThrow(() -> new ResourceNotFoundException("Relación no encontrada con clinic_id: " + pk.getClinicId() + " treatment_id: " + pk.getTreatmentId())));
 
     }
+
+    @Override
+    public ClinicTreatmentResponseDTO updateClinicTreatment(Long clinicId, Long treatmentId, ClinicTreatmentDTO dto){
+        //Crea llave compuesta
+        ClinicTreatmentEntityPK pk = new ClinicTreatmentEntityPK();
+        pk.setClinicId(clinicId);
+        pk.setTreatmentId(treatmentId);
+
+        //La busca en el repository
+        ClinicTreatmentEntity updateClinicTreatment = clinicTreatmentRepository.findById(pk)
+                .orElseThrow(() -> new ResourceNotFoundException("Relación no encontrada con clinic_id: " + pk.getClinicId() + " treatment_id: " + pk.getTreatmentId()));
+       if (dto.getPrice() != null) {
+           updateClinicTreatment.setPrice(dto.getPrice());
+       }
+        return new ClinicTreatmentResponseDTO(clinicTreatmentRepository.save(updateClinicTreatment));
+    }
+
+    @Override
+    public ClinicTreatmentResponseDTO deleteClinicTreatment(Long clinicId, Long treatmentId) {
+        // Crear la llave compuesta
+        ClinicTreatmentEntityPK pk = new ClinicTreatmentEntityPK();
+        pk.setClinicId(clinicId);
+        pk.setTreatmentId(treatmentId);
+
+        // Buscar la relación en la base de datos
+        ClinicTreatmentEntity entity = clinicTreatmentRepository.findById(pk)
+                .orElseThrow(() -> new ResourceNotFoundException("Relación no encontrada con clinic_id: " + clinicId + " treatment_id: " + treatmentId));
+
+        // Eliminar la entidad
+        clinicTreatmentRepository.delete(entity);
+
+        // Devolver los datos de la relación eliminada
+        return new ClinicTreatmentResponseDTO(entity);
+    }
+
+
 }

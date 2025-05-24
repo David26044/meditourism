@@ -50,7 +50,7 @@ public class AuthService implements IAuthService{
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setName(request.getName());
-        user.setRoleEntity(roleService.getRoleById(request.getRoleId()));
+        user.setRoleEntity(roleService.getRoleById(2L));
         user.setVerified(false);
         userRepository.save(user);
 

@@ -2,9 +2,11 @@ package com.meditourism.meditourism.treatment.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name="treatments")
-public class TreatmentEntity {
+public class TreatmentEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

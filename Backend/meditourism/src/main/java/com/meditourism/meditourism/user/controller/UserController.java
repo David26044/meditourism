@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -25,6 +26,7 @@ public class UserController {
 
     /* Para obtener todos los usuarios en la base de datos.
      * Llama al metodo de userService que llama un metodo de repository*/
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsersResponseDTO());
@@ -62,7 +64,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<UserResponseDTO> deleteUserById(@PathVariable Long id){
-        return ResponseEntity.ok(userService.deleteUserById(id));
+    public ResponseEntity<UserResponseDTO> deleteUserById(@PathVariable Long id, Authentication authenticate){
+        return ResponseEntity.ok(userService.deleteUserById(id, authenticate));
     }
 }

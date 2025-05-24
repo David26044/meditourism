@@ -10,7 +10,7 @@ import java.util.List;
 public interface IUserService {
     UserResponseDTO saveUser(UserDTO dto);
     UserResponseDTO updateUser(Long id, UserDTO dto, Authentication authenticate);
-    UserResponseDTO deleteUserById(Long id);
+    UserResponseDTO deleteUserById(Long id, Authentication authenticate);
     UserResponseDTO getUserResponseDTOById(Long id);
     //void verifyEmail();
     UserEntity getUserByEmail(String email);

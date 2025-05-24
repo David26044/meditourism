@@ -30,8 +30,23 @@ public class ReviewEntity {
     @CreationTimestamp
     private LocalDateTime date;
 
+    @Column
+    private Integer rating;
+
     // Getters y Setters
 
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
 
     public ClinicEntity getClinic() {
         return clinic;

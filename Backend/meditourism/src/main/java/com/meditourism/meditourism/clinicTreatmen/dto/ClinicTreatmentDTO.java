@@ -1,5 +1,7 @@
 package com.meditourism.meditourism.clinicTreatmen.dto;
 
+import com.meditourism.meditourism.clinicTreatmen.entity.ClinicTreatmentEntity;
+
 import java.math.BigDecimal;
 
 public class ClinicTreatmentDTO {

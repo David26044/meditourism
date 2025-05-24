@@ -2,8 +2,11 @@ package com.meditourism.meditourism.clinic.entity;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-public class ClinicEntity {
+@Table(name="clinics")
+public class ClinicEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,6 +20,17 @@ public class ClinicEntity {
 
     @Column(name = "contact_info")
     private String contactInfo;
+
+    @Column
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
     public Long getId() {
         return id;

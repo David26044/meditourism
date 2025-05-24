@@ -5,34 +5,32 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "blocked_user")
 public class BlockedUserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "blocked_user_id", nullable = false)
+    @MapsId  // Esto hace que el id de esta entidad sea el mismo que el id del usuario
+    @JoinColumn(name = "user_id")
     private UserEntity blockedUser;
 
     @Column(nullable = false)
     private String reason;
 
-    @Column
     @CreationTimestamp
-    private LocalDateTime date = LocalDateTime.now();
+    @Column(nullable = false)
+    private LocalDateTime date;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // No seteamos el id directamente, se obtiene del blockedUser
 
     public UserEntity getBlockedUser() {
         return blockedUser;
