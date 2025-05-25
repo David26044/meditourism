@@ -56,6 +56,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Función para verificar si el usuario está logeado
+    function checkUserSession() {
+        const authToken = localStorage.getItem('authToken');
+        if (authToken) {
+            fetch(`${API_BASE_URL}/users/me`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('No se pudo obtener la información del usuario');
+                }
+            })
+            .then(user => {
+                const userActions = document.querySelector('.user-actions');
+                userActions.innerHTML = `<span class="user-name">Hola, ${user.name}</span>`;
+            })
+            .catch(error => {
+                console.error('Error al verificar la sesión del usuario:', error);
+            });
+        }
+    }
+
+    // Llamar a la función para verificar la sesión del usuario
+    checkUserSession();
+
     // Manejar el registro
     async function handleRegister(e) {
         e.preventDefault();
