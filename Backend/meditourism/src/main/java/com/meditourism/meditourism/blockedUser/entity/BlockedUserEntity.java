@@ -23,7 +23,7 @@ public class BlockedUserEntity {
     private String reason;
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column
     private LocalDateTime date;
 
     public Long getId() {

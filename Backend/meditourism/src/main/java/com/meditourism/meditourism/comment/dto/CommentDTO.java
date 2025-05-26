@@ -11,11 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class CommentDTO {
-
     private Long id;
     private String content;
     private LocalDateTime date;
     private UserDTO userDTO;
-    private List<CommentDTO> sons;
-
 }

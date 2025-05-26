@@ -34,4 +34,51 @@ public class CommentEntity {
     @JoinColumn(name = "father_comment_id")
     private CommentEntity fatherCommentEntity;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public UserEntity getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(UserEntity userEntity) {
+        this.userEntity = userEntity;
+    }
+
+    public ReviewEntity getReviewEntity() {
+        return reviewEntity;
+    }
+
+    public void setReviewEntity(ReviewEntity reviewEntity) {
+        this.reviewEntity = reviewEntity;
+    }
+
+    public CommentEntity getFatherCommentEntity() {
+        return fatherCommentEntity;
+    }
+
+    public void setFatherCommentEntity(CommentEntity fatherCommentEntity) {
+        this.fatherCommentEntity = fatherCommentEntity;
+    }
 }
