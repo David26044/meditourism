@@ -67,10 +67,6 @@ public class TreatmentService implements ITreatmentService{
     @Override
     public List<TreatmentDTO> getAllTreatments() {
         List<TreatmentEntity> treatments = treatmentRepository.findAll();
-        List<TreatmentDTO> dtos = new ArrayList<>();
-        for(TreatmentEntity treatment : treatments){
-            dtos.add(new TreatmentDTO(treatment));
-        }
-        return dtos;
+        return TreatmentDTO.fromEntityList(treatments);
     }
 }

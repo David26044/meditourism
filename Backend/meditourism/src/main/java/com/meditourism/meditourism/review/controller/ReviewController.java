@@ -1,12 +1,11 @@
 package com.meditourism.meditourism.review.controller;
 
-import com.meditourism.meditourism.review.dto.ReviewDTO;
-import com.meditourism.meditourism.review.entity.ReviewEntity;
+import com.meditourism.meditourism.review.dto.ReviewRequestDTO;
+import com.meditourism.meditourism.review.dto.ReviewResponseDTO;
 import com.meditourism.meditourism.review.service.IReviewService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -21,23 +20,23 @@ public class ReviewController {
     IReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<List<ReviewDTO>> getAllReviews(){
+    public ResponseEntity<List<ReviewResponseDTO>> getAllReviews(){
         return ResponseEntity.ok(reviewService.getAllReviews());
     }
 
     @GetMapping("/review-clinic/{id}")
-    public ResponseEntity<List<ReviewDTO>> getReviewsByClinicId(@PathVariable Long id){
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByClinicId(@PathVariable Long id){
         return ResponseEntity.ok(reviewService.getReviewsByClinicId(id));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReviewDTO> getReviewByReviewId(@PathVariable Long id){
+    public ResponseEntity<ReviewResponseDTO> getReviewByReviewId(@PathVariable Long id){
         return ResponseEntity.ok(reviewService.getReviewById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDTO> postReview(@RequestBody @Valid ReviewDTO dto){
-        ReviewDTO savedReview = reviewService.saveReview(dto);
+    public ResponseEntity<ReviewResponseDTO> postReview(@RequestBody @Valid ReviewRequestDTO dto){
+        ReviewResponseDTO savedReview = reviewService.saveReview(dto);
         return ResponseEntity
                 .created(ServletUriComponentsBuilder
                         .fromCurrentRequest()
@@ -48,17 +47,17 @@ public class ReviewController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReviewDTO> patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto){
+    public ResponseEntity<ReviewResponseDTO> patchReview(@PathVariable Long id, @RequestBody ReviewRequestDTO dto){
         return ResponseEntity.ok(reviewService.updateReview(id, dto));
     }
 
     @DeleteMapping
-    public ResponseEntity<ReviewDTO> deleteReview(@PathVariable Long id, Authentication authenticate){
+    public ResponseEntity<ReviewResponseDTO> deleteReview(@PathVariable Long id){
         return ResponseEntity.ok(reviewService.deleteReview(id));
     }
 
     @GetMapping("/latest")
-    public ResponseEntity<List<ReviewDTO>> getLatestThreeReviews() {
+    public ResponseEntity<List<ReviewResponseDTO>> getLatestThreeReviews() {
         return ResponseEntity.ok(reviewService.getLatestThreeReviews());
     }
 
