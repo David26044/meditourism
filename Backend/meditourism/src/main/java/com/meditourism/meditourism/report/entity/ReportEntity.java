@@ -11,6 +11,7 @@ import jakarta.persistence.*;
 public class ReportEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
@@ -32,5 +33,51 @@ public class ReportEntity {
     @Column(nullable = false)
     private String reason;
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public UserEntity getReporterUser() {
+        return reporterUser;
+    }
+
+    public void setReporterUser(UserEntity reporterUser) {
+        this.reporterUser = reporterUser;
+    }
+
+    public ReviewEntity getTargetReview() {
+        return targetReview;
+    }
+
+    public void setTargetReview(ReviewEntity targetReview) {
+        this.targetReview = targetReview;
+    }
+
+    public CommentEntity getTargetComment() {
+        return targetComment;
+    }
+
+    public void setTargetComment(CommentEntity targetComment) {
+        this.targetComment = targetComment;
+    }
+
+    public CommunityRuleEntity getCommunityRule() {
+        return communityRule;
+    }
+
+    public void setCommunityRule(CommunityRuleEntity communityRule) {
+        this.communityRule = communityRule;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 }
