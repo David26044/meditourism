@@ -14,4 +14,6 @@ public interface IReviewService {
     ReviewResponseDTO updateReview(Long id, ReviewRequestDTO dto);
     ReviewResponseDTO saveReview(ReviewRequestDTO review);
     ReviewResponseDTO deleteReview(Long id);
+
+    List<ReviewResponseDTO> getLatestThreeReviews();
 }
