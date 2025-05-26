@@ -12,6 +12,8 @@ import com.meditourism.meditourism.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -57,5 +59,25 @@ public class AuthService implements IAuthService{
         AuthResponse response = new AuthResponse();
         response.setToken(jwtService.getToken(user));
         return response;
+    }
+
+    public UserEntity getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (UserEntity) authentication.getPrincipal();
+    }
+
+    public boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    public boolean isOwner(Long ownerId) {
+        UserEntity user = getAuthenticatedUser();
+        return user.getId().equals(ownerId);
+    }
+
+    public boolean isOwnerOrAdmin(Long ownerId) {
+        return isOwner(ownerId) || isAdmin();
     }
 }

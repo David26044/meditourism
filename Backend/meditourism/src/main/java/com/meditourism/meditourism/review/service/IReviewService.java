@@ -10,7 +10,8 @@ public interface IReviewService {
     List<ReviewDTO> getAllReviews();
     ReviewDTO getReviewById(Long id);
     List<ReviewDTO> getReviewsByClinicId(Long id);
-    ReviewDTO updateReview(Long id, ReviewDTO review, Authentication authenticate);
+    ReviewEntity getReviewEntityById(Long id);
+    ReviewDTO updateReview(Long id, ReviewDTO dto);
     ReviewDTO saveReview(ReviewDTO review);
-    ReviewDTO deleteReview(Long id, Authentication authenticate);
+    ReviewDTO deleteReview(Long id);
 }

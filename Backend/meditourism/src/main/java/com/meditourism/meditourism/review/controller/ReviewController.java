@@ -48,13 +48,13 @@ public class ReviewController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ReviewDTO> patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto, Authentication authenticate){
-        return ResponseEntity.ok(reviewService.updateReview(id, dto, authenticate));
+    public ResponseEntity<ReviewDTO> patchReview(@PathVariable Long id, @RequestBody ReviewDTO dto){
+        return ResponseEntity.ok(reviewService.updateReview(id, dto));
     }
 
     @DeleteMapping
     public ResponseEntity<ReviewDTO> deleteReview(@PathVariable Long id, Authentication authenticate){
-        return ResponseEntity.ok(reviewService.deleteReview(id, authenticate));
+        return ResponseEntity.ok(reviewService.deleteReview(id));
     }
 
 }

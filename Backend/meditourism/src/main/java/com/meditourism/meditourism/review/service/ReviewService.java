@@ -1,19 +1,16 @@
 package com.meditourism.meditourism.review.service;
 
+import com.meditourism.meditourism.auth.service.AuthService;
 import com.meditourism.meditourism.clinic.service.IClinicService;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.exception.UnauthorizedAccessException;
 import com.meditourism.meditourism.review.dto.ReviewDTO;
 import com.meditourism.meditourism.review.entity.ReviewEntity;
 import com.meditourism.meditourism.review.repository.ReviewRepository;
-import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -27,6 +24,8 @@ public class ReviewService implements IReviewService {
 
     @Autowired
     IClinicService clinicService;
+    @Autowired
+    private AuthService authService;
 
     /**
      * @return
@@ -57,29 +56,21 @@ public class ReviewService implements IReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("No hay reseñas asociadas a la clinica con ID: " + id)));
     }
 
+    @Override
+    public ReviewEntity getReviewEntityById(Long id){
+        return reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + id));
+    }
+
     /**
      * @param dto
      * @return
      */
     @Override
-    public ReviewDTO updateReview(Long id, ReviewDTO dto, Authentication authenticate) {
+    public ReviewDTO updateReview(Long id, ReviewDTO dto) {
         ReviewEntity review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + id));
 
-        UserEntity authenticatedUser = ((UserEntity) authenticate.getPrincipal());
-
-        boolean isOwner = authenticatedUser.getId().equals(review.getUser().getId());
-
-        boolean isAdmin = false;
-        Collection<? extends GrantedAuthority> authorities = authenticate.getAuthorities(); // ← aquí
-
-        for (GrantedAuthority auth : authorities) {
-            if (auth.getAuthority().equals("ROLE_ADMIN")) {
-                isAdmin = true;
-                break;
-            }
-        }
-        if (!isOwner && !isAdmin) {
+        if (! authService.isOwnerOrAdmin(review.getUser().getId())) {
             throw new UnauthorizedAccessException("No tienes permiso para editar esta reseña");
         }
 
@@ -118,23 +109,10 @@ public class ReviewService implements IReviewService {
      * @param id
      */
     @Override
-    public ReviewDTO deleteReview(Long id, Authentication authenticate) {
+    public ReviewDTO deleteReview(Long id) {
         ReviewEntity review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + id));
-        UserEntity authenticatedUser = ((UserEntity) authenticate.getPrincipal());
-
-        boolean isOwner = authenticatedUser.getId().equals(review.getUser().getId());
-
-        boolean isAdmin = false;
-        Collection<? extends GrantedAuthority> authorities = authenticate.getAuthorities(); // ← aquí
-
-        for (GrantedAuthority auth : authorities) {
-            if (auth.getAuthority().equals("ROLE_ADMIN")) {
-                isAdmin = true;
-                break;
-            }
-        }
-        if (!isOwner && !isAdmin) {
+        if (! authService.isOwnerOrAdmin(review.getUser().getId())) {
             throw new UnauthorizedAccessException("No tienes permiso para editar esta reseña");
         }
         reviewRepository.delete(review);
