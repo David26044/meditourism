@@ -56,35 +56,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Variable para almacenar la información del usuario autenticado
+    let cachedUser = null;
+
     // Función para verificar si el usuario está logeado
-    function checkUserSession() {
+    async function checkUserSession() {
+        if (cachedUser) {
+            // Si ya tenemos la información del usuario, no hacemos otra solicitud
+            updateUserUI(cachedUser);
+            return;
+        }
+
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            fetch(`${API_BASE_URL}/users/me`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`,
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
                 if (response.ok) {
-                    return response.json();
+                    const user = await response.json();
+                    cachedUser = user; // Cachear la información del usuario
+                    updateUserUI(user);
                 } else {
-                    throw new Error('No se pudo obtener la información del usuario');
+                    console.error('No se pudo obtener la información del usuario');
                 }
-            })
-            .then(user => {
-                const userActions = document.querySelector('.user-actions');
-                userActions.innerHTML = `<span class="user-name">Hola, ${user.name}</span>`;
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error al verificar la sesión del usuario:', error);
-            });
+            }
         }
     }
 
-    // Llamar a la función para verificar la sesión del usuario
+    // Función para actualizar la interfaz con la información del usuario
+    function updateUserUI(user) {
+        const userActions = document.querySelector('.user-actions');
+        userActions.innerHTML = `<span class="user-name">Hola, ${user.name}</span>`;
+    }
+
+    // Llamar a la función para verificar la sesión del usuario al cargar la página
     checkUserSession();
 
     // Manejar el registro
@@ -184,6 +197,115 @@ document.addEventListener('DOMContentLoaded', function() {
             showMessage(loginMessage, error.message || 'Error de conexión con el servidor', 'error');
         }
     }
+
+    // Variable global para almacenar el rating seleccionado
+    let selectedRating = 0;
+
+    // Función para manejar el rating con estrellas
+    function handleStarRating() {
+        const stars = document.querySelectorAll('.rating__star');
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                // Actualizar el rating seleccionado
+                selectedRating = index + 1;
+
+                // Remover la clase 'active' de todas las estrellas
+                stars.forEach(s => s.classList.remove('active'));
+
+                // Agregar la clase 'active' a las estrellas hasta la seleccionada
+                for (let i = 0; i <= index; i++) {
+                    stars[i].classList.add('active');
+                }
+            });
+        });
+    }
+
+    // Manejar el envío del formulario de reseñas
+    const commentForm = document.querySelector('.comment-form');
+    if (commentForm) {
+        commentForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Verificar que se haya seleccionado un rating
+            if (selectedRating === 0) {
+                alert('Por favor selecciona una calificación antes de enviar tu comentario.');
+                return;
+            }
+
+            // Obtener el ID del usuario autenticado
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                alert('Debes iniciar sesión para enviar una reseña.');
+                return;
+            }
+
+            let userId;
+            try {
+                const userResponse = await fetch(`${API_BASE_URL}/users/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    userId = userData.id; // Obtener el ID del usuario
+                } else {
+                    throw new Error('No se pudo obtener el ID del usuario.');
+                }
+            } catch (error) {
+                console.error('Error al obtener el ID del usuario:', error);
+                alert('Hubo un error al obtener tu información de usuario. Intenta nuevamente.');
+                return;
+            }
+
+            // Crear el objeto reviewData con los datos del formulario
+            const reviewData = {
+                clinicId: document.getElementById('contact-service').value, // ID de la clínica
+                content: document.getElementById('comment').value, // Contenido del comentario
+                rating: selectedRating, // Calificación capturada
+                date: new Date().toISOString(), // Fecha actual en formato ISO
+                userId: userId // ID del usuario autenticado
+            };
+
+            console.log('Datos enviados:', reviewData); // Verificar los datos enviados
+
+            // Enviar los datos al backend
+            submitReview(reviewData);
+        });
+    }
+
+    // Función para enviar la reseña al backend
+    async function submitReview(reviewData) {
+        const authToken = localStorage.getItem('authToken');
+        try {
+            const response = await fetch(`${API_BASE_URL}/reviews`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${authToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData),
+            });
+
+            if (response.ok) {
+                alert('Reseña enviada con éxito.');
+                location.reload(); // Recargar la página para limpiar el formulario
+            } else {
+                const errorData = await response.json();
+                console.error('Error al enviar la reseña:', errorData);
+                alert('Hubo un error al enviar tu reseña. Intenta nuevamente.');
+            }
+        } catch (error) {
+            console.error('Error al enviar la reseña:', error);
+            alert('Hubo un error al conectar con el servidor.');
+        }
+    }
+
+    // Llamar a la función para inicializar el manejo de estrellas
+    handleStarRating();
 
     // Event Listeners
     registerBtn.addEventListener('click', () => container.classList.add('active'));

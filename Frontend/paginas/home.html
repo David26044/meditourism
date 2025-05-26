@@ -154,50 +154,15 @@
         <!-- Sección Testimonios/Blog -->
         <section id="testimonios" class="section section--testimonials">
             <div class="section__container">
-                <h2 class="section__title">Experiencias de nuestros pacientes</h2>
-                <div class="testimonials-grid">
-                    <article class="testimonial">
-                        <div class="testimonial__header">
-                            <img src="images/user1.jpg" alt="Foto de María G." class="testimonial__image">
-                            <div class="testimonial__author">
-                                <h3 class="testimonial__name">María G.</h3>
-                                <span class="testimonial__location">México</span>
-                            </div>
-                        </div>
-                        <div class="testimonial__content">
-                            <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Facilisis eget dictumst egestas risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit."</p>
-                            <div class="testimonial__rating">★★★★★</div>
-                        </div>
-                    </article>
-                    <article class="testimonial">
-                        <div class="testimonial__header">
-                            <img src="images/user2.jpg" alt="Foto de John D." class="testimonial__image">
-                            <div class="testimonial__author">
-                                <h3 class="testimonial__name">John D.</h3>
-                                <span class="testimonial__location">Estados Unidos</span>
-                            </div>
-                        </div>
-                        <div class="testimonial__content">
-                            <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Facilisis eget dictumst egestas risus. Lorem ipsum dolor sit amet, consectetur adipiscing elit."</p>
-                            <div class="testimonial__rating">★★★★☆</div>
-                        </div>
-                    </article>
-                </div>
+                <h2 class="section__title">Deja tu comentario o reseña</h2>
                 <div class="comments-section">
-                    <h3 class="comments-section__title">Deja tu comentario o reseña</h3>
                     <form class="comment-form">
-                        <div class="comment-form__group">
-                            <label for="name" class="comment-form__label">Nombre</label>
-                            <input type="text" id="name" class="comment-form__input" required>
-                        </div>
-                        <div class="comment-form__group">
-                            <label for="email" class="comment-form__label">Email</label>
-                            <input type="email" id="email" class="comment-form__input" required>
-                        </div>
+                        <!-- Campo para el contenido del comentario -->
                         <div class="comment-form__group">
                             <label for="comment" class="comment-form__label">Tu experiencia</label>
                             <textarea id="comment" class="comment-form__textarea" rows="5" required></textarea>
                         </div>
+                        <!-- Campo para la calificación -->
                         <div class="comment-form__group">
                             <label class="comment-form__label">Calificación</label>
                             <div class="rating">
@@ -208,6 +173,16 @@
                                 <span class="rating__star">★</span>
                             </div>
                         </div>
+                        <!-- Campo para seleccionar la clínica -->
+                        <div class="comment-form__group">
+                            <label for="contact-service" class="comment-form__label">Clínica</label>
+                            <select id="contact-service" class="comment-form__select" required>
+                                <option value="1">Clínica Marsella</option>
+                                <option value="2">Clínica Chapinero</option>
+                                <option value="3">Clínica Lago de los Héroes</option>
+                            </select>
+                        </div>
+                        <!-- Botón para enviar el formulario -->
                         <button type="submit" class="comment-form__submit button button--primary">Enviar comentario</button>
                     </form>
                 </div>
