@@ -6,8 +6,8 @@ import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.comment.repository.CommentRepository;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.exception.UnauthorizedAccessException;
+import com.meditourism.meditourism.review.entity.ReviewEntity;
 import com.meditourism.meditourism.review.service.ReviewService;
-import com.meditourism.meditourism.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +18,6 @@ public class CommentService implements ICommentService{
 
     @Autowired
     CommentRepository commentRepository;
-    @Autowired
-    private ReviewService reviewService;
-    @Autowired
-    private UserService userService;
     @Autowired
     private AuthService authService;
 
@@ -57,10 +53,12 @@ public class CommentService implements ICommentService{
     @Override
     public CommentDTO saveComment(CommentDTO dto) {
         CommentEntity entity = new CommentEntity();
+        ReviewEntity reviewEntity = new ReviewEntity();
+        reviewEntity.setId(dto.getReviewId());
         entity.setContent(dto.getContent());
         entity.setFatherCommentEntity(getCommentEntityById(dto.getFatherId()));
-        entity.setReviewEntity(reviewService.getReviewEntityById(dto.getReviewId()));
-        entity.setUserEntity(userService.getUserEntityById(dto.getUserId()));
+        entity.setReviewEntity(reviewEntity);
+        entity.setUserEntity(authService.getAuthenticatedUser());
         return new CommentDTO(commentRepository.save(entity));
     }
 

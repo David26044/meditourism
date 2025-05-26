@@ -3,12 +3,11 @@ package com.meditourism.meditourism.review.dto;
 import com.meditourism.meditourism.review.entity.ReviewEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReviewDTO {
+public class ReviewRequestDTO {
 
     private Long id;
 
@@ -24,7 +23,7 @@ public class ReviewDTO {
     @NotNull(message = "La calificación no puede ser nula")
     private Integer rating;
 
-    public ReviewDTO(Long id, Long userId, Long clinicId, String content, Integer rating) {
+    public ReviewRequestDTO(Long id, Long userId, Long clinicId, String content, Integer rating) {
         this.id = id;
         this.userId = userId;
         this.clinicId = clinicId;
@@ -32,9 +31,9 @@ public class ReviewDTO {
         this.rating = rating;
     }
 
-    public ReviewDTO(){}
+    public ReviewRequestDTO(){}
 
-    public ReviewDTO(ReviewEntity entity){
+    public ReviewRequestDTO(ReviewEntity entity){
         this.id = entity.getId();
         this.userId = entity.getUser().getId();
         this.clinicId = entity.getClinic().getId();
@@ -82,12 +81,5 @@ public class ReviewDTO {
         this.rating = rating;
     }
 
-    public static List<ReviewDTO> fromEntityList(List<ReviewEntity> entities) {
-        List<ReviewDTO> dtoList = new ArrayList<>();
-        for (ReviewEntity entity : entities) {
-            dtoList.add(new ReviewDTO(entity));
-        }
-        return dtoList;
-    }
 
 }
