@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity // HABILITA @PreAuthorize y @Secured
 public class SecurityConfig {
 
-
     private final AuthenticationProvider authProvider;
 
     // Constructor para la inyección de dependencias
@@ -33,10 +32,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         return http.csrf(csrf ->
-                        csrf.disable())//Medida de seguridad que pide token csrf para los post
-                .cors(cors -> cors.configure(http)) // Enable CORS
+                        csrf.disable()) // Deshabilitar CSRF para API REST
+                .cors(cors -> cors.configure(http)) // Habilitar CORS
                 .authorizeHttpRequests(authRequest ->
-                        authRequest.requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/email/**").permitAll()
+                        authRequest
+                                .requestMatchers(
+                                        "/auth/**", 
+                                        "/swagger-ui/**", 
+                                        "/v3/api-docs/**", 
+                                        "/swagger-ui.html", 
+                                        "/email/**", 
+                                        "/reviews/**" // Permitir acceso público a /reviews
+                                ).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager ->
@@ -45,7 +52,6 @@ public class SecurityConfig {
                 .authenticationProvider(authProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 }
 

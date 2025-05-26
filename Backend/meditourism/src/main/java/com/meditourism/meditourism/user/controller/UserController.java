@@ -26,7 +26,6 @@ public class UserController {
 
     /* Para obtener todos los usuarios en la base de datos.
      * Llama al metodo de userService que llama un metodo de repository*/
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsersResponseDTO());

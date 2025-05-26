@@ -304,6 +304,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Función para obtener y mostrar las últimas 3 reseñas
+    async function fetchLatestReviews() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/reviews/latest`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const reviews = await response.json();
+                displayLatestReviews(reviews);
+            } else {
+                console.error('Error al obtener las reseñas:', response.status);
+            }
+        } catch (error) {
+            console.error('Error al obtener las reseñas:', error);
+        }
+    }
+
+    // Función para mostrar las últimas 3 reseñas en el DOM
+    function displayLatestReviews(reviews) {
+        const testimonialsGrid = document.querySelector('.testimonials-grid');
+        testimonialsGrid.innerHTML = ''; // Limpiar contenido previo
+
+        reviews.forEach(review => {
+            const reviewElement = document.createElement('article');
+            reviewElement.classList.add('testimonial-card');
+            reviewElement.innerHTML = `
+                <div class="testimonial-card__content">
+                    <p class="testimonial-card__quote">"${review.content}"</p>
+                </div>
+                <div class="testimonial-card__rating">
+                    <span class="testimonial-card__stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                </div>
+            `;
+            testimonialsGrid.appendChild(reviewElement);
+        });
+    }
+
+    // Llamar a la función para obtener y mostrar las últimas 3 reseñas al cargar la página
+    fetchLatestReviews();
+
     // Llamar a la función para inicializar el manejo de estrellas
     handleStarRating();
 

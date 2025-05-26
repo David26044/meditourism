@@ -141,4 +141,9 @@ public class ReviewService implements IReviewService {
         return new ReviewDTO(review);
     }
 
+    @Override
+    public List<ReviewDTO> getLatestThreeReviews() {
+        return ReviewDTO.fromEntityList(reviewRepository.findTop3ByIdOrderByDesc());
+    }
+
 }

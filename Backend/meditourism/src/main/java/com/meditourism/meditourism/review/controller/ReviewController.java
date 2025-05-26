@@ -57,4 +57,9 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.deleteReview(id, authenticate));
     }
 
+    @GetMapping("/latest")
+    public ResponseEntity<List<ReviewDTO>> getLatestThreeReviews() {
+        return ResponseEntity.ok(reviewService.getLatestThreeReviews());
+    }
+
 }
