@@ -118,7 +118,7 @@ form h1 {
 .input-group input {
     background-color: #eee;
     border: 2px solid #eee;
-    padding: 12px 75px 12px 15px; /* Aumentado padding derecho para dos iconos */
+    padding: 12px 75px 12px 15px; /* Espacio para dos iconos */
     margin: 8px 0;
     width: 100%;
     border-radius: 5px;
@@ -145,7 +145,7 @@ form h1 {
 
 .validation-icon {
     position: absolute;
-    right: 15px; /* Posicionado al final */
+    right: 15px; /* Al final del campo */
     top: 50%;
     transform: translateY(-50%);
     width: 20px;
@@ -154,6 +154,7 @@ form h1 {
     align-items: center;
     justify-content: center;
     z-index: 2;
+    font-size: 14px;
 }
 
 .validation-icon.valid {
@@ -612,7 +613,7 @@ button.loading {
 
 .password-toggle {
     position: absolute;
-    right: 45px; /* Posicionado antes del icono de validación */
+    right: 45px; /* Antes del icono de validación */
     top: 50%;
     transform: translateY(-50%);
     width: 20px;
@@ -624,15 +625,16 @@ button.loading {
     color: #666;
     z-index: 3;
     transition: color 0.3s ease;
+    font-size: 14px;
 }
 
 .password-toggle:hover {
-    color: #333;
+    color: var(--primary-color);
 }
 
 .validation-icon {
     position: absolute;
-    right: 15px; /* Posicionado al final */
+    right: 15px; /* Al final del campo */
     top: 50%;
     transform: translateY(-50%);
     width: 20px;
@@ -641,6 +643,7 @@ button.loading {
     align-items: center;
     justify-content: center;
     z-index: 2;
+    font-size: 14px;
 }
 
 .reset-btn {
@@ -961,4 +964,14 @@ button.loading {
     font-size: 14px;
     margin: 10px 0 20px;
     text-align: center;
+}
+
+/* Para campos que NO tienen password toggle, usar padding normal */
+.input-group:not(.has-password-toggle) input {
+    padding: 12px 45px 12px 15px; /* Solo espacio para un icono */
+}
+
+/* Para asegurar que los campos de email usen padding normal */
+input[type="email"] {
+    padding: 12px 45px 12px 15px !important;
 }

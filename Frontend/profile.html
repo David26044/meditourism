@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Odontomar - Mi Perfil">
+    <title>Odontomar | Mi Perfil</title>
+    <link rel="stylesheet" href="assets/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-tooth"></i>
+                <span>Odontomar</span>
+            </div>
+            <div class="nav-actions">
+                <a href="home.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-avatar">
+                <div class="avatar-circle">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="sidebarUserName">Cargando...</h3>
+                <p id="sidebarUserEmail">Cargando...</p>
+            </div>
+            <nav class="profile-nav">
+                <a href="#" class="nav-item active" data-section="personal-info">
+                    <i class="fas fa-user"></i> Información Personal
+                </a>
+                <a href="#" class="nav-item" data-section="security">
+                    <i class="fas fa-shield-alt"></i> Seguridad
+                </a>
+                <a href="#" class="nav-item" data-section="preferences">
+                    <i class="fas fa-cog"></i> Preferencias
+                </a>
+            </nav>
+        </div>
+
+        <div class="profile-content">
+            <!-- Personal Info Section -->
+            <div class="content-section active" id="personal-info">
+                <div class="section-header">
+                    <h2>Información Personal</h2>
+                    <p>Actualiza tu información personal</p>
+                </div>
+
+                <form id="personalInfoForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="userName">Nombre Completo</label>
+                        <div class="input-group">
+                            <input type="text" id="userName" name="name" required>
+                            <span class="validation-icon" id="nameIcon"></span>
+                        </div>
+                        <div class="validation-message" id="nameError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail">Correo Electrónico</label>
+                        <div class="input-group">
+                            <input type="email" id="userEmail" name="email" required>
+                            <span class="validation-icon" id="emailIcon"></span>
+                        </div>
+                        <div class="validation-message" id="emailError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estado de Verificación</label>
+                        <div class="verification-status" id="verificationStatus">
+                            <span class="status-badge" id="statusBadge">Verificando...</span>
+                            <button type="button" id="resendVerification" class="btn-link" style="display: none;">
+                                Reenviar correo de verificación
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelChanges" class="btn-secondary">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="saveChanges" class="btn-primary">
+                            <span class="btn-text">Guardar Cambios</span>
+                            <span class="btn-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> Guardando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Security Section -->
+            <div class="content-section" id="security">
+                <div class="section-header">
+                    <h2>Seguridad</h2>
+                    <p>Gestiona la seguridad de tu cuenta</p>
+                </div>
+
+                <form id="changePasswordForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Contraseña Actual</label>
+                        <div class="input-group">
+                            <input type="password" id="currentPassword" name="currentPassword" required>
+                            <span class="password-toggle" onclick="togglePassword('currentPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">Nueva Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" id="newPassword" name="newPassword" required>
+                            <span class="password-toggle" onclick="togglePassword('newPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                            <span class="validation-icon" id="newPasswordIcon"></span>
+                        </div>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-meter">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText">Ingresa una nueva contraseña</div>
+                        </div>
+                        <div class="validation-message" id="newPasswordError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirmar Nueva Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                            <span class="password-toggle" onclick="togglePassword('confirmNewPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                            <span class="validation-icon" id="confirmNewPasswordIcon"></span>
+                        </div>
+                        <div class="validation-message" id="confirmNewPasswordError"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="changePasswordBtn" class="btn-primary">
+                            <span class="btn-text">Cambiar Contraseña</span>
+                            <span class="btn-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin"></i> Cambiando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Preferences Section -->
+            <div class="content-section" id="preferences">
+                <div class="section-header">
+                    <h2>Preferencias</h2>
+                    <p>Personaliza tu experiencia</p>
+                </div>
+
+                <div class="preference-item">
+                    <div class="preference-info">
+                        <h4>Notificaciones por Email</h4>
+                        <p>Recibe notificaciones sobre citas y promociones</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="emailNotifications" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="preference-item">
+                    <div class="preference-info">
+                        <h4>Recordatorios de Citas</h4>
+                        <p>Recibe recordatorios antes de tus citas</p>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="appointmentReminders" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="danger-zone">
+                    <h3>Zona Peligrosa</h3>
+                    <div class="danger-item">
+                        <div class="danger-info">
+                            <h4>Eliminar Cuenta</h4>
+                            <p>Una vez eliminada, no podrás recuperar tu cuenta ni tus datos</p>
+                        </div>
+                        <button id="deleteAccountBtn" class="btn-danger">
+                            Eliminar Cuenta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="message-container"></div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeDeleteModal">&times;</span>
+            <h2>¿Estás seguro?</h2>
+            <p>Esta acción no se puede deshacer. Se eliminarán todos tus datos permanentemente.</p>
+            <div class="modal-actions">
+                <button id="cancelDelete" class="btn-secondary">Cancelar</button>
+                <button id="confirmDelete" class="btn-danger">
+                    <span class="btn-text">Eliminar Cuenta</span>
+                    <span class="btn-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Eliminando...
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/config/api.js"></script>
+    <script src="assets/js/services/authService.js"></script>
+    <script src="assets/js/services/userService.js"></script>
+    <script src="assets/js/utils/ui.js"></script>
+    <script src="assets/js/utils/validation.js"></script>
+    <script src="assets/js/profile.js"></script>
+</body>
+</html>
