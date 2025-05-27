@@ -640,6 +640,206 @@ body {
     50% { opacity: 0.5; }
 }
 
+/* About Director Section */
+.about-director {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.about-director::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2c5aa0, #3b82f6, #60a5fa);
+}
+
+.director-card {
+    background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
+    border-radius: 24px;
+    padding: 50px;
+    box-shadow: 
+        0 20px 60px rgba(44, 90, 160, 0.08),
+        0 8px 20px rgba(44, 90, 160, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 50px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.director-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 
+        0 30px 80px rgba(44, 90, 160, 0.12),
+        0 12px 30px rgba(44, 90, 160, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.director-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.director-info h2 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 12px;
+    position: relative;
+    background: linear-gradient(135deg, #2c5aa0 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.director-title {
+    font-size: 1.2rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-bottom: 35px;
+    padding: 12px 20px;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 197, 253, 0.05) 100%);
+    border-left: 4px solid #3b82f6;
+    border-radius: 0 8px 8px 0;
+    position: relative;
+}
+
+.director-title::before {
+    content: '📋';
+    margin-right: 8px;
+    font-size: 1.1rem;
+}
+
+.credentials {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.credential-item {
+    display: flex;
+    align-items: center;
+    padding: 20px 25px;
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.credential-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #3b82f6 0%, #60a5fa 100%);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.credential-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.credential-item:hover::before {
+    transform: scaleY(1);
+}
+
+.credential-item i {
+    font-size: 1.4rem;
+    color: #3b82f6;
+    margin-right: 18px;
+    min-width: 24px;
+    text-align: center;
+    padding: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.credential-item:hover i {
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(1.1);
+}
+
+.credential-item span {
+    font-size: 1.05rem;
+    color: #374151;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.director-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-placeholder {
+    width: 280px;
+    height: 280px;
+    background: linear-gradient(145deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 
+        0 20px 40px rgba(59, 130, 246, 0.3),
+        inset 0 4px 8px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+}
+
+.image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    background: linear-gradient(45deg, #3b82f6, #60a5fa, #93c5fd, #3b82f6);
+    border-radius: 50%;
+    z-index: -1;
+    animation: rotate 8s linear infinite;
+}
+
+.image-placeholder:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 25px 50px rgba(59, 130, 246, 0.4),
+        inset 0 4px 8px rgba(255, 255, 255, 0.3);
+}
+
+.image-placeholder i {
+    font-size: 4rem;
+    color: white;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .mobile-toggle {
@@ -689,5 +889,68 @@ body {
         padding: 10px;
         background: rgba(255,255,255,0.1);
         border-radius: var(--border-radius);
+    }
+}
+
+@media (max-width: 968px) {
+    .director-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 40px 30px;
+        gap: 40px;
+    }
+    
+    .director-info h2 {
+        font-size: 2.4rem;
+    }
+    
+    .image-placeholder {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .image-placeholder i {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .about-director {
+        padding: 60px 0;
+    }
+    
+    .director-card {
+        padding: 30px 20px;
+        border-radius: 16px;
+    }
+    
+    .director-info h2 {
+        font-size: 2rem;
+    }
+    
+    .director-title {
+        font-size: 1.1rem;
+        padding: 10px 16px;
+    }
+    
+    .credential-item {
+        padding: 16px 20px;
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+    
+    .credential-item i {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    
+    .image-placeholder {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .image-placeholder i {
+        font-size: 2.5rem;
     }
 }

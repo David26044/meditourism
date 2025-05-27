@@ -297,18 +297,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Función global para toggle de contraseña
+// Función global para toggle de contraseña (fuera del DOMContentLoaded)
 function togglePassword(inputId, toggleButton) {
     const input = document.getElementById(inputId);
     const icon = toggleButton.querySelector('i');
+    
+    if (!input || !icon) return;
     
     if (input.type === 'password') {
         input.type = 'text';
         icon.classList.remove('fa-eye');
         icon.classList.add('fa-eye-slash');
+        toggleButton.title = 'Ocultar contraseña';
     } else {
         input.type = 'password';
         icon.classList.remove('fa-eye-slash');
         icon.classList.add('fa-eye');
+        toggleButton.title = 'Mostrar contraseña';
     }
 }
