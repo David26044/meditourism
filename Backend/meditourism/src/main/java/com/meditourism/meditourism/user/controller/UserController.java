@@ -1,6 +1,8 @@
 package com.meditourism.meditourism.user.controller;
 
+import com.meditourism.meditourism.email.service.EmailService;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
+import com.meditourism.meditourism.jwt.JwtService;
 import com.meditourism.meditourism.user.dto.UserDTO;
 import com.meditourism.meditourism.user.dto.UserResponseDTO;
 import com.meditourism.meditourism.user.entity.UserEntity;
@@ -23,6 +25,10 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private JwtService jwtService;
 
     /* Para obtener todos los usuarios en la base de datos.
      * Llama al metodo de userService que llama un metodo de repository*/

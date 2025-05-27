@@ -8,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 
 public interface IUserService {
+    boolean existsByEmail(String email);
+
     UserResponseDTO saveUser(UserDTO dto);
     UserResponseDTO updateUser(Long id, UserDTO dto, Authentication authenticate);
     UserResponseDTO deleteUserById(Long id, Authentication authenticate);

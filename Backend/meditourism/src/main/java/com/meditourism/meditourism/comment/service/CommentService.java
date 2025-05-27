@@ -1,13 +1,13 @@
 package com.meditourism.meditourism.comment.service;
 
 import com.meditourism.meditourism.auth.service.AuthService;
+import com.meditourism.meditourism.blockedUser.service.BlockedUserService;
 import com.meditourism.meditourism.comment.dto.CommentDTO;
 import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.comment.repository.CommentRepository;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.exception.UnauthorizedAccessException;
 import com.meditourism.meditourism.review.entity.ReviewEntity;
-import com.meditourism.meditourism.review.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,8 @@ public class CommentService implements ICommentService{
     CommentRepository commentRepository;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private BlockedUserService blockedUserService;
 
     @Override
     public List<CommentDTO> getAllComments(){
@@ -52,6 +54,9 @@ public class CommentService implements ICommentService{
      */
     @Override
     public CommentDTO saveComment(CommentDTO dto) {
+        if (blockedUserService.isBlocked(authService.getAuthenticatedUser().getId())) {
+            throw new UnauthorizedAccessException("No tienes permisos");
+        }
         CommentEntity entity = new CommentEntity();
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setId(dto.getReviewId());

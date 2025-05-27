@@ -1,6 +1,8 @@
 package com.meditourism.meditourism.review.service;
 
 import com.meditourism.meditourism.auth.service.AuthService;
+import com.meditourism.meditourism.blockedUser.service.BlockedUserService;
+import com.meditourism.meditourism.blockedUser.service.IBlockedUserService;
 import com.meditourism.meditourism.clinic.entity.ClinicEntity;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
 import com.meditourism.meditourism.exception.UnauthorizedAccessException;
@@ -21,6 +23,8 @@ public class ReviewService implements IReviewService {
 
     @Autowired
     private AuthService authService;
+    @Autowired
+    private IBlockedUserService blockedUserService;
 
     /**
      * @return
@@ -84,6 +88,9 @@ public class ReviewService implements IReviewService {
      */
     @Override
     public ReviewResponseDTO saveReview(ReviewRequestDTO dto) {
+        if (blockedUserService.isBlocked(dto.getUserId())) {
+            throw new UnauthorizedAccessException("No tienes permisos");
+        }
         ReviewEntity review = new ReviewEntity();
         //Setteo valores de la review
         ClinicEntity clinic = new ClinicEntity();

@@ -1,11 +1,14 @@
 package com.meditourism.meditourism.contactForm.service;
 
+import com.meditourism.meditourism.blockedUser.service.BlockedUserService;
+import com.meditourism.meditourism.blockedUser.service.IBlockedUserService;
 import com.meditourism.meditourism.contactForm.dto.ContactFormRequestDTO;
 import com.meditourism.meditourism.contactForm.dto.ContactFormResponseDTO;
 import com.meditourism.meditourism.contactForm.dto.TreatmentContactCountDTO;
 import com.meditourism.meditourism.contactForm.entity.ContactFormEntity;
 import com.meditourism.meditourism.contactForm.repository.ContactFormRepository;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
+import com.meditourism.meditourism.exception.UnauthorizedAccessException;
 import com.meditourism.meditourism.treatment.entity.TreatmentEntity;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,8 @@ public class ContactFormService implements IContactFormService {
 
     @Autowired
     private ContactFormRepository contactFormRepository;
+    @Autowired
+    private IBlockedUserService blockedUserService;
 
     /**
      * @return 
@@ -81,6 +86,9 @@ public class ContactFormService implements IContactFormService {
      */
     @Override
     public ContactFormResponseDTO saveContactForm(ContactFormRequestDTO dto) {
+        if (blockedUserService.isBlocked(dto.getUserId())) {
+            throw new UnauthorizedAccessException("No tienes permisos");
+        }
         ContactFormEntity entity = new ContactFormEntity();
         UserEntity userEntity = new UserEntity();
         userEntity.setId(dto.getUserId());

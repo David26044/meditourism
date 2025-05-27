@@ -71,6 +71,11 @@ public class UserService implements IUserService {
 
     }
 
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
     /**
      * @param dto 
      * @return
