@@ -71,38 +71,6 @@ public class UserService implements IUserService {
 
     }
 
-    /*
-    * Lanza una excepcion si el correo ya ha sido usado con un usuario
-    * encripta la contraseña, se la asigna al objeto y lo guarda en la db
-    * */
-//    @Override
-//    public UserResponseDTO saveUser(UserDTO dto) {
-//        // Verifica si el email ya está en uso
-//        if (userRepository.existsByEmail(dto.getEmail())) {
-//            throw new ResourceAlreadyExistsException("El correo ya está registrado: " + dto.getEmail());
-//        }
-//
-//        //setteo el nuevo usuario.
-//        UserEntity user = new UserEntity();
-//
-//        user.setEmail(dto.getEmail());
-//        user.setName(dto.getName());
-//        user.setVerified(false);
-//
-//        RoleEntity role = roleService.getRoleById(dto.getRoleId());
-//
-//        user.setRoleEntity(role); // Asigna la referencia al rol
-//
-//        // Encripta la contraseña
-//        String hashedPassword = passwordEncoder.encode(dto.getPassword());
-//        user.setPassword(hashedPassword);
-//
-//        // Guarda y retorna
-//        UserEntity savedUser = userRepository.save(user);
-//
-//        return new UserResponseDTO(savedUser);
-//    }
-
     /**
      * @param dto 
      * @return
