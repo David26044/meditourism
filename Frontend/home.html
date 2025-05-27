@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Turismo médico en Colombia - Plataforma completa de servicios médicos">
+    <title>MediTourism Colombia | Dashboard</title>
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-heartbeat"></i>
+                <span>MediTourism</span>
+            </div>
+            <nav class="nav-menu" id="navMenu">
+                <a href="#servicios" class="nav-link">Servicios</a>
+                <a href="#hospitales" class="nav-link">Hospitales</a>
+                <a href="#citas" class="nav-link">Mis Citas</a>
+                <a href="#perfil" class="nav-link">Perfil</a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="#perfil" class="dropdown-item">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="#configuracion" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Configuración
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+                <div class="mobile-toggle" id="mobileToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Bienvenido a <span class="highlight">MediTourism</span></h1>
+                <p class="hero-subtitle">Tu plataforma completa para turismo médico en Colombia</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Médicos Especialistas</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Hospitales Afiliados</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">10k+</span>
+                        <span class="stat-label">Pacientes Satisfechos</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="hero-card">
+                    <i class="fas fa-stethoscope"></i>
+                    <h3>Atención de Calidad</h3>
+                    <p>Profesionales certificados a tu servicio</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="quick-actions">
+        <div class="container">
+            <h2>Acciones Rápidas</h2>
+            <div class="actions-grid">
+                <div class="action-card" data-action="agendar-cita">
+                    <div class="action-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <h3>Agendar Cita</h3>
+                    <p>Programa tu consulta médica</p>
+                    <button class="action-btn">Agendar Ahora</button>
+                </div>
+                <div class="action-card" data-action="buscar-medicos">
+                    <div class="action-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Buscar Médicos</h3>
+                    <p>Encuentra especialistas cerca de ti</p>
+                    <button class="action-btn">Buscar</button>
+                </div>
+                <div class="action-card" data-action="historial-medico">
+                    <div class="action-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3>Historial Médico</h3>
+                    <p>Consulta tus registros médicos</p>
+                    <button class="action-btn">Ver Historial</button>
+                </div>
+                <div class="action-card" data-action="planes-turismo">
+                    <div class="action-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h3>Planes de Turismo</h3>
+                    <p>Combina salud y turismo</p>
+                    <button class="action-btn">Explorar</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Widgets -->
+    <section class="dashboard-widgets">
+        <div class="container">
+            <div class="widgets-grid">
+                <!-- Próximas Citas -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3><i class="fas fa-calendar-check"></i> Próximas Citas</h3>
+                        <a href="#citas" class="widget-link">Ver todas</a>
+                    </div>
+                    <div class="widget-content">
+                        <div class="appointment-item">
+                            <div class="appointment-date">
+                                <span class="day">15</span>
+                                <span class="month">Nov</span>
+                            </div>
+                            <div class="appointment-info">
+                                <h4>Dr. Juan Pérez</h4>
+                                <p>Cardiología - 2:30 PM</p>
+                                <span class="appointment-status confirmed">Confirmada</span>
+                            </div>
+                        </div>
+                        <div class="appointment-item">
+                            <div class="appointment-date">
+                                <span class="day">20</span>
+                                <span class="month">Nov</span>
+                            </div>
+                            <div class="appointment-info">
+                                <h4>Dra. María González</h4>
+                                <p>Dermatología - 10:00 AM</p>
+                                <span class="appointment-status pending">Pendiente</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Servicios Populares -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3><i class="fas fa-star"></i> Servicios Populares</h3>
+                        <a href="#servicios" class="widget-link">Ver todos</a>
+                    </div>
+                    <div class="widget-content">
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="service-info">
+                                <h4>Cardiología</h4>
+                                <p>Especialistas en salud cardiovascular</p>
+                                <div class="service-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <span>4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-tooth"></i>
+                            </div>
+                            <div class="service-info">
+                                <h4>Odontología</h4>
+                                <p>Cuidado dental integral</p>
+                                <div class="service-rating">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <span>4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notificaciones -->
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3><i class="fas fa-bell"></i> Notificaciones</h3>
+                        <a href="#notificaciones" class="widget-link">Ver todas</a>
+                    </div>
+                    <div class="widget-content">
+                        <div class="notification-item unread">
+                            <div class="notification-icon">
+                                <i class="fas fa-calendar"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Recordatorio de Cita</h4>
+                                <p>Tu cita con Dr. Juan Pérez es mañana a las 2:30 PM</p>
+                                <span class="notification-time">Hace 2 horas</span>
+                            </div>
+                        </div>
+                        <div class="notification-item">
+                            <div class="notification-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="notification-content">
+                                <h4>Cita Confirmada</h4>
+                                <p>Tu cita de dermatología ha sido confirmada</p>
+                                <span class="notification-time">Ayer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MediTourism Colombia</h3>
+                    <p>Tu salud es nuestra prioridad. Conectamos pacientes con los mejores profesionales médicos del país.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#hospitales">Hospitales</a></li>
+                        <li><a href="#medicos">Médicos</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Soporte</h4>
+                    <ul>
+                        <li><a href="#ayuda">Centro de Ayuda</a></li>
+                        <li><a href="#terminos">Términos y Condiciones</a></li>
+                        <li><a href="#privacidad">Política de Privacidad</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MediTourism Colombia. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-heartbeat"></i>
+            <p>Cargando...</p>
+        </div>
+    </div>
+
+    <script src="assets/js/config/api.js"></script>
+    <script src="assets/js/services/authService.js"></script>
+    <script src="assets/js/utils/ui.js"></script>
+    <script src="assets/js/home.js"></script>
+</body>
+</html>
