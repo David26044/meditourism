@@ -2,7 +2,9 @@ package com.meditourism.meditourism.contactForm.controller;
 
 import com.meditourism.meditourism.contactForm.dto.ContactFormRequestDTO;
 import com.meditourism.meditourism.contactForm.dto.ContactFormResponseDTO;
+import com.meditourism.meditourism.contactForm.dto.TreatmentContactCountDTO;
 import com.meditourism.meditourism.contactForm.service.ContactFormService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,8 +40,14 @@ public class ContactFormController {
         return ResponseEntity.ok(contactFormService.getContactFormByUserId(userId));
     }
 
+    @GetMapping("/treatment-contact-count")
+    public ResponseEntity<List<TreatmentContactCountDTO>> getTreatmentContactCounts() {
+        return ResponseEntity.ok(contactFormService.getTreatmentContactCounts());
+    }
+
+
     @PostMapping
-    public ResponseEntity<ContactFormResponseDTO> createContactForm(@RequestBody ContactFormRequestDTO dto) {
+    public ResponseEntity<ContactFormResponseDTO> createContactForm(@RequestBody @Valid ContactFormRequestDTO dto) {
         ContactFormResponseDTO savedContactForm = contactFormService.saveContactForm(dto);
         return ResponseEntity
                 .created(ServletUriComponentsBuilder
