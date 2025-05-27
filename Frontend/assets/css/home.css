@@ -640,6 +640,245 @@ body {
     50% { opacity: 0.5; }
 }
 
+/* Pricing Section */
+.pricing-section {
+    padding: 80px 0;
+    background: var(--white);
+}
+
+.pricing-section h2 {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.pricing-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    overflow: hidden;
+    transition: var(--transition);
+    border: 2px solid transparent;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-color);
+}
+
+.pricing-card.featured {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+}
+
+.pricing-card.featured .pricing-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.pricing-header {
+    background: var(--primary-color);
+    color: var(--white);
+    padding: 25px;
+    text-align: center;
+    position: relative;
+}
+
+.pricing-header h3 {
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.pricing-header i {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.pricing-content {
+    padding: 25px;
+}
+
+.pricing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.pricing-item:last-child {
+    border-bottom: none;
+}
+
+.service-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    flex: 1;
+}
+
+.service-price {
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.service-pricing {
+    margin-top: 10px;
+}
+
+.service-pricing .price {
+    background: var(--gray-light);
+    color: var(--primary-color);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* Location Items */
+.location-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.location-item:last-child {
+    border-bottom: none;
+}
+
+.location-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--gray-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.location-info h4 {
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.location-info p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.location-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.location-status.available {
+    background: #d4edda;
+    color: var(--success-color);
+}
+
+/* Hero card updates for dental focus */
+.hero-card small {
+    display: block;
+    margin-top: 10px;
+    opacity: 0.7;
+    font-size: 0.8rem;
+}
+
+/* Action card updates */
+.action-card[data-action="operatoria-dental"] .action-icon {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.action-card[data-action="implantes"] .action-icon {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+}
+
+.action-card[data-action="estetica-dental"] .action-icon {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+/* Professional credentials styling */
+.credentials {
+    background: var(--gray-light);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin: 20px 0;
+}
+
+.credentials h4 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.credentials ul {
+    list-style: none;
+    padding: 0;
+}
+
+.credentials ul li {
+    padding: 8px 0;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.credentials ul li i {
+    color: var(--primary-color);
+    width: 16px;
+}
+
+/* Equipment and technology section */
+.equipment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.equipment-item {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.equipment-item i {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.equipment-item h5 {
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.equipment-item p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .mobile-toggle {
@@ -676,6 +915,14 @@ body {
     .footer-content {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+    
+    .pricing-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .equipment-list {
+        grid-template-columns: 1fr;
     }
 }
 
