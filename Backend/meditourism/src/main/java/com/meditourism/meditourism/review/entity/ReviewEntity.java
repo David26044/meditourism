@@ -81,7 +81,7 @@ public class ReviewEntity {
     }
 
     public void setPublicationDate(LocalDateTime publicationDate) {
-        this.date = date;
+        this.date = publicationDate; // Corregir asignación
     }
 
     public UserEntity getUser() {

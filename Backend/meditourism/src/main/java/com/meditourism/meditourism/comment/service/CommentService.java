@@ -61,7 +61,12 @@ public class CommentService implements ICommentService{
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setId(dto.getReviewId());
         entity.setContent(dto.getContent());
-        entity.setFatherCommentEntity(getCommentEntityById(dto.getFatherId()));
+        
+        // Solo asignar padre si existe
+        if (dto.getFatherId() != null) {
+            entity.setFatherCommentEntity(getCommentEntityById(dto.getFatherId()));
+        }
+        
         entity.setReviewEntity(reviewEntity);
         entity.setUserEntity(authService.getAuthenticatedUser());
         return new CommentDTO(commentRepository.save(entity));
@@ -74,7 +79,7 @@ public class CommentService implements ICommentService{
     public CommentDTO deleteComment(Long id) {
         CommentEntity entity = getCommentEntityById(id);
 
-        if (authService.isOwnerOrAdmin(entity.getUserEntity().getId())) {
+        if (!authService.isOwnerOrAdmin(entity.getUserEntity().getId())) {
             throw new UnauthorizedAccessException("No tienes permiso para eliminar el comentario");
         }
         commentRepository.delete(entity);
@@ -87,7 +92,7 @@ public class CommentService implements ICommentService{
     @Override
     public CommentDTO updateComment(Long id, CommentDTO dto) {
         CommentEntity entity = getCommentEntityById(id);
-        if (authService.isOwnerOrAdmin(entity.getUserEntity().getId())) {
+        if (!authService.isOwnerOrAdmin(entity.getUserEntity().getId())) {
             throw new UnauthorizedAccessException("No tienes permiso para editar el comentario");
         }
         if (dto.getContent() != null) {

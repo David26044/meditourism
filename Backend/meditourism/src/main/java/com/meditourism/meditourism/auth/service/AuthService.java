@@ -38,8 +38,8 @@ public class AuthService implements IAuthService{
     @Autowired
     IEmailService emailService;
 
-    @Value("${app.email.reset-password-url}")
-    private String resetPasswordUrlBase;
+    @Value("${app.frontend.reset-password.url}")
+    private String frontendResetPasswordUrl;
     @Value("${app.email.verification-url}")
     private String verificationUrlBase;
 
@@ -77,11 +77,15 @@ public class AuthService implements IAuthService{
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
 
         String token = jwtService.generateVerificationToken(email);
-        String resetUrl = resetPasswordUrlBase + "?token=" + token;
+        String resetUrl = frontendResetPasswordUrl + "?token=" + token;
 
-        String subject = "Restablecimiento de contraseña";
+        String subject = "Restablecimiento de contraseña - MediTourism";
         String body = "Hola " + userEntity.getName() + ",\n\n" +
-                "Haz clic en el siguiente enlace para restablecer tu contraseña:\n" + resetUrl;
+                "Has solicitado restablecer tu contraseña en MediTourism.\n\n" +
+                "Haz clic en el siguiente enlace para restablecer tu contraseña:\n" + resetUrl + "\n\n" +
+                "Si no solicitaste este cambio, puedes ignorar este mensaje.\n\n" +
+                "Este enlace expirará en 24 horas por seguridad.\n\n" +
+                "Saludos,\nEquipo MediTourism";
 
         emailService.sendEmail(email, subject, body);
     }
@@ -101,9 +105,18 @@ public class AuthService implements IAuthService{
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
 
         String token = jwtService.generateVerificationToken(email);
-        String verificationLink = verificationUrlBase +  "?token=" + token;
-        String subject = "Verifica tu correo electrónico";
-        String body = "Bienvenido a MediTourism. Haz clic en el siguiente enlace para verificar tu correo:\n\n" + verificationLink;
+        String verificationLink = "http://localhost:10090/verify-email.html?token=" + token;
+        
+        String subject = "Verifica tu correo electrónico - MediTourism";
+        String body = "¡Bienvenido a MediTourism, " + userEntity.getName() + "!\n\n" +
+                "Gracias por registrarte en nuestra plataforma de turismo médico.\n\n" +
+                "Para completar tu registro, por favor verifica tu correo electrónico haciendo clic en el siguiente enlace:\n" +
+                verificationLink + "\n\n" +
+                "Una vez verificado tu correo, podrás acceder a todos nuestros servicios.\n\n" +
+                "Si no te registraste en MediTourism, puedes ignorar este mensaje.\n\n" +
+                "¡Esperamos ayudarte a encontrar los mejores tratamientos médicos!\n\n" +
+                "Saludos,\nEquipo MediTourism";
+        
         emailService.sendEmail(email, subject, body);
     }
 

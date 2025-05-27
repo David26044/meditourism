@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,18 +43,18 @@ public class CommentController {
 
     // Crear nuevo comentario
     @PostMapping
-    public ResponseEntity<CommentDTO> saveComment(@RequestBody CommentDTO dto) {
+    public ResponseEntity<CommentDTO> saveComment(@RequestBody @Valid CommentDTO dto) {
         CommentDTO savedComment = commentService.saveComment(dto);
         return ResponseEntity.created(ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("{/id}")
+                .path("/{id}")
                 .buildAndExpand(savedComment.getId())
                 .toUri())
                 .body(savedComment);
     }
 
     // Actualizar un comentario
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<CommentDTO> updateComment(@PathVariable Long id, @RequestBody CommentDTO dto) {
         return ResponseEntity.ok(commentService.updateComment(id, dto));
     }

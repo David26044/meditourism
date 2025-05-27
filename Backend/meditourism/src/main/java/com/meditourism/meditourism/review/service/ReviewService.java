@@ -91,18 +91,19 @@ public class ReviewService implements IReviewService {
         if (blockedUserService.isBlocked(dto.getUserId())) {
             throw new UnauthorizedAccessException("No tienes permisos");
         }
+        
+        // Validar rating
+        if (dto.getRating() < 1 || dto.getRating() > 5) {
+            throw new IllegalArgumentException("El rating debe estar entre 1 y 5");
+        }
+        
         ReviewEntity review = new ReviewEntity();
-        //Setteo valores de la review
         ClinicEntity clinic = new ClinicEntity();
         clinic.setId(dto.getClinicId());
 
-        //Contenido
         review.setContent(dto.getContent());
-
-        //El service lanza la excepcion si el usuario no existe
+        review.setRating(dto.getRating()); // Asegurar que se guarde el rating
         review.setUser(authService.getAuthenticatedUser());
-
-        //El service de clinica lanza excepcion si la clinica no existe.
         review.setClinic(clinic);
 
         return new ReviewResponseDTO(reviewRepository.save(review));
