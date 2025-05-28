@@ -18,6 +18,9 @@ public interface IClinicTreatmentService {
     List<ClinicTreatmentResponseDTO> getAllClinicTreatments();
     ClinicTreatmentResponseDTO saveClinicTreatment(ClinicTreatmentDTO clinicTreatment);
     ClinicTreatmentResponseDTO getClinicTreatmentById(ClinicTreatmentDTO dto);
+
+    ClinicTreatmentEntity getClinicTreatmentEntityById(Long clinicId, Long treatmentId);
+
     ClinicTreatmentResponseDTO updateClinicTreatment(Long clinicId, Long treatmentId, ClinicTreatmentDTO dto);
     ClinicTreatmentResponseDTO deleteClinicTreatment(Long clinicId, Long treatmentId);
 }

@@ -83,6 +83,16 @@ public class ClinicTreatmentService implements IClinicTreatmentService {
     }
 
     @Override
+    public ClinicTreatmentEntity getClinicTreatmentEntityById(Long clinicId, Long treatmentId) {
+        ClinicTreatmentEntityPK pk = new ClinicTreatmentEntityPK();
+        pk.setClinicId(clinicId);
+        pk.setTreatmentId(treatmentId);
+        return clinicTreatmentRepository.findById(pk)
+                .orElseThrow(() -> new ResourceNotFoundException("Relación no encontrada con clinic_id: " + pk.getClinicId() + " treatment_id: " + pk.getTreatmentId()));
+
+    }
+
+    @Override
     public ClinicTreatmentResponseDTO updateClinicTreatment(Long clinicId, Long treatmentId, ClinicTreatmentDTO dto){
         //Crea llave compuesta
         ClinicTreatmentEntityPK pk = new ClinicTreatmentEntityPK();

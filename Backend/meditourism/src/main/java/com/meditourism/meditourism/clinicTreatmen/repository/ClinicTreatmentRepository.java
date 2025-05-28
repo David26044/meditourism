@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ClinicTreatmentRepository extends JpaRepository<ClinicTreatmentEntity, ClinicTreatmentEntityPK> {
@@ -18,4 +20,5 @@ public interface ClinicTreatmentRepository extends JpaRepository<ClinicTreatment
 
     @Query("SELECT ct.treatment FROM ClinicTreatmentEntity ct WHERE ct.clinic.id = :clinicId")
     List<TreatmentEntity> findTreatmentByClinic(@Param("clinicId") Long clinicId);
+
 }
