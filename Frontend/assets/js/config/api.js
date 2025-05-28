@@ -22,9 +22,9 @@ const API_CONFIG = {
         TREATMENTS: '/treatments',
         // Contact form endpoints
         CONTACT_FORMS: '/contact-forms',
-        // Email endpoints
+        // Email endpoints - Fixed structure
         EMAIL: '/email',
-        SEND_WELCOME_EMAIL: '/send-welcome-email'
+        SEND_WELCOME_EMAIL: '/email/send-welcome-email'
     },
     TIMEOUT: 10000, // 10 segundos
     HEADERS: {

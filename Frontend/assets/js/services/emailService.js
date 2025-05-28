@@ -3,9 +3,12 @@ class EmailService {
     
     static async sendWelcomeEmail(emailData) {
         try {
-            const response = await fetch(buildURL(API_CONFIG.ENDPOINTS.EMAIL.BASE), {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EMAIL.BASE}`, {
                 method: 'POST',
-                ...FETCH_CONFIG,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(emailData)
             });
 
@@ -34,9 +37,12 @@ class EmailService {
                 `
             };
 
-            const response = await fetch(buildURL(API_CONFIG.ENDPOINTS.EMAIL.BASE), {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EMAIL}`, {
                 method: 'POST',
-                ...FETCH_CONFIG,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
                 body: JSON.stringify(emailContent)
             });
 
