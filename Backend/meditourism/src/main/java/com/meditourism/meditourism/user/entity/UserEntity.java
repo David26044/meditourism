@@ -2,6 +2,7 @@ package com.meditourism.meditourism.user.entity;
 import com.meditourism.meditourism.blockedUser.entity.BlockedUserEntity;
 import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.contactForm.entity.ContactFormEntity;
+import com.meditourism.meditourism.report.entity.ReportEntity;
 import com.meditourism.meditourism.review.entity.ReviewEntity;
 import com.meditourism.meditourism.role.entity.RoleEntity;
 import jakarta.persistence.*;
@@ -41,18 +42,9 @@ public class UserEntity implements Serializable, UserDetails {
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = java.time.LocalDateTime.now();
-    }
-
-    public java.time.LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(java.time.LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id") // o el nombre de la columna que estás usando
+    private UserEntity userReporter;
 
     public boolean isVerified() {
         return isVerified;
@@ -160,11 +152,13 @@ public class UserEntity implements Serializable, UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ContactFormEntity> contactForms;
 
-    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReviewEntity> reviews;
 
     @OneToOne(mappedBy = "blockedUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private BlockedUserEntity blockedUser;
 
+    @OneToMany(mappedBy = "reporterUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReportEntity> reports;
 }
 
