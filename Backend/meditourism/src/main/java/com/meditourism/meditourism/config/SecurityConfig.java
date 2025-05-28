@@ -42,7 +42,10 @@ public class SecurityConfig {
                                         "/v3/api-docs/**", 
                                         "/swagger-ui.html", 
                                         "/email/**", 
-                                        "/reviews/**" // Permitir acceso público a /reviews
+                                        "/reviews/**",
+                                        "/clinics/**",
+                                        "/treatments/**",
+                                        "/clinics-treatments/**"// Permitir acceso público a /reviews
                                 ).permitAll()
                                 .anyRequest().authenticated()
                 )
