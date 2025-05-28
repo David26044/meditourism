@@ -9,7 +9,6 @@ public class UserResponseDTO {
     private String name;
     private boolean isVerified;
     private RoleEntity role;
-    private java.time.LocalDateTime createdAt;
 
     public UserResponseDTO(UserEntity user){
         this.id = user.getId();
@@ -17,7 +16,6 @@ public class UserResponseDTO {
         this.name = user.getName();
         this.isVerified = user.isVerified();
         this.role = user.getRoleEntity();
-        this.createdAt = user.getCreatedAt();
     }
 
     public UserResponseDTO(Long id, String email, String name, boolean isVerified, RoleEntity role) {
@@ -69,13 +67,6 @@ public class UserResponseDTO {
     public void setVerified(boolean verified) {
         isVerified = verified;
     }
-
-    public java.time.LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(java.time.LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    
 }
 

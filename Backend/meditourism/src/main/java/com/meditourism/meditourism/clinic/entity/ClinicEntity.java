@@ -1,8 +1,13 @@
 package com.meditourism.meditourism.clinic.entity;
 
+import com.meditourism.meditourism.clinicTreatmen.entity.ClinicTreatmentEntity;
+import com.meditourism.meditourism.review.entity.ReviewEntity;
+import com.meditourism.meditourism.schedule.entity.ScheduleEntity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="clinics")
@@ -63,4 +68,16 @@ public class ClinicEntity implements Serializable {
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
     }
+
+    // Relación con ScheduleEntity
+    @OneToMany(mappedBy = "clinic", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ScheduleEntity> schedules = new ArrayList<>();
+
+    // Relación con ReviewEntity
+    @OneToMany(mappedBy = "clinic", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReviewEntity> reviews = new ArrayList<>();
+
+    // Relación con ClinicTreatmentEntity
+    @OneToMany(mappedBy = "clinic", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ClinicTreatmentEntity> clinicTreatments = new ArrayList<>();
 }
