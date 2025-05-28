@@ -104,8 +104,8 @@ package "blockedUser" {
 }
 
 ' Relationships
-ReviewEntity "1" *-- "1" UserEntity
-ReviewEntity "1" *-- "1" ClinicEntity
+ReviewEntity -- UserEntity
+ReviewEntity -- ClinicEntity
 
 ReviewService ..|> IReviewService
 ReviewService --> ReviewRepository
