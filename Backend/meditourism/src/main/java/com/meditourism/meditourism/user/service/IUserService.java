@@ -21,4 +21,5 @@ public interface IUserService {
     List<UserResponseDTO> getAllUsersResponseDTO();
     UserResponseDTO getMyUser(String email);
     void verifyEmail(String email);
+    UserResponseDTO refreshUserInfo(String email);
 }

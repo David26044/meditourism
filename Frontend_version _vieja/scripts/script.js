@@ -33,18 +33,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Función para enviar correo de confirmación
     async function sendConfirmationEmail(email, username) {
         try {
-            const response = await fetch(`${API_BASE_URL}/send-welcome-email`, {
+            const response = await fetch(`${API_BASE_URL}/email/send-welcome-email`, {
                 ...fetchConfig,
                 method: 'POST',
                 body: JSON.stringify({
                     recipient: email,
-                    subject: '¡Bienvenido a Turismo Médico!',
-                    body: `
-                        ¡Gracias por registrarte, ${username}!
-                        Tu cuenta en Turismo Médico ha sido creada exitosamente.
-                        Ahora puedes acceder a todos nuestros servicios médicos.
-                        Si no realizaste este registro, por favor contacta con soporte.
-                    `
+                    subject: '¡Bienvenido a MediTourism!',
+                    body: `¡Gracias por registrarte, ${username}!
+                    
+Tu cuenta en MediTourism ha sido creada exitosamente.
+Ahora puedes acceder a todos nuestros servicios médicos.
+
+Para mayor seguridad, te recomendamos verificar tu correo electrónico desde tu perfil.
+
+Si no realizaste este registro, por favor contacta con soporte.
+
+¡Esperamos ayudarte a encontrar los mejores tratamientos médicos!
+
+Saludos,
+Equipo MediTourism`
                 })
             });
             

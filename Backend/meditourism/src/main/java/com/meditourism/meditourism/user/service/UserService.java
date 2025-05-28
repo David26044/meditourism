@@ -50,7 +50,6 @@ public class UserService implements IUserService {
                 .orElseThrow(() -> new ResourceNotFoundException("No se pudo verificar el correo: " + email));
         user.setVerified(true);
         userRepository.save(user);
-
     }
 
     @Override
@@ -68,7 +67,6 @@ public class UserService implements IUserService {
     public UserEntity getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
-
     }
 
     @Override
@@ -134,5 +132,11 @@ public class UserService implements IUserService {
     @Override
     public UserEntity updatePassword(Long id, String newPassword) {
         return null;
+    }
+
+    public UserResponseDTO refreshUserInfo(String email) {
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
+        return new UserResponseDTO(user);
     }
 }

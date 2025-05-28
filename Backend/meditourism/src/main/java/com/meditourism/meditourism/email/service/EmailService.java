@@ -20,5 +20,18 @@ public class EmailService implements IEmailService {
         message.setText(body);
         mailSender.send(message);
     }
+
+    public void sendPasswordResetEmail(String to, String resetToken) {
+        String subject = "Restablecer contraseña - Odontomar";
+        String body = "Hola,\n\n" +
+                "Has solicitado restablecer tu contraseña. " +
+                "Haz clic en el siguiente enlace para continuar:\n\n" +
+                "http://localhost:3000/reset-password?token=" + resetToken + "\n\n" +
+                "Este enlace expirará en 2 horas.\n\n" +
+                "Si no solicitaste este cambio, puedes ignorar este correo.\n\n" +
+                "Saludos,\nEquipo Odontomar";
+
+        sendEmail(to, subject, body);
+    }
 }
 

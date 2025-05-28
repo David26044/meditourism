@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 let currentUser = null;
 let isEditing = false;
+let cropCanvas = null;
+let cropCtx = null;
+let currentImageData = null;
 
 async function initializeProfilePage() {
     console.log('🎯 Initializing profile page...');
@@ -64,18 +67,59 @@ async function loadCurrentUser() {
 function displayUserInfo(user) {
     console.log('🎨 Displaying user info:', user);
     
-    // Update display elements
-    document.getElementById('displayName').textContent = user.name || '-';
-    document.getElementById('displayEmail').textContent = user.email || '-';
+    // Update header with user name
+    const headerUserName = document.getElementById('headerUserName');
+    if (headerUserName && user.name) {
+        headerUserName.textContent = user.name;
+    }
+    
+    // Update display elements with null checks
+    const displayName = document.getElementById('displayName');
+    if (displayName) displayName.textContent = user.name || '-';
+    
+    const displayEmail = document.getElementById('displayEmail');
+    if (displayEmail) displayEmail.textContent = user.email || '-';
+    
+    const displayPhone = document.getElementById('displayPhone');
+    if (displayPhone) displayPhone.textContent = user.phone || '-';
+    
+    const displayCity = document.getElementById('displayCity');
+    if (displayCity) displayCity.textContent = user.city || '-';
+    
+    const displayBirthDate = document.getElementById('displayBirthDate');
+    if (displayBirthDate) {
+        displayBirthDate.textContent = user.birthDate ? 
+            new Date(user.birthDate).toLocaleDateString() : '-';
+    }
+    
+    // Update avatar
+    if (user.avatar) {
+        const profileImage = document.getElementById('profileImage');
+        if (profileImage) {
+            profileImage.src = user.avatar;
+            profileImage.style.display = 'block';
+        }
+        
+        const avatarIcon = document.getElementById('profileAvatarLarge')?.querySelector('i');
+        if (avatarIcon) avatarIcon.style.display = 'none';
+        
+        const removeBtn = document.getElementById('removeAvatarBtn');
+        if (removeBtn) removeBtn.style.display = 'block';
+    }
     
     // Verification status
     const verifiedElement = document.getElementById('displayVerified');
-    if (user.verified) {
-        verifiedElement.innerHTML = '<span class="verified-badge"><i class="fas fa-check"></i> Verificado</span>';
-    } else {
-        verifiedElement.innerHTML = '<span class="unverified-badge"><i class="fas fa-clock"></i> Pendiente</span>';
-        document.getElementById('resendVerificationBtn').style.display = 'block';
-        document.getElementById('verificationStatus').textContent = 'Tu email aún no está verificado';
+    if (verifiedElement) {
+        if (user.verified) {
+            verifiedElement.innerHTML = '<span class="verified-badge"><i class="fas fa-check"></i> Verificado</span>';
+        } else {
+            verifiedElement.innerHTML = '<span class="unverified-badge"><i class="fas fa-clock"></i> Pendiente</span>';
+            const resendBtn = document.getElementById('resendVerificationBtn');
+            if (resendBtn) resendBtn.style.display = 'block';
+            
+            const verificationStatus = document.getElementById('verificationStatus');
+            if (verificationStatus) verificationStatus.textContent = 'Tu email aún no está verificado';
+        }
     }
     
     // Role display
@@ -83,24 +127,47 @@ function displayUserInfo(user) {
     const profileRoleBadge = document.getElementById('profileRoleBadge');
     const avatarLarge = document.getElementById('profileAvatarLarge');
     
-    if (user.role && user.role.name === 'ADMIN') {
-        roleElement.innerHTML = '<span class="admin-badge"><i class="fas fa-crown"></i> Administrador</span>';
-        profileRoleBadge.textContent = 'ADMIN';
-        profileRoleBadge.classList.add('show');
-        avatarLarge.classList.add('admin');
-    } else {
-        roleElement.innerHTML = '<span class="user-badge"><i class="fas fa-user"></i> Usuario</span>';
-        profileRoleBadge.classList.remove('show');
-        avatarLarge.classList.remove('admin');
+    if (roleElement) {
+        if (user.role && user.role.name === 'ADMIN') {
+            roleElement.innerHTML = '<span class="admin-badge"><i class="fas fa-crown"></i> Administrador</span>';
+            if (profileRoleBadge) {
+                profileRoleBadge.textContent = 'ADMIN';
+                profileRoleBadge.classList.add('show');
+            }
+            if (avatarLarge) avatarLarge.classList.add('admin');
+        } else {
+            roleElement.innerHTML = '<span class="user-badge"><i class="fas fa-user"></i> Usuario</span>';
+            if (profileRoleBadge) profileRoleBadge.classList.remove('show');
+            if (avatarLarge) avatarLarge.classList.remove('admin');
+        }
     }
     
     // Member since (using created date or current date as fallback)
     const memberSince = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Información no disponible';
-    document.getElementById('displayMemberSince').textContent = memberSince;
+    const displayMemberSince = document.getElementById('displayMemberSince');
+    if (displayMemberSince) displayMemberSince.textContent = memberSince;
     
-    // Update edit form
-    document.getElementById('editName').value = user.name || '';
-    document.getElementById('editEmail').value = user.email || '';
+    // Update edit form with null checks
+    const editName = document.getElementById('editName');
+    if (editName) editName.value = user.name || '';
+    
+    const editEmail = document.getElementById('editEmail');
+    if (editEmail) editEmail.value = user.email || '';
+    
+    const editPhone = document.getElementById('editPhone');
+    if (editPhone) editPhone.value = user.phone || '';
+    
+    const editCity = document.getElementById('editCity');
+    if (editCity) editCity.value = user.city || '';
+    
+    const editBirthDate = document.getElementById('editBirthDate');
+    if (editBirthDate) editBirthDate.value = user.birthDate || '';
+    
+    const editBio = document.getElementById('editBio');
+    if (editBio) editBio.value = user.bio || '';
+    
+    // Load preferences
+    loadUserPreferences(user);
 }
 
 function updateUserInterface() {
@@ -131,6 +198,12 @@ function setupEventListeners() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
     }
+    
+    // Avatar management
+    setupAvatarManagement();
+    
+    // Preferences
+    setupPreferences();
 }
 
 function setupTabSwitching() {
@@ -186,63 +259,259 @@ function exitEditMode() {
     if (currentUser) {
         document.getElementById('editName').value = currentUser.name || '';
         document.getElementById('editEmail').value = currentUser.email || '';
+        document.getElementById('editPhone').value = currentUser.phone || '';
+        document.getElementById('editCity').value = currentUser.city || '';
+        document.getElementById('editBirthDate').value = currentUser.birthDate || '';
+        document.getElementById('editBio').value = currentUser.bio || '';
     }
     
     // Clear errors
     clearFormErrors();
 }
 
-async function handleProfileUpdate(e) {
-    e.preventDefault();
+function setupAvatarManagement() {
+    const uploadBtn = document.getElementById('uploadAvatarBtn');
+    const removeBtn = document.getElementById('removeAvatarBtn');
+    const avatarInput = document.getElementById('avatarInput');
+    const cropModal = document.getElementById('avatarCropModal');
     
-    console.log('💾 Updating profile...');
+    uploadBtn.addEventListener('click', () => {
+        avatarInput.click();
+    });
     
-    const formData = {
-        name: document.getElementById('editName').value.trim(),
-        email: document.getElementById('editEmail').value.trim()
-    };
+    avatarInput.addEventListener('change', handleAvatarUpload);
+    removeBtn.addEventListener('click', handleAvatarRemove);
     
-    // Validate form
-    if (!validateProfileForm(formData)) {
+    // Crop modal controls
+    document.getElementById('closeCropModal').addEventListener('click', () => {
+        cropModal.classList.remove('show');
+    });
+    
+    document.getElementById('cancelCrop').addEventListener('click', () => {
+        cropModal.classList.remove('show');
+    });
+    
+    document.getElementById('saveCroppedAvatar').addEventListener('click', saveCroppedAvatar);
+    
+    // Initialize crop canvas
+    const canvas = document.getElementById('cropCanvas');
+    cropCanvas = canvas;
+    cropCtx = canvas.getContext('2d');
+}
+
+function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+        showMessage('Por favor selecciona un archivo de imagen válido', 'error');
         return;
     }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        showMessage('La imagen debe ser menor a 5MB', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        currentImageData = e.target.result;
+        showCropModal();
+    };
+    reader.readAsDataURL(file);
+}
+
+function showCropModal() {
+    const modal = document.getElementById('avatarCropModal');
+    modal.classList.add('show');
+    
+    const img = new Image();
+    img.onload = () => {
+        const size = 300;
+        cropCanvas.width = size;
+        cropCanvas.height = size;
+        
+        const scale = Math.min(size / img.width, size / img.height);
+        const x = (size - img.width * scale) / 2;
+        const y = (size - img.height * scale) / 2;
+        
+        cropCtx.clearRect(0, 0, size, size);
+        cropCtx.drawImage(img, x, y, img.width * scale, img.height * scale);
+    };
+    img.src = currentImageData;
+}
+
+async function saveCroppedAvatar() {
+    try {
+        showLoading(true);
+        
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => {
+            cropCanvas.toBlob(resolve, 'image/jpeg', 0.8);
+        });
+        
+        // Create FormData for upload
+        const formData = new FormData();
+        formData.append('avatar', blob, 'avatar.jpg');
+        formData.append('userId', currentUser.id);
+        
+        // Upload avatar
+        const response = await fetch(`${API_CONFIG.BASE_URL}/upload/avatar`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${AuthService.getToken()}`
+            },
+            body: formData
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            
+            // Update user data
+            currentUser.avatar = result.avatarUrl;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            
+            // Update UI
+            const profileImage = document.getElementById('profileImage');
+            profileImage.src = result.avatarUrl;
+            profileImage.style.display = 'block';
+            document.getElementById('profileAvatarLarge').querySelector('i').style.display = 'none';
+            document.getElementById('removeAvatarBtn').style.display = 'block';
+            
+            // Update navbar avatar
+            updateUserInterface();
+            
+            // Close modal
+            document.getElementById('avatarCropModal').classList.remove('show');
+            
+            showMessage('Foto de perfil actualizada exitosamente', 'success');
+        } else {
+            throw new Error('Error al subir la imagen');
+        }
+    } catch (error) {
+        console.error('Error uploading avatar:', error);
+        showMessage('Error al subir la foto de perfil', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function handleAvatarRemove() {
+    const confirmed = confirm('¿Estás seguro de que quieres quitar tu foto de perfil?');
+    if (!confirmed) return;
     
     try {
         showLoading(true);
         
-        // Update user via API
-        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.USERS}/${currentUser.id}`, {
-            method: 'PATCH',
-            body: JSON.stringify(formData)
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.USERS}/${currentUser.id}/avatar`, {
+            method: 'DELETE'
         });
         
         if (response.ok) {
-            const updatedUser = await response.json();
-            currentUser = updatedUser;
+            // Update user data
+            currentUser.avatar = null;
+            localStorage.setItem('user', JSON.stringify(currentUser));
             
-            // Update localStorage
-            localStorage.setItem('user', JSON.stringify(updatedUser));
-            AuthService.cachedUser = updatedUser;
+            // Update UI
+            const profileImage = document.getElementById('profileImage');
+            profileImage.style.display = 'none';
+            document.getElementById('profileAvatarLarge').querySelector('i').style.display = 'block';
+            document.getElementById('removeAvatarBtn').style.display = 'none';
             
-            // Update display
-            displayUserInfo(updatedUser);
             updateUserInterface();
-            
-            // Exit edit mode
-            exitEditMode();
-            
-            showMessage('Perfil actualizado exitosamente', 'success');
-            console.log('✅ Profile updated successfully');
+            showMessage('Foto de perfil eliminada', 'success');
         } else {
-            const errorData = await response.json();
-            showMessage(errorData.message || 'Error al actualizar el perfil', 'error');
+            throw new Error('Error al eliminar la imagen');
         }
     } catch (error) {
-        console.error('Error updating profile:', error);
-        showMessage('Error de conexión al actualizar el perfil', 'error');
+        console.error('Error removing avatar:', error);
+        showMessage('Error al eliminar la foto de perfil', 'error');
     } finally {
         showLoading(false);
     }
+}
+
+function setupPreferences() {
+    const saveBtn = document.getElementById('savePreferencesBtn');
+    const resetBtn = document.getElementById('resetPreferencesBtn');
+    
+    saveBtn.addEventListener('click', saveUserPreferences);
+    resetBtn.addEventListener('click', resetUserPreferences);
+    
+    // Add change listeners for immediate feedback
+    const toggles = document.querySelectorAll('.preference-item input[type="checkbox"]');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', (e) => {
+            console.log(`Preference ${e.target.id} changed to:`, e.target.checked);
+        });
+    });
+}
+
+function loadUserPreferences(user) {
+    // Load notification preferences
+    document.getElementById('emailNotifications').checked = user.preferences?.emailNotifications ?? true;
+    document.getElementById('appointmentReminders').checked = user.preferences?.appointmentReminders ?? true;
+    document.getElementById('newsletter').checked = user.preferences?.newsletter ?? false;
+    
+    // Load privacy preferences
+    document.getElementById('publicProfile').checked = user.preferences?.publicProfile ?? false;
+    document.getElementById('showReviews').checked = user.preferences?.showReviews ?? true;
+    
+    // Load language and region
+    document.getElementById('languageSelect').value = user.preferences?.language ?? 'es';
+    document.getElementById('timezoneSelect').value = user.preferences?.timezone ?? 'America/Bogota';
+}
+
+async function saveUserPreferences() {
+    try {
+        showLoading(true);
+        
+        const preferences = {
+            emailNotifications: document.getElementById('emailNotifications').checked,
+            appointmentReminders: document.getElementById('appointmentReminders').checked,
+            newsletter: document.getElementById('newsletter').checked,
+            publicProfile: document.getElementById('publicProfile').checked,
+            showReviews: document.getElementById('showReviews').checked,
+            language: document.getElementById('languageSelect').value,
+            timezone: document.getElementById('timezoneSelect').value
+        };
+        
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.USERS}/${currentUser.id}/preferences`, {
+            method: 'PATCH',
+            body: JSON.stringify({ preferences })
+        });
+        
+        if (response.ok) {
+            currentUser.preferences = preferences;
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            showMessage('Preferencias guardadas exitosamente', 'success');
+        } else {
+            throw new Error('Error al guardar preferencias');
+        }
+    } catch (error) {
+        console.error('Error saving preferences:', error);
+        showMessage('Error al guardar las preferencias', 'error');
+    } finally {
+        showLoading(false);
+    }
+}
+
+function resetUserPreferences() {
+    const confirmed = confirm('¿Estás seguro de que quieres restaurar las preferencias por defecto?');
+    if (!confirmed) return;
+    
+    // Reset to default values
+    document.getElementById('emailNotifications').checked = true;
+    document.getElementById('appointmentReminders').checked = true;
+    document.getElementById('newsletter').checked = false;
+    document.getElementById('publicProfile').checked = false;
+    document.getElementById('showReviews').checked = true;
+    document.getElementById('languageSelect').value = 'es';
+    document.getElementById('timezoneSelect').value = 'America/Bogota';
+    
+    showMessage('Preferencias restauradas por defecto', 'info');
 }
 
 function validateProfileForm(data) {
@@ -264,111 +533,87 @@ function validateProfileForm(data) {
         isValid = false;
     }
     
+    // Validate phone (optional but if provided must be valid)
+    if (data.phone && !/^\+?[\d\s\-\(\)]{10,}$/.test(data.phone)) {
+        showFieldError('phoneError', 'Ingresa un teléfono válido');
+        isValid = false;
+    }
+    
+    // Validate birth date (optional but if provided must be reasonable)
+    if (data.birthDate) {
+        const birthDate = new Date(data.birthDate);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        
+        if (age < 13 || age > 120) {
+            showFieldError('birthDateError', 'La fecha de nacimiento no es válida');
+            isValid = false;
+        }
+    }
+    
     return isValid;
 }
 
-function clearFormErrors() {
-    const errorElements = document.querySelectorAll('.error-message');
-    errorElements.forEach(element => {
-        element.style.display = 'none';
-        element.textContent = '';
-    });
-}
-
-function showFieldError(elementId, message) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-    }
-}
-
-async function loadUserContactForms() {
-    console.log('📧 Loading user contact forms...');
+async function handleProfileUpdate(e) {
+    e.preventDefault();
     
-    if (!currentUser || !currentUser.id) {
-        console.warn('No current user ID available');
+    console.log('💾 Updating profile...');
+    
+    const formData = {
+        name: document.getElementById('editName').value.trim(),
+        email: document.getElementById('editEmail').value.trim(),
+        phone: document.getElementById('editPhone').value.trim(),
+        city: document.getElementById('editCity').value.trim(),
+        birthDate: document.getElementById('editBirthDate').value,
+        bio: document.getElementById('editBio').value.trim()
+    };
+    
+    // Remove empty fields
+    Object.keys(formData).forEach(key => {
+        if (!formData[key]) {
+            delete formData[key];
+        }
+    });
+    
+    // Validate form
+    if (!validateProfileForm(formData)) {
         return;
     }
     
     try {
-        const result = await ContactService.getUserContactForms(currentUser.id);
+        showLoading(true);
         
-        if (result.success && result.data) {
-            displayContactForms(result.data);
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.USERS}/${currentUser.id}`, {
+            method: 'PATCH',
+            body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+            const updatedUser = await response.json();
+            currentUser = { ...currentUser, ...updatedUser };
+            
+            // Update localStorage
+            localStorage.setItem('user', JSON.stringify(currentUser));
+            AuthService.cachedUser = currentUser;
+            
+            // Update display
+            displayUserInfo(currentUser);
+            updateUserInterface();
+            
+            // Exit edit mode
+            exitEditMode();
+            
+            showMessage('Perfil actualizado exitosamente', 'success');
+            console.log('✅ Profile updated successfully');
         } else {
-            console.error('Error loading contact forms:', result.message);
-            document.getElementById('noContactForms').style.display = 'block';
+            const errorData = await response.json();
+            showMessage(errorData.message || 'Error al actualizar el perfil', 'error');
         }
     } catch (error) {
-        console.error('Error loading contact forms:', error);
-        document.getElementById('noContactForms').style.display = 'block';
+        console.error('Error updating profile:', error);
+        showMessage('Error de conexión al actualizar el perfil', 'error');
     } finally {
-        document.getElementById('contactFormsLoading').style.display = 'none';
-    }
-}
-
-function displayContactForms(forms) {
-    console.log('📋 Displaying contact forms:', forms);
-    
-    const container = document.getElementById('contactFormsList');
-    
-    if (!forms || forms.length === 0) {
-        document.getElementById('noContactForms').style.display = 'block';
-        return;
-    }
-    
-    container.innerHTML = forms.map(form => `
-        <div class="contact-form-item">
-            <div class="contact-form-header">
-                <div>
-                    <div class="contact-form-title">
-                        ${form.treatmentName || 'Consulta General'} - ${form.inquiryType || 'Información'}
-                    </div>
-                    <div class="contact-form-date">
-                        ${formatDate(form.submittedAt)}
-                    </div>
-                </div>
-                <div class="contact-form-status ${getStatusClass(form.status)}">
-                    ${getStatusText(form.status)}
-                </div>
-            </div>
-            <div class="contact-form-content">
-                ${form.message || 'Sin mensaje'}
-            </div>
-            <div class="contact-form-meta">
-                <span><i class="fas fa-envelope"></i> ${form.email}</span>
-                ${form.phone ? `<span><i class="fas fa-phone"></i> ${form.phone}</span>` : ''}
-                ${form.preferredClinic ? `<span><i class="fas fa-map-marker-alt"></i> ${form.preferredClinic}</span>` : ''}
-            </div>
-        </div>
-    `).join('');
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'Fecha no disponible';
-    return new Date(dateString).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-function getStatusClass(status) {
-    switch(status?.toLowerCase()) {
-        case 'answered': return 'status-answered';
-        case 'in_progress': return 'status-in-progress';
-        default: return 'status-pending';
-    }
-}
-
-function getStatusText(status) {
-    switch(status?.toLowerCase()) {
-        case 'answered': return 'Respondida';
-        case 'in_progress': return 'En Proceso';
-        default: return 'Pendiente';
+        showLoading(false);
     }
 }
 
@@ -415,7 +660,7 @@ async function handlePasswordReset() {
     
     try {
         showLoading(true);
-        const result = await AuthService.forgotPassword(currentUser.email);
+        const result = await EmailService.sendPasswordResetEmail(currentUser.email);
         
         if (result.success) {
             showMessage('Email de restablecimiento enviado exitosamente', 'success');
@@ -442,14 +687,23 @@ async function handleResendVerification() {
     try {
         showLoading(true);
         
-        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.SEND_VERIFY_EMAIL}?email=${encodeURIComponent(currentUser.email)}`, {
-            method: 'POST'
-        });
+        const result = await EmailService.sendVerificationEmail(currentUser.email);
         
-        if (response.ok) {
-            showMessage('Email de verificación enviado exitosamente', 'success');
+        if (result.success) {
+            showMessage('Email de verificación enviado exitosamente. Revisa tu bandeja de entrada y spam.', 'success');
+            
+            // Update button state
+            const resendBtn = document.getElementById('resendVerificationBtn');
+            if (resendBtn) {
+                resendBtn.disabled = true;
+                resendBtn.innerHTML = '<i class="fas fa-clock"></i> Enviado';
+                setTimeout(() => {
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Reenviar';
+                }, 60000); // Re-enable after 1 minute
+            }
         } else {
-            showMessage('Error al enviar email de verificación', 'error');
+            showMessage(result.message || 'Error al enviar email de verificación', 'error');
         }
     } catch (error) {
         console.error('Error resending verification:', error);
@@ -611,4 +865,89 @@ function showMessage(message, type = 'info') {
             messageEl.parentNode.removeChild(messageEl);
         }
     }, 5000);
+}
+
+async function loadUserContactForms() {
+    console.log('📧 Loading user contact forms...');
+    
+    try {
+        const loadingElement = document.getElementById('contactFormsLoading');
+        const listElement = document.getElementById('contactFormsList');
+        const emptyElement = document.getElementById('noContactForms');
+        
+        if (loadingElement) loadingElement.style.display = 'block';
+        if (listElement) listElement.innerHTML = '';
+        if (emptyElement) emptyElement.style.display = 'none';
+        
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.CONTACT_FORMS}/user/${currentUser.id}`);
+        
+        if (response.ok) {
+            const contactForms = await response.json();
+            
+            if (loadingElement) loadingElement.style.display = 'none';
+            
+            if (contactForms.length === 0) {
+                if (emptyElement) emptyElement.style.display = 'block';
+            } else {
+                displayContactForms(contactForms);
+            }
+        } else {
+            throw new Error('Error al cargar las consultas');
+        }
+    } catch (error) {
+        console.error('Error loading contact forms:', error);
+        const loadingElement = document.getElementById('contactFormsLoading');
+        if (loadingElement) {
+            loadingElement.innerHTML = '<p class="error">Error al cargar las consultas</p>';
+        }
+    }
+}
+
+function displayContactForms(contactForms) {
+    const container = document.getElementById('contactFormsList');
+    if (!container) return;
+    
+    container.innerHTML = contactForms.map(form => `
+        <div class="contact-form-item">
+            <div class="form-header">
+                <h4>${form.subject || 'Consulta'}</h4>
+                <span class="form-date">${new Date(form.createdAt).toLocaleDateString()}</span>
+            </div>
+            <div class="form-content">
+                <p><strong>Tratamiento:</strong> ${form.treatmentName || 'General'}</p>
+                <p><strong>Mensaje:</strong> ${form.message}</p>
+                <div class="form-status ${form.status?.toLowerCase() || 'pending'}">
+                    <i class="fas fa-circle"></i>
+                    ${form.status || 'Pendiente'}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function clearFormErrors() {
+    const errorElements = document.querySelectorAll('.error-message');
+    errorElements.forEach(element => {
+        element.textContent = '';
+        element.style.display = 'none';
+    });
+    
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach(group => {
+        group.classList.remove('error');
+    });
+}
+
+function showFieldError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+        
+        // Add error class to form group
+        const formGroup = errorElement.closest('.form-group');
+        if (formGroup) {
+            formGroup.classList.add('error');
+        }
+    }
 }

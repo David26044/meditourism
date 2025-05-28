@@ -29,7 +29,7 @@ public class ContactFormResponseDTO {
 
     public ContactFormResponseDTO(ContactFormEntity entity) {
         this.id = entity.getId();
-        this.user = new UserResponseDTO(entity.getUser());
+        this.user = entity.getUser() != null ? new UserResponseDTO(entity.getUser()) : null;
         this.treatment = new TreatmentDTO(entity.getTreatment());
         this.email = entity.getEmail();
         this.message = entity.getMessage();

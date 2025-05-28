@@ -29,4 +29,6 @@ public interface IJwtService {
     boolean isTokenExpired(String token);
 
     String generateVerificationToken(String email);
+
+    String generatePasswordResetToken(String email);
 }
