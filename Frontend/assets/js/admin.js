@@ -340,237 +340,52 @@ function displayUsersTable(users) {
     usersContainer.innerHTML = tableHTML;
 }
 
-// User management functions
-async function viewUser(userId) {
-    const user = allUsers.find(u => u.id === userId);
-    if (!user) return;
-    
-    const blockedInfo = blockedUsers.find(blocked => blocked.blockedUser.id === userId);
-    
-    const userDetails = `
-        <div class="user-details">
-            <h3>Detalles del Usuario</h3>
-            <div class="detail-grid">
-                <div class="detail-item">
-                    <strong>ID:</strong> ${user.id}
-                </div>
-                <div class="detail-item">
-                    <strong>Nombre:</strong> ${user.name}
-                </div>
-                <div class="detail-item">
-                    <strong>Email:</strong> ${user.email}
-                </div>
-                <div class="detail-item">
-                    <strong>Rol:</strong> ${user.role?.name || 'Sin rol'}
-                </div>
-                <div class="detail-item">
-                    <strong>Verificado:</strong> ${user.verified ? 'Sí' : 'No'}
-                </div>
-                <div class="detail-item">
-                    <strong>Fecha de registro:</strong> ${new Date(user.createdAt).toLocaleString()}
-                </div>
-                ${blockedInfo ? `
-                    <div class="detail-item blocked-info">
-                        <strong>Estado:</strong> Bloqueado
-                    </div>
-                    <div class="detail-item blocked-info">
-                        <strong>Razón:</strong> ${blockedInfo.reason}
-                    </div>
-                    <div class="detail-item blocked-info">
-                        <strong>Bloqueado el:</strong> ${new Date(blockedInfo.createdAt).toLocaleString()}
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
-    
-    showModal('Información del Usuario', userDetails);
-}
-
-async function changeUserRole(userId) {
-    const user = allUsers.find(u => u.id === userId);
-    if (!user) return;
-    
-    const roleOptions = allRoles.map(role => 
-        `<option value="${role.id}" ${user.role?.id === role.id ? 'selected' : ''}>${role.name}</option>`
-    ).join('');
-    
-    const roleForm = `
-        <div class="role-form">
-            <h3>Cambiar Rol de Usuario</h3>
-            <p><strong>Usuario:</strong> ${user.name} (${user.email})</p>
-            <p><strong>Rol actual:</strong> ${user.role?.name || 'Sin rol'}</p>
-            
-            <form id="roleChangeForm">
-                <div class="form-group">
-                    <label for="newRole">Nuevo Rol:</label>
-                    <select id="newRole" required>
-                        <option value="">Seleccionar rol</option>
-                        ${roleOptions}
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="admin-btn secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="admin-btn primary">Cambiar Rol</button>
-                </div>
-            </form>
-        </div>
-    `;
-    
-    showModal('Cambiar Rol', roleForm);
-    
-    document.getElementById('roleChangeForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const newRoleId = document.getElementById('newRole').value;
-        
-        if (!newRoleId) {
-            alert('Selecciona un rol');
-            return;
-        }
-        
-        try {
-            showAdminLoading(true);
-            await AdminService.updateUserRole(userId, parseInt(newRoleId));
-            
-            UIUtils.showToast('Rol actualizado correctamente', 'success');
-            closeModal();
-            await loadUsersData();
-        } catch (error) {
-            console.error('Error changing user role:', error);
-            alert('Error al cambiar el rol del usuario: ' + error.message);
-        } finally {
-            showAdminLoading(false);
-        }
-    });
-}
-
-async function blockUser(userId) {
-    const user = allUsers.find(u => u.id === userId);
-    if (!user) return;
-    
-    const blockForm = `
-        <div class="block-form">
-            <h3>Bloquear Usuario</h3>
-            <p><strong>Usuario:</strong> ${user.name} (${user.email})</p>
-            <p class="warning">⚠️ Esta acción impedirá que el usuario acceda al sistema.</p>
-            
-            <form id="blockUserForm">
-                <div class="form-group">
-                    <label for="blockReason">Razón del bloqueo:</label>
-                    <textarea id="blockReason" rows="3" required placeholder="Describe la razón del bloqueo..."></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="admin-btn secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="admin-btn danger">Bloquear Usuario</button>
-                </div>
-            </form>
-        </div>
-    `;
-    
-    showModal('Bloquear Usuario', blockForm);
-    
-    document.getElementById('blockUserForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const reason = document.getElementById('blockReason').value.trim();
-        
-        if (!reason) {
-            alert('Ingresa una razón para el bloqueo');
-            return;
-        }
-        
-        try {
-            showAdminLoading(true);
-            await AdminService.blockUser(userId, reason);
-            
-            UIUtils.showToast('Usuario bloqueado correctamente', 'success');
-            closeModal();
-            
-            // Reload data
-            blockedUsers = await AdminService.getAllBlockedUsers();
-            await loadUsersData();
-        } catch (error) {
-            console.error('Error blocking user:', error);
-            alert('Error al bloquear el usuario: ' + error.message);
-        } finally {
-            showAdminLoading(false);
-        }
-    });
-}
-
-async function unblockUser(userId) {
-    const blockedUser = blockedUsers.find(blocked => blocked.blockedUser.id === userId);
-    if (!blockedUser) return;
-    
-    if (confirm(`¿Estás seguro de que quieres desbloquear a ${blockedUser.blockedUser.name}?`)) {
-        try {
-            showAdminLoading(true);
-            await AdminService.unblockUser(blockedUser.id);
-            
-            UIUtils.showToast('Usuario desbloqueado correctamente', 'success');
-            
-            // Reload data
-            blockedUsers = await AdminService.getAllBlockedUsers();
-            await loadUsersData();
-        } catch (error) {
-            console.error('Error unblocking user:', error);
-            alert('Error al desbloquear el usuario: ' + error.message);
-        } finally {
-            showAdminLoading(false);
-        }
-    }
-}
-
-// Contact Forms Data Loading
 async function loadContactFormsData() {
-    const formsContainer = document.getElementById('contact-forms-list');
+    const contactFormsContainer = document.getElementById('contact-forms-list');
     
     try {
-        formsContainer.innerHTML = '<p class="loading">Cargando formularios de contacto...</p>';
+        contactFormsContainer.innerHTML = '<p class="loading">Cargando consultas...</p>';
         
         const response = await apiRequest(API_CONFIG.ENDPOINTS.CONTACT_FORMS);
         if (response.ok) {
-            const forms = await response.json();
-            displayContactFormsTable(forms);
+            const contactForms = await response.json();
+            displayContactFormsTable(contactForms);
         } else {
-            throw new Error('Error al cargar formularios');
+            throw new Error('Error al cargar consultas');
         }
     } catch (error) {
         console.error('Error loading contact forms:', error);
-        formsContainer.innerHTML = '<p class="error">Error al cargar formularios de contacto</p>';
+        contactFormsContainer.innerHTML = '<p class="error">Error al cargar consultas</p>';
     }
 }
 
-function displayContactFormsTable(forms) {
-    const formsContainer = document.getElementById('contact-forms-list');
+function displayContactFormsTable(contactForms) {
+    const container = document.getElementById('contact-forms-list');
     
     const tableHTML = `
         <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
+                    <th>Usuario</th>
+                    <th>Nombre Completo</th>
                     <th>Email</th>
                     <th>Tratamiento</th>
-                    <th>Tipo Consulta</th>
+                    <th>Tipo de Consulta</th>
                     <th>Fecha</th>
-                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                ${forms.map(form => `
+                ${contactForms.map(form => `
                     <tr>
                         <td>${form.id}</td>
+                        <td>${form.user ? form.user.name : 'Anónimo'}</td>
                         <td>${form.fullName}</td>
                         <td>${form.email}</td>
-                        <td>${form.treatment?.name || 'No especificado'}</td>
+                        <td>${form.treatment?.name || 'N/A'}</td>
                         <td>${form.inquiryType}</td>
-                        <td>${new Date(form.createdAt).toLocaleDateString()}</td>
-                        <td>
-                            <span class="status-badge ${form.status || 'pending'}">
-                                ${form.status === 'responded' ? 'Respondido' : 'Pendiente'}
-                            </span>
-                        </td>
+                        <td>${new Date(form.createdDate).toLocaleDateString()}</td>
                         <td class="actions-cell">
                             <button class="admin-btn small" onclick="viewContactForm(${form.id})" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
@@ -585,81 +400,368 @@ function displayContactFormsTable(forms) {
         </table>
     `;
     
-    formsContainer.innerHTML = tableHTML;
+    container.innerHTML = tableHTML;
 }
 
-// Contact Form Actions
+async function loadTreatmentsData() {
+    const treatmentsContainer = document.getElementById('treatments-list');
+    
+    try {
+        treatmentsContainer.innerHTML = '<p class="loading">Cargando tratamientos...</p>';
+        
+        const response = await apiRequest(API_CONFIG.ENDPOINTS.TREATMENTS);
+        if (response.ok) {
+            const treatments = await response.json();
+            displayTreatmentsTable(treatments);
+        } else {
+            throw new Error('Error al cargar tratamientos');
+        }
+    } catch (error) {
+        console.error('Error loading treatments:', error);
+        treatmentsContainer.innerHTML = '<p class="error">Error al cargar tratamientos</p>';
+    }
+}
+
+function displayTreatmentsTable(treatments) {
+    const container = document.getElementById('treatments-list');
+    
+    const tableHTML = `
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Duración</th>
+                    <th>Precio Base</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${treatments.map(treatment => `
+                    <tr>
+                        <td>${treatment.id}</td>
+                        <td>${treatment.name}</td>
+                        <td>${treatment.description?.substring(0, 50) + '...' || 'Sin descripción'}</td>
+                        <td>${treatment.duration || 'No especificada'}</td>
+                        <td>$${treatment.basePrice?.toLocaleString() || 'No especificado'}</td>
+                        <td class="actions-cell">
+                            <button class="admin-btn small" onclick="viewTreatment(${treatment.id})" title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="admin-btn small primary" onclick="editTreatment(${treatment.id})" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="admin-btn small danger" onclick="deleteTreatment(${treatment.id})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = tableHTML;
+}
+
+async function loadReviewsData() {
+    const reviewsContainer = document.getElementById('reviews-list');
+    
+    try {
+        reviewsContainer.innerHTML = '<p class="loading">Cargando reviews...</p>';
+        
+        const response = await apiRequest(API_CONFIG.ENDPOINTS.REVIEWS);
+        if (response.ok) {
+            const reviews = await response.json();
+            displayReviewsTable(reviews);
+        } else {
+            throw new Error('Error al cargar reviews');
+        }
+    } catch (error) {
+        console.error('Error loading reviews:', error);
+        reviewsContainer.innerHTML = '<p class="error">Error al cargar reviews</p>';
+    }
+}
+
+function displayReviewsTable(reviews) {
+    const container = document.getElementById('reviews-list');
+    
+    const tableHTML = `
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Clínica</th>
+                    <th>Calificación</th>
+                    <th>Contenido</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${reviews.map(review => `
+                    <tr>
+                        <td>${review.id}</td>
+                        <td>${review.user?.name || 'Usuario eliminado'}</td>
+                        <td>${review.clinic?.name || 'N/A'}</td>
+                        <td>
+                            <div class="rating-display">
+                                ${generateStarRating(review.rating)}
+                                <span>(${review.rating || 0})</span>
+                            </div>
+                        </td>
+                        <td>${review.content?.substring(0, 50) + '...' || 'Sin contenido'}</td>
+                        <td>${new Date(review.date).toLocaleDateString()}</td>
+                        <td class="actions-cell">
+                            <button class="admin-btn small" onclick="viewReview(${review.id})" title="Ver detalles">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="admin-btn small danger" onclick="deleteReview(${review.id})" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+    
+    container.innerHTML = tableHTML;
+}
+
+function generateStarRating(rating) {
+    const stars = [];
+    const fullStars = Math.floor(rating || 0);
+    const hasHalfStar = (rating || 0) % 1 !== 0;
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars.push('<i class="fas fa-star"></i>');
+    }
+    
+    if (hasHalfStar) {
+        stars.push('<i class="fas fa-star-half-alt"></i>');
+    }
+    
+    const emptyStars = 5 - Math.ceil(rating || 0);
+    for (let i = 0; i < emptyStars; i++) {
+        stars.push('<i class="far fa-star"></i>');
+    }
+    
+    return stars.join('');
+}
+
+// User management functions
+async function viewUser(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const blockedInfo = blockedUsers.find(blocked => blocked.blockedUser.id === userId);
+    
+    showModal(`
+        <h3>Detalles del Usuario</h3>
+        <div class="user-details">
+            <p><strong>ID:</strong> ${user.id}</p>
+            <p><strong>Nombre:</strong> ${user.name}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Rol:</strong> ${user.role?.name === 'ADMIN' ? 'Administrador' : 'Usuario'}</p>
+            <p><strong>Verificado:</strong> ${user.verified ? 'Sí' : 'No'}</p>
+            <p><strong>Fecha de registro:</strong> ${new Date(user.createdAt).toLocaleString()}</p>
+            ${blockedInfo ? `
+                <p><strong>Estado:</strong> <span class="status-blocked">BLOQUEADO</span></p>
+                <p><strong>Razón del bloqueo:</strong> ${blockedInfo.reason}</p>
+                <p><strong>Fecha de bloqueo:</strong> ${new Date(blockedInfo.blockedDate).toLocaleString()}</p>
+            ` : `<p><strong>Estado:</strong> <span class="status-active">ACTIVO</span></p>`}
+        </div>
+    `);
+}
+
+async function changeUserRole(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const currentRole = user.role?.name;
+    const newRole = currentRole === 'ADMIN' ? 'USER' : 'ADMIN';
+    const newRoleId = currentRole === 'ADMIN' ? 2 : 1;
+    
+    if (confirm(`¿Estás seguro de cambiar el rol de ${user.name} a ${newRole}?`)) {
+        try {
+            const response = await AdminService.updateUserRole(userId, newRoleId);
+            showMessage('Rol actualizado exitosamente', 'success');
+            await loadUsersData();
+        } catch (error) {
+            showMessage('Error al actualizar rol: ' + error.message, 'error');
+        }
+    }
+}
+
+async function blockUser(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    const reason = prompt(`¿Cuál es la razón para bloquear a ${user.name}?`);
+    if (!reason) return;
+    
+    try {
+        await AdminService.blockUser(userId, reason);
+        showMessage('Usuario bloqueado exitosamente', 'success');
+        await loadUsersData();
+        await loadInitialData();
+    } catch (error) {
+        showMessage('Error al bloquear usuario: ' + error.message, 'error');
+    }
+}
+
+async function unblockUser(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    if (confirm(`¿Estás seguro de desbloquear a ${user.name}?`)) {
+        try {
+            const blockedUser = blockedUsers.find(b => b.blockedUser.id === userId);
+            if (blockedUser) {
+                await AdminService.unblockUser(blockedUser.id);
+                showMessage('Usuario desbloqueado exitosamente', 'success');
+                await loadUsersData();
+                await loadInitialData();
+            }
+        } catch (error) {
+            showMessage('Error al desbloquear usuario: ' + error.message, 'error');
+        }
+    }
+}
+
+// Contact Forms functions
 async function viewContactForm(formId) {
     try {
         const response = await apiRequest(`${API_CONFIG.ENDPOINTS.CONTACT_FORMS}/${formId}`);
         if (response.ok) {
             const form = await response.json();
-            
-            const formDetails = `
-                <div class="contact-form-details">
-                    <h3>Detalles del Formulario de Contacto</h3>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <strong>Nombre:</strong> ${form.fullName}
-                        </div>
-                        <div class="detail-item">
-                            <strong>Email:</strong> ${form.email}
-                        </div>
-                        <div class="detail-item">
-                            <strong>Teléfono:</strong> ${form.phone || 'No especificado'}
-                        </div>
-                        <div class="detail-item">
-                            <strong>Tratamiento:</strong> ${form.treatment?.name || 'No especificado'}
-                        </div>
-                        <div class="detail-item">
-                            <strong>Tipo de consulta:</strong> ${form.inquiryType}
-                        </div>
-                        <div class="detail-item">
-                            <strong>Sede preferida:</strong> ${form.preferredClinic || 'No especificada'}
-                        </div>
-                        <div class="detail-item full-width">
-                            <strong>Mensaje:</strong>
-                            <p class="message-content">${form.message}</p>
-                        </div>
-                        <div class="detail-item">
-                            <strong>Fecha:</strong> ${new Date(form.createdAt).toLocaleString()}
-                        </div>
-                    </div>
+            showModal(`
+                <h3>Detalles de la Consulta</h3>
+                <div class="form-details">
+                    <p><strong>ID:</strong> ${form.id}</p>
+                    <p><strong>Usuario:</strong> ${form.user ? form.user.name : 'Anónimo'}</p>
+                    <p><strong>Nombre completo:</strong> ${form.fullName}</p>
+                    <p><strong>Email:</strong> ${form.email}</p>
+                    <p><strong>Teléfono:</strong> ${form.phone || 'No proporcionado'}</p>
+                    <p><strong>Tratamiento:</strong> ${form.treatment?.name || 'N/A'}</p>
+                    <p><strong>Tipo de consulta:</strong> ${form.inquiryType}</p>
+                    <p><strong>Clínica preferida:</strong> ${form.preferredClinic || 'No especificada'}</p>
+                    <p><strong>Fecha:</strong> ${new Date(form.createdDate).toLocaleString()}</p>
+                    <p><strong>Mensaje:</strong></p>
+                    <div class="message-content">${form.message}</div>
+                    <p><strong>Acepta términos:</strong> ${form.acceptTerms ? 'Sí' : 'No'}</p>
+                    <p><strong>Acepta marketing:</strong> ${form.acceptMarketing ? 'Sí' : 'No'}</p>
                 </div>
-            `;
-            
-            showModal('Formulario de Contacto', formDetails);
+            `);
         }
     } catch (error) {
-        console.error('Error loading contact form:', error);
-        alert('Error al cargar el formulario');
+        showMessage('Error al cargar detalles de la consulta', 'error');
     }
 }
 
 async function deleteContactForm(formId) {
-    if (confirm('¿Estás seguro de que quieres eliminar este formulario de contacto?')) {
+    if (confirm('¿Estás seguro de eliminar esta consulta?')) {
         try {
-            showAdminLoading(true);
             const response = await apiRequest(`${API_CONFIG.ENDPOINTS.CONTACT_FORMS}/${formId}`, {
                 method: 'DELETE'
             });
-            
             if (response.ok) {
-                UIUtils.showToast('Formulario eliminado correctamente', 'success');
+                showMessage('Consulta eliminada exitosamente', 'success');
                 await loadContactFormsData();
-            } else {
-                throw new Error('Error al eliminar formulario');
             }
         } catch (error) {
-            console.error('Error deleting contact form:', error);
-            alert('Error al eliminar el formulario');
-        } finally {
-            showAdminLoading(false);
+            showMessage('Error al eliminar consulta', 'error');
         }
     }
 }
 
-// Add refresh functions for manual updates
+// Treatment functions
+async function viewTreatment(treatmentId) {
+    try {
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.TREATMENTS}/${treatmentId}`);
+        if (response.ok) {
+            const treatment = await response.json();
+            showModal(`
+                <h3>Detalles del Tratamiento</h3>
+                <div class="treatment-details">
+                    <p><strong>ID:</strong> ${treatment.id}</p>
+                    <p><strong>Nombre:</strong> ${treatment.name}</p>
+                    <p><strong>Descripción:</strong> ${treatment.description || 'Sin descripción'}</p>
+                    <p><strong>Duración:</strong> ${treatment.duration || 'No especificada'}</p>
+                    <p><strong>Precio base:</strong> $${treatment.basePrice?.toLocaleString() || 'No especificado'}</p>
+                </div>
+            `);
+        }
+    } catch (error) {
+        showMessage('Error al cargar detalles del tratamiento', 'error');
+    }
+}
+
+async function editTreatment(treatmentId) {
+    // This would open an edit modal - for now show a simple prompt
+    showMessage('Funcionalidad de edición en desarrollo', 'info');
+}
+
+async function deleteTreatment(treatmentId) {
+    if (confirm('¿Estás seguro de eliminar este tratamiento?')) {
+        try {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.TREATMENTS}/${treatmentId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showMessage('Tratamiento eliminado exitosamente', 'success');
+                await loadTreatmentsData();
+            }
+        } catch (error) {
+            showMessage('Error al eliminar tratamiento', 'error');
+        }
+    }
+}
+
+// Review functions
+async function viewReview(reviewId) {
+    try {
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`);
+        if (response.ok) {
+            const review = await response.json();
+            showModal(`
+                <h3>Detalles de la Review</h3>
+                <div class="review-details">
+                    <p><strong>ID:</strong> ${review.id}</p>
+                    <p><strong>Usuario:</strong> ${review.user?.name || 'Usuario eliminado'}</p>
+                    <p><strong>Clínica:</strong> ${review.clinic?.name || 'N/A'}</p>
+                    <p><strong>Calificación:</strong> ${generateStarRating(review.rating)} (${review.rating || 0}/5)</p>
+                    <p><strong>Fecha:</strong> ${new Date(review.date).toLocaleString()}</p>
+                    <p><strong>Contenido:</strong></p>
+                    <div class="review-content">${review.content || 'Sin contenido'}</div>
+                </div>
+            `);
+        }
+    } catch (error) {
+        showMessage('Error al cargar detalles de la review', 'error');
+    }
+}
+
+async function deleteReview(reviewId) {
+    if (confirm('¿Estás seguro de eliminar esta review?')) {
+        try {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showMessage('Review eliminada exitosamente', 'success');
+                await loadReviewsData();
+            }
+        } catch (error) {
+            showMessage('Error al eliminar review', 'error');
+        }
+    }
+}
+
+// Refresh functions
 async function refreshUsers() {
     await loadUsersData();
 }
@@ -672,63 +774,13 @@ async function refreshReviews() {
     await loadReviewsData();
 }
 
-// Add treatment modal function
-function showAddTreatmentModal() {
-    const treatmentForm = `
-        <div class="add-treatment-form">
-            <h3>Agregar Nuevo Tratamiento</h3>
-            <form id="addTreatmentForm">
-                <div class="form-group">
-                    <label for="treatmentName">Nombre del Tratamiento:</label>
-                    <input type="text" id="treatmentName" required>
-                </div>
-                <div class="form-group">
-                    <label for="treatmentDescription">Descripción:</label>
-                    <textarea id="treatmentDescription" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="treatmentPrice">Precio Desde:</label>
-                    <input type="number" id="treatmentPrice" min="0">
-                </div>
-                <div class="form-group">
-                    <label for="treatmentSpecialty">Especialidad:</label>
-                    <select id="treatmentSpecialty">
-                        <option value="Operatoria Dental">Operatoria Dental</option>
-                        <option value="Endodoncia">Endodoncia</option>
-                        <option value="Implantología">Implantología</option>
-                        <option value="Estética Dental">Estética Dental</option>
-                        <option value="Ortodoncia">Ortodoncia</option>
-                        <option value="Periodoncia">Periodoncia</option>
-                        <option value="Cirugía Oral">Cirugía Oral</option>
-                        <option value="Rehabilitación Oral">Rehabilitación Oral</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="admin-btn secondary" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="admin-btn primary">Agregar Tratamiento</button>
-                </div>
-            </form>
-        </div>
-    `;
-    
-    showModal('Agregar Tratamiento', treatmentForm);
-    
-    document.getElementById('addTreatmentForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        // Handle treatment creation
-        UIUtils.showToast('Función de agregar tratamiento en desarrollo', 'info');
-        closeModal();
-    });
-}
-
 // Modal functions
-function showModal(title, content) {
+function showModal(content) {
     const modal = document.createElement('div');
     modal.className = 'admin-modal';
     modal.innerHTML = `
         <div class="admin-modal-content">
             <div class="admin-modal-header">
-                <h2>${title}</h2>
                 <button class="admin-modal-close" onclick="closeModal()">&times;</button>
             </div>
             <div class="admin-modal-body">
@@ -739,11 +791,9 @@ function showModal(title, content) {
     
     document.body.appendChild(modal);
     
-    // Close on outside click
+    // Close on background click
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
+        if (e.target === modal) closeModal();
     });
 }
 
@@ -754,25 +804,85 @@ function closeModal() {
     }
 }
 
-// Utility functions
+function showMessage(message, type = 'info') {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `admin-message ${type}`;
+    messageDiv.textContent = message;
+    
+    document.body.appendChild(messageDiv);
+    
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 3000);
+}
+
 function showAdminLoading(show) {
-    const loadingOverlay = document.getElementById('admin-loading');
-    if (loadingOverlay) {
-        loadingOverlay.style.display = show ? 'flex' : 'none';
+    const loadingElement = document.getElementById('admin-loading');
+    if (loadingElement) {
+        loadingElement.style.display = show ? 'flex' : 'none';
     }
 }
 
 function handleAdminLogout() {
-    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+    if (confirm('¿Estás seguro de cerrar sesión?')) {
         AuthService.logout();
+        window.location.href = 'login.html';
     }
 }
 
-// Load more data functions (placeholders)
-async function loadTreatmentsData() {
-    console.log('Loading treatments data...');
-}
-
-async function loadReviewsData() {
-    console.log('Loading reviews data...');
+// Add treatment modal function
+function showAddTreatmentModal() {
+    showModal(`
+        <h3>Agregar Nuevo Tratamiento</h3>
+        <form id="addTreatmentForm" class="admin-form">
+            <div class="form-group">
+                <label for="treatmentName">Nombre:</label>
+                <input type="text" id="treatmentName" required>
+            </div>
+            <div class="form-group">
+                <label for="treatmentDescription">Descripción:</label>
+                <textarea id="treatmentDescription" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="treatmentDuration">Duración:</label>
+                <input type="text" id="treatmentDuration">
+            </div>
+            <div class="form-group">
+                <label for="treatmentPrice">Precio base:</label>
+                <input type="number" id="treatmentPrice" min="0">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="admin-btn primary">Crear Tratamiento</button>
+                <button type="button" class="admin-btn secondary" onclick="closeModal()">Cancelar</button>
+            </div>
+        </form>
+    `);
+    
+    document.getElementById('addTreatmentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const treatmentData = {
+            name: document.getElementById('treatmentName').value,
+            description: document.getElementById('treatmentDescription').value,
+            duration: document.getElementById('treatmentDuration').value,
+            basePrice: document.getElementById('treatmentPrice').value
+        };
+        
+        try {
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.TREATMENTS, {
+                method: 'POST',
+                body: JSON.stringify(treatmentData)
+            });
+            
+            if (response.ok) {
+                showMessage('Tratamiento creado exitosamente', 'success');
+                closeModal();
+                await loadTreatmentsData();
+            } else {
+                showMessage('Error al crear tratamiento', 'error');
+            }
+        } catch (error) {
+            showMessage('Error al crear tratamiento', 'error');
+        }
+    });
 }
