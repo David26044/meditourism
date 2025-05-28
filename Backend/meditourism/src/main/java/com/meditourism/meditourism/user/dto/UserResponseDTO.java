@@ -67,6 +67,6 @@ public class UserResponseDTO {
     public void setVerified(boolean verified) {
         isVerified = verified;
     }
-
+    
 }
 

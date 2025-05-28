@@ -100,7 +100,17 @@ public class JwtService implements IJwtService {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 48)) // 48h for better UX
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    // Add method to generate password reset tokens with different expiration
+    public String generatePasswordResetToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2)) // 2h for password reset
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -13,10 +13,14 @@ class EmailService {
                 body: JSON.stringify(emailData)
             });
 
-            return response.ok;
+            const result = await response.json().catch(() => ({}));
+            return {
+                success: response.ok,
+                message: result.message || (response.ok ? 'Email enviado' : 'Error al enviar email')
+            };
         } catch (error) {
             console.error('Error enviando correo:', error);
-            return false;
+            return { success: false, message: 'Error de conexión' };
         }
     }
 
@@ -52,6 +56,50 @@ class EmailService {
         } catch (error) {
             console.error('Error enviando correo de contacto:', error);
             return false;
+        }
+    }
+
+    static async sendVerificationEmail(email) {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_VERIFY_EMAIL}?email=${encodeURIComponent(email)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            const result = await response.json().catch(() => ({}));
+            return {
+                success: response.ok,
+                message: result.message || (response.ok ? 'Email de verificación enviado' : 'Error al enviar verificación')
+            };
+        } catch (error) {
+            console.error('Error enviando correo de verificación:', error);
+            return { success: false, message: 'Error de conexión' };
+        }
+    }
+
+    static async sendPasswordResetEmail(email) {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_PASSWORD_RESET}?email=${encodeURIComponent(email)}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            const result = await response.json().catch(() => ({}));
+            return {
+                success: response.ok,
+                message: result.message || (response.ok ? 'Email de restablecimiento enviado' : 'Error al enviar email')
+            };
+        } catch (error) {
+            console.error('Error enviando correo de restablecimiento:', error);
+            return { success: false, message: 'Error de conexión' };
         }
     }
 }

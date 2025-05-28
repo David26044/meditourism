@@ -262,17 +262,8 @@ function loadUserData() {
 }
 
 function showAdminFeatures() {
-    // Add admin-specific functionality
-    const navMenu = document.querySelector('.nav-menu');
-    if (navMenu && !document.querySelector('#adminPanel')) {
-        const adminLink = document.createElement('a');
-        adminLink.href = '#admin';
-        adminLink.className = 'nav-link admin-link';
-        adminLink.id = 'adminPanel';
-        adminLink.innerHTML = '<i class="fas fa-cog"></i> Panel Admin';
-        adminLink.style.color = '#ff4757';
-        navMenu.appendChild(adminLink);
-    }
+    // Remove automatic admin link creation - admin access is now through profile page
+    console.log('Admin features available through profile page');
 }
 
 function loadUserAppointments() {
@@ -408,11 +399,17 @@ function addAdminMenuItems() {
         const divider = dropdownMenu.querySelector('.dropdown-divider');
         
         const adminItem = document.createElement('a');
-        adminItem.href = '#admin-dashboard';
+        adminItem.href = 'admin.html';
         adminItem.className = 'dropdown-item';
         adminItem.id = 'adminMenuItem';
         adminItem.innerHTML = '<i class="fas fa-shield-alt"></i> Panel de Admin';
         adminItem.style.color = '#ff4757';
+        
+        // Add click handler to go to admin.html
+        adminItem.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'admin.html';
+        });
         
         if (divider) {
             dropdownMenu.insertBefore(adminItem, divider);

@@ -17,7 +17,7 @@ public class ContactFormEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = true)  // Changed to nullable = true
     private UserEntity user;
 
     @ManyToOne

@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Forgot password validation
         const forgotEmail = document.getElementById('forgotEmail');
         forgotEmail.addEventListener('input', UIUtils.debounce(() => {
-            const validation = ValidationUtils.validateEmail(forgotEmail.value);
+            const validation = ValidationUtils.validateEmailVerification(forgotEmail.value);
             ValidationUtils.showValidationState('forgotEmail', 'forgotEmailIcon', 'forgotEmailError', validation);
         }, 300));
     }
@@ -210,7 +210,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await AuthService.register(username, email, password);
             
             if (response.success) {
-                UIUtils.showMessage(registerMessage, response.message, 'success');
+                UIUtils.showMessage(registerMessage, 
+                    response.message + ' Revisa tu email (incluyendo spam) para verificar tu cuenta.', 
+                    'success'
+                );
                 
                 // Switch to login form after delay
                 setTimeout(() => {

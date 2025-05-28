@@ -22,4 +22,10 @@ public class EmailController {
         emailService.sendEmail(request.getRecipient(), request.getSubject(), request.getBody());
         return "Correo enviado exitosamente";
     }
+
+    @PostMapping("/send-welcome-email")
+    public ResponseEntity<String> sendWelcomeEmail(@RequestBody EmailRequest request) {
+        emailService.sendEmail(request.getRecipient(), request.getSubject(), request.getBody());
+        return ResponseEntity.ok("Correo de bienvenida enviado exitosamente");
+    }
 }

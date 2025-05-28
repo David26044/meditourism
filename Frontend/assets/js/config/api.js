@@ -13,6 +13,8 @@ const API_CONFIG = {
         // User endpoints
         USER_ME: '/users/me',
         USERS: '/users',
+        ROLES: '/roles',
+        BLOCKED_USERS: '/blocked-users',
         // Review endpoints
         REVIEWS: '/reviews',
         REVIEWS_LATEST: '/reviews/latest',

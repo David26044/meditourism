@@ -738,15 +738,334 @@ button.loading {
     animation: fadeIn 0.3s ease;
 }
 
-/* Animation */
-@keyframes slideUp {
+/* Verification Page Styles */
+.verify-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, var(--very-light-blue) 0%, var(--light-blue) 100%);
+}
+
+.verify-container {
+    width: 100%;
+    max-width: 500px;
+    animation: slideUp 0.6s ease-out;
+}
+
+.verify-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+}
+
+.verify-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--white);
+    padding: 40px 30px 30px;
+    text-align: center;
+    position: relative;
+}
+
+.verify-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.verify-logo {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+}
+
+.verify-logo i {
+    font-size: 60px;
+    opacity: 0.9;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.verify-header h1 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.verify-subtitle {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    opacity: 0.9;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.verify-content {
+    padding: 40px 30px;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.verify-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.loading-spinner {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    border-radius: 50%;
+    box-shadow: 0 8px 32px rgba(44, 90, 160, 0.3);
+}
+
+.loading-spinner i {
+    font-size: 32px;
+    color: var(--white);
+}
+
+.verify-loading p {
+    font-size: 18px;
+    color: var(--dark-gray);
+    font-weight: 500;
+    margin: 0;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    animation: loadingDots 1.5s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.verify-message {
+    display: none;
+    width: 100%;
+}
+
+.verify-result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.result-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.verify-result-success .result-icon {
+    background: linear-gradient(135deg, var(--success-color), #2ecc71);
+    color: var(--white);
+    animation: successPulse 0.6s ease-out;
+}
+
+.verify-result-error .result-icon {
+    background: linear-gradient(135deg, var(--error-color), #e55a4e);
+    color: var(--white);
+    animation: errorShake 0.6s ease-out;
+}
+
+.result-icon i {
+    font-size: 32px;
+}
+
+.verify-result h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.verify-result-success h3 {
+    color: var(--success-color);
+}
+
+.verify-result-error h3 {
+    color: var(--error-color);
+}
+
+.verify-result p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--dark-gray);
+    max-width: 400px;
+}
+
+.verify-actions {
+    padding: 20px 30px;
+    background: var(--light-gray);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.verify-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    min-width: 140px;
+    justify-content: center;
+    border: 2px solid transparent;
+}
+
+.verify-btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+}
+
+.verify-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(44, 90, 160, 0.3);
+}
+
+.verify-btn-secondary {
+    background: var(--white);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.verify-btn-secondary:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(44, 90, 160, 0.2);
+}
+
+.verify-footer {
+    padding: 20px 30px 30px;
+    text-align: center;
+    background: var(--light-gray);
+}
+
+.verify-footer p {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: var(--dark-gray);
+}
+
+.support-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.support-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Verification Page Animations */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+@keyframes loadingDots {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes errorShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
     }
 }
 

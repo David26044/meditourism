@@ -7,6 +7,7 @@ class ValidationUtils {
         hasNumber: /\d/,
         hasSpecial: /[!@#$%^&*(),.?":{}|<>]/
     };
+    static phoneRegex = /^[\+]?[1-9][\d]{0,15}$/; // International phone format
 
     static validateEmail(email) {
         return {
@@ -49,6 +50,56 @@ class ValidationUtils {
             isValid,
             message: isValid ? '' : 'Las contraseñas no coinciden'
         };
+    }
+
+    static validateEmailVerification(email) {
+        const emailValidation = this.validateEmail(email);
+        return {
+            isValid: emailValidation.isValid,
+            message: emailValidation.isValid ? '' : 'Ingresa un email válido para verificar'
+        };
+    }
+
+    static validatePhone(phone) {
+        if (!phone) {
+            return { isValid: true, message: '' }; // Phone is optional
+        }
+        
+        const cleanPhone = phone.replace(/[\s\-\(\)]/g, ''); // Remove formatting
+        const isValid = this.phoneRegex.test(cleanPhone) && cleanPhone.length >= 7;
+        
+        return {
+            isValid,
+            message: isValid ? '' : 'Ingresa un número de teléfono válido'
+        };
+    }
+
+    static validateTokenExpiration(token) {
+        try {
+            const payload = this.parseJwtPayload(token);
+            const currentTime = Math.floor(Date.now() / 1000);
+            
+            return {
+                isValid: payload.exp > currentTime,
+                isExpired: payload.exp <= currentTime,
+                expiresAt: new Date(payload.exp * 1000)
+            };
+        } catch (error) {
+            return {
+                isValid: false,
+                isExpired: true,
+                error: 'Token inválido'
+            };
+        }
+    }
+
+    static parseJwtPayload(token) {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
     }
 
     static getPasswordStrength(passedChecks) {

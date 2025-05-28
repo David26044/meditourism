@@ -1,4 +1,9 @@
 package com.meditourism.meditourism.user.entity;
+import com.meditourism.meditourism.blockedUser.entity.BlockedUserEntity;
+import com.meditourism.meditourism.comment.entity.CommentEntity;
+import com.meditourism.meditourism.contactForm.entity.ContactFormEntity;
+import com.meditourism.meditourism.report.entity.ReportEntity;
+import com.meditourism.meditourism.review.entity.ReviewEntity;
 import com.meditourism.meditourism.role.entity.RoleEntity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -6,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,10 +35,17 @@ public class UserEntity implements Serializable, UserDetails {
     @Column(name="is_verified")
     private boolean isVerified;
 
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+
 
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id") // o el nombre de la columna que estás usando
+    private UserEntity userReporter;
 
     public boolean isVerified() {
         return isVerified;
@@ -88,7 +101,10 @@ public class UserEntity implements Serializable, UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roleEntity.getName()));
+        if (roleEntity != null && roleEntity.getName() != null) {
+            return List.of(new SimpleGrantedAuthority(roleEntity.getName()));
+        }
+        return List.of(); // Return empty list if no role assigned
     }
 
     /**
@@ -131,5 +147,19 @@ public class UserEntity implements Serializable, UserDetails {
         return true;
     }
 
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<CommentEntity> comments;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ContactFormEntity> contactForms;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReviewEntity> reviews;
+
+    @OneToOne(mappedBy = "blockedUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private BlockedUserEntity blockedUser;
+
+    @OneToMany(mappedBy = "reporterUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReportEntity> reports;
 }
 
