@@ -57,16 +57,15 @@ function setupUserDropdown() {
         }
     });
 
-    // Setup admin panel link - connect to profile.html admin tab
+    // Setup admin panel link - connect directly to admin.html
     const adminPanelLink = document.querySelector('.admin-panel-link');
     if (adminPanelLink) {
         if (UserService.isAdmin()) {
             adminPanelLink.style.display = 'block';
-            adminPanelLink.href = 'profile.html';
+            adminPanelLink.href = 'admin.html';
             adminPanelLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                localStorage.setItem('activeProfileTab', 'admin');
-                window.location.href = 'profile.html';
+                window.location.href = 'admin.html';
             });
         } else {
             adminPanelLink.style.display = 'none';

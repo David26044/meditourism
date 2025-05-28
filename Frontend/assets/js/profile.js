@@ -782,6 +782,27 @@ function showAdminFeatures() {
     adminTabs.forEach(tab => {
         tab.style.display = 'block';
     });
+    
+    // Add admin panel link to tab content
+    const adminTab = document.getElementById('admin-tab');
+    if (adminTab && !adminTab.querySelector('.admin-panel-link')) {
+        const adminPanelLink = document.createElement('div');
+        adminPanelLink.className = 'admin-panel-section';
+        adminPanelLink.innerHTML = `
+            <div class="profile-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-shield-alt"></i> Panel Administrativo</h2>
+                </div>
+                <div class="admin-panel-card">
+                    <p>Accede al panel administrativo completo para gestionar usuarios, consultas y configuraciones del sistema.</p>
+                    <a href="admin.html" class="admin-btn primary admin-panel-link">
+                        <i class="fas fa-external-link-alt"></i> Ir al Panel Admin
+                    </a>
+                </div>
+            </div>
+        `;
+        adminTab.appendChild(adminPanelLink);
+    }
 }
 
 async function loadAdminStats() {

@@ -72,4 +72,31 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> deleteUserById(@PathVariable Long id, Authentication authenticate){
         return ResponseEntity.ok(userService.deleteUserById(id, authenticate));
     }
+
+    // New admin endpoints
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/role")
+    public ResponseEntity<UserResponseDTO> updateUserRole(
+            @PathVariable Long id, 
+            @RequestParam Long roleId,
+            Authentication authentication) {
+        return ResponseEntity.ok(userService.updateUserRole(id, roleId, authentication));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/admin/{id}")
+    public ResponseEntity<UserResponseDTO> adminUpdateUser(
+            @PathVariable Long id, 
+            @RequestBody UserDTO dto, 
+            Authentication authentication) {
+        return ResponseEntity.ok(userService.adminUpdateUser(id, dto, authentication));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/admin/{id}")
+    public ResponseEntity<UserResponseDTO> adminDeleteUser(
+            @PathVariable Long id, 
+            Authentication authentication) {
+        return ResponseEntity.ok(userService.adminDeleteUser(id, authentication));
+    }
 }
