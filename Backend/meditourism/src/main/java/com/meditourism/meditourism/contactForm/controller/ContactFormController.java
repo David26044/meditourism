@@ -47,6 +47,7 @@ public class ContactFormController {
 
 
     @PostMapping
+    @PreAuthorize("permitAll()")  // Permitir acceso público
     public ResponseEntity<ContactFormResponseDTO> createContactForm(@RequestBody @Valid ContactFormRequestDTO dto) {
         ContactFormResponseDTO savedContactForm = contactFormService.saveContactForm(dto);
         return ResponseEntity

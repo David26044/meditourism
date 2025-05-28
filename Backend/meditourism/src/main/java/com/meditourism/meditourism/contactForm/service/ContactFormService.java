@@ -86,18 +86,35 @@ public class ContactFormService implements IContactFormService {
      */
     @Override
     public ContactFormResponseDTO saveContactForm(ContactFormRequestDTO dto) {
-        if (blockedUserService.isBlocked(dto.getUserId())) {
+        // Validar solo si el usuario no es nulo
+        if (dto.getUserId() != null && blockedUserService.isBlocked(dto.getUserId())) {
             throw new UnauthorizedAccessException("No tienes permisos");
         }
+        
         ContactFormEntity entity = new ContactFormEntity();
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(dto.getUserId());
+        
+        // Set user reference only if userId is provided
+        if (dto.getUserId() != null) {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setId(dto.getUserId());
+            entity.setUser(userEntity);
+        }
+        
+        // Set treatment reference
         TreatmentEntity treatmentEntity = new TreatmentEntity();
         treatmentEntity.setId(dto.getTreatmentId());
-        entity.setEmail(dto.getEmail());
-        entity.setMessage(dto.getMessage());
-        entity.setUser(userEntity);
         entity.setTreatment(treatmentEntity);
+        
+        // Map all fields
+        entity.setFullName(dto.getFullName());
+        entity.setEmail(dto.getEmail());
+        entity.setPhone(dto.getPhone());
+        entity.setInquiryType(dto.getInquiryType());
+        entity.setPreferredClinic(dto.getPreferredClinic());
+        entity.setMessage(dto.getMessage());
+        entity.setAcceptTerms(dto.getAcceptTerms());
+        entity.setAcceptMarketing(dto.getAcceptMarketing());
+        
         return new ContactFormResponseDTO(contactFormRepository.save(entity));
     }
 

@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 public class ContactFormEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "contact_form_seq")
+    @SequenceGenerator(name = "contact_form_seq", sequenceName = "contact_form_id_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne
@@ -28,6 +29,24 @@ public class ContactFormEntity {
 
     @Column(nullable = false)
     private String message;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column
+    private String phone;
+
+    @Column(name = "inquiry_type")
+    private String inquiryType;
+
+    @Column(name = "preferred_clinic")
+    private String preferredClinic;
+
+    @Column(name = "accept_terms")
+    private Boolean acceptTerms = true;
+
+    @Column(name = "accept_marketing")
+    private Boolean acceptMarketing = false;
 
     @Column
     @CreationTimestamp
@@ -79,5 +98,53 @@ public class ContactFormEntity {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getInquiryType() {
+        return inquiryType;
+    }
+
+    public void setInquiryType(String inquiryType) {
+        this.inquiryType = inquiryType;
+    }
+
+    public String getPreferredClinic() {
+        return preferredClinic;
+    }
+
+    public void setPreferredClinic(String preferredClinic) {
+        this.preferredClinic = preferredClinic;
+    }
+
+    public Boolean getAcceptTerms() {
+        return acceptTerms;
+    }
+
+    public void setAcceptTerms(Boolean acceptTerms) {
+        this.acceptTerms = acceptTerms;
+    }
+
+    public Boolean getAcceptMarketing() {
+        return acceptMarketing;
+    }
+
+    public void setAcceptMarketing(Boolean acceptMarketing) {
+        this.acceptMarketing = acceptMarketing;
     }
 }
