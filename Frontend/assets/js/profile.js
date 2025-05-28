@@ -38,6 +38,13 @@ async function initializeProfilePage() {
             await loadAdminStats();
         }
         
+        // Check if admin tab should be activated
+        const activeTab = localStorage.getItem('activeProfileTab');
+        if (activeTab === 'admin' && UserService.isAdmin()) {
+            activateTab('admin');
+            localStorage.removeItem('activeProfileTab');
+        }
+        
         console.log('✅ Profile page initialized successfully');
     } catch (error) {
         console.error('💥 Error initializing profile page:', error);
@@ -213,18 +220,28 @@ function setupTabSwitching() {
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             const targetTab = button.getAttribute('data-tab');
-            
-            // Remove active class from all buttons and contents
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            // Add active class to clicked button and corresponding content
-            button.classList.add('active');
-            document.getElementById(`${targetTab}-tab`).classList.add('active');
-            
-            console.log(`📑 Switched to tab: ${targetTab}`);
+            activateTab(targetTab);
         });
     });
+}
+
+function activateTab(targetTab) {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    // Remove active class from all buttons and contents
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
+    
+    // Add active class to target button and corresponding content
+    const targetButton = document.querySelector(`[data-tab="${targetTab}"]`);
+    const targetContent = document.getElementById(`${targetTab}-tab`);
+    
+    if (targetButton && targetContent) {
+        targetButton.classList.add('active');
+        targetContent.classList.add('active');
+        console.log(`📑 Switched to tab: ${targetTab}`);
+    }
 }
 
 function setupProfileEditing() {

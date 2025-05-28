@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Odontomar</title>
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <!-- Header del Admin -->
+    <header class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-logo">
+                <i class="fas fa-user-shield"></i>
+                <span>Panel Administrativo - Odontomar</span>
+            </div>
+            <div class="admin-user-info">
+                <span id="admin-user-name">Cargando...</span>
+                <a href="home.html" class="admin-home-btn">
+                    <i class="fas fa-home"></i>
+                    Volver al Inicio
+                </a>
+                <button onclick="handleAdminLogout()" class="admin-logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <!-- Sidebar Navigation -->
+        <nav class="admin-sidebar">
+            <ul class="admin-nav">
+                <li class="admin-nav-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="admin-nav-item" data-section="users">
+                    <i class="fas fa-users"></i>
+                    <span>Usuarios</span>
+                </li>
+                <li class="admin-nav-item" data-section="contact-forms">
+                    <i class="fas fa-envelope"></i>
+                    <span>Consultas</span>
+                </li>
+                <li class="admin-nav-item" data-section="treatments">
+                    <i class="fas fa-tooth"></i>
+                    <span>Tratamientos</span>
+                </li>
+                <li class="admin-nav-item" data-section="reviews">
+                    <i class="fas fa-star"></i>
+                    <span>Reviews</span>
+                </li>
+                <li class="admin-nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="admin-section active">
+                <div class="admin-section-header">
+                    <h1>Dashboard de Administración</h1>
+                    <p>Resumen general del sistema Odontomar</p>
+                </div>
+                
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-users">0</h3>
+                            <p>Total Usuarios</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-contact-forms">0</h3>
+                            <p>Consultas Recibidas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-tooth"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-treatments">0</h3>
+                            <p>Tratamientos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-reviews">0</h3>
+                            <p>Reviews</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="admin-card">
+                    <h3><i class="fas fa-clock"></i> Actividad Reciente</h3>
+                    <div id="recent-activity" class="recent-activity">
+                        <p class="loading">Cargando actividad reciente...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="admin-section">
+                <div class="admin-section-header">
+                    <h1>Gestión de Usuarios</h1>
+                    <p>Administrar usuarios del sistema</p>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-users"></i> Lista de Usuarios</h3>
+                        <button class="admin-btn primary" onclick="refreshUsers()">
+                            <i class="fas fa-refresh"></i> Actualizar
+                        </button>
+                    </div>
+                    <div id="users-list" class="admin-table-container">
+                        <p class="loading">Cargando usuarios...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Forms Section -->
+            <section id="contact-forms-section" class="admin-section">
+                <div class="admin-section-header">
+                    <h1>Consultas de Pacientes</h1>
+                    <p>Administrar consultas recibidas</p>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-envelope"></i> Lista de Consultas</h3>
+                        <button class="admin-btn primary" onclick="refreshContactForms()">
+                            <i class="fas fa-refresh"></i> Actualizar
+                        </button>
+                    </div>
+                    <div id="contact-forms-list" class="admin-table-container">
+                        <p class="loading">Cargando consultas...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Treatments Section -->
+            <section id="treatments-section" class="admin-section">
+                <div class="admin-section-header">
+                    <h1>Gestión de Tratamientos</h1>
+                    <p>Administrar tratamientos dentales</p>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-tooth"></i> Lista de Tratamientos</h3>
+                        <button class="admin-btn primary" onclick="showAddTreatmentModal()">
+                            <i class="fas fa-plus"></i> Agregar Tratamiento
+                        </button>
+                    </div>
+                    <div id="treatments-list" class="admin-table-container">
+                        <p class="loading">Cargando tratamientos...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reviews Section -->
+            <section id="reviews-section" class="admin-section">
+                <div class="admin-section-header">
+                    <h1>Gestión de Reviews</h1>
+                    <p>Administrar reseñas de pacientes</p>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <h3><i class="fas fa-star"></i> Lista de Reviews</h3>
+                        <button class="admin-btn primary" onclick="refreshReviews()">
+                            <i class="fas fa-refresh"></i> Actualizar
+                        </button>
+                    </div>
+                    <div id="reviews-list" class="admin-table-container">
+                        <p class="loading">Cargando reviews...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="admin-section">
+                <div class="admin-section-header">
+                    <h1>Configuración del Sistema</h1>
+                    <p>Configuraciones generales de Odontomar</p>
+                </div>
+                <div class="admin-card">
+                    <h3><i class="fas fa-cog"></i> Configuraciones</h3>
+                    <div class="settings-grid">
+                        <div class="setting-item">
+                            <h4>Información de la Clínica</h4>
+                            <p>Dr. Carlos Monroy - Reg. REPS: 79 708 910</p>
+                            <p>16 años de experiencia docente</p>
+                        </div>
+                        <div class="setting-item">
+                            <h4>Sedes Activas</h4>
+                            <ul>
+                                <li>Sede Marsella</li>
+                                <li>Sede Chapinero</li>
+                                <li>Sede Lago de los Héroes</li>
+                            </ul>
+                        </div>
+                        <div class="setting-item">
+                            <h4>Especialidades</h4>
+                            <p>8 especialidades dentales disponibles</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="admin-loading" class="admin-loading">
+        <div class="admin-loading-content">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="assets/js/config/api.js"></script>
+    <script src="assets/js/services/authService.js"></script>
+    <script src="assets/js/services/userService.js"></script>
+    <script src="assets/js/utils/ui.js"></script>
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>
