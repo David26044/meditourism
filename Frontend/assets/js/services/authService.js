@@ -140,13 +140,13 @@ class AuthService {
             return this.cachedUser;
         }
 
-        const authToken = localStorage.getItem('authToken');
-        if (authToken) {
+        const token = localStorage.getItem('token'); // Changed from 'authToken' to 'token'
+        if (token) {
             try {
                 const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`, {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${authToken}`,
+                        'Authorization': `Bearer ${token}`, // Changed from 'authToken' to 'token'
                         'Content-Type': 'application/json'
                     }
                 });
