@@ -123,7 +123,16 @@ public class UserService implements IUserService {
 
         boolean isOwner = authenticatedUser.getId().equals(id);
 
-        if (!isOwner) {
+        boolean isAdmin = false;
+        Collection<? extends GrantedAuthority> authorities = authenticate.getAuthorities(); // ← aquí
+
+        for (GrantedAuthority auth : authorities) {
+            if (auth.getAuthority().equals("ROLE_ADMIN")) {
+                isAdmin = true;
+                break;
+            }
+        }
+        if (!isOwner && !isAdmin) {
             throw new UnauthorizedAccessException("No tienes permiso para eliminar este usuario");
         }
 
