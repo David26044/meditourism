@@ -34,6 +34,9 @@ public class UserEntity implements Serializable, UserDetails {
     @Column(name="is_verified")
     private boolean isVerified;
 
+    @Column(name = "created_at")
+    private java.time.LocalDateTime createdAt;
+
 
     @ManyToOne
     @JoinColumn(name = "role_id")
@@ -97,7 +100,10 @@ public class UserEntity implements Serializable, UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roleEntity.getName()));
+        if (roleEntity != null && roleEntity.getName() != null) {
+            return List.of(new SimpleGrantedAuthority(roleEntity.getName()));
+        }
+        return List.of(); // Return empty list if no role assigned
     }
 
     /**

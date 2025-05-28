@@ -57,11 +57,16 @@ function setupUserDropdown() {
         }
     });
 
-    // Setup admin panel link (only for admins)
+    // Setup admin panel link - connect directly to admin.html
     const adminPanelLink = document.querySelector('.admin-panel-link');
     if (adminPanelLink) {
         if (UserService.isAdmin()) {
             adminPanelLink.style.display = 'block';
+            adminPanelLink.href = 'admin.html';
+            adminPanelLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'admin.html';
+            });
         } else {
             adminPanelLink.style.display = 'none';
         }

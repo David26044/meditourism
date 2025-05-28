@@ -21,4 +21,10 @@ public interface IUserService {
     List<UserResponseDTO> getAllUsersResponseDTO();
     UserResponseDTO getMyUser(String email);
     void verifyEmail(String email);
+    UserResponseDTO refreshUserInfo(String email);
+
+    // Admin methods
+    UserResponseDTO updateUserRole(Long userId, Long roleId, Authentication authenticate);
+    UserResponseDTO adminUpdateUser(Long id, UserDTO dto, Authentication authenticate);
+    UserResponseDTO adminDeleteUser(Long id, Authentication authenticate);
 }

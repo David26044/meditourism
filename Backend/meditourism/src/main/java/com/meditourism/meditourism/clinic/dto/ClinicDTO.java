@@ -39,7 +39,7 @@ public class ClinicDTO {
         this.name = clinicEntity.getName();
         this.description = clinicEntity.getDescription();
         this.contactInfo = clinicEntity.getContactInfo();
-
+        this.address = clinicEntity.getAddress();
     }
 
     public String getAddress() {

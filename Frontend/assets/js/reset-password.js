@@ -104,13 +104,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function verifyToken() {
         try {
-            // Intentar decodificar el token para verificar si es válido
-            const payload = parseJwt(token);
-            const currentTime = Math.floor(Date.now() / 1000);
+            const tokenValidation = ValidationUtils.validateTokenExpiration(token);
             
-            if (payload.exp < currentTime) {
-                UIUtils.showMessage(resetMessage, 'El enlace ha expirado. Por favor solicita un nuevo enlace de recuperación.', 'error');
+            if (!tokenValidation.isValid) {
+                if (tokenValidation.isExpired) {
+                    UIUtils.showMessage(resetMessage, 
+                        `El enlace ha expirado el ${tokenValidation.expiresAt?.toLocaleString() || 'fecha desconocida'}. Por favor solicita un nuevo enlace de recuperación.`, 
+                        'error'
+                    );
+                } else {
+                    UIUtils.showMessage(resetMessage, 
+                        tokenValidation.error || 'Token inválido. Por favor solicita un nuevo enlace de recuperación.', 
+                        'error'
+                    );
+                }
                 resetBtn.disabled = true;
+                
+                // Add helpful link
+                setTimeout(() => {
+                    resetMessage.innerHTML += '<br><a href="auth.html" class="reset-link">← Volver al login</a>';
+                }, 2000);
             }
         } catch (error) {
             UIUtils.showMessage(resetMessage, 'Token inválido. Por favor solicita un nuevo enlace de recuperación.', 'error');

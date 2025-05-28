@@ -19,6 +19,19 @@ async function initializeContactForm() {
     // Configurar formulario
     setupContactFormHandler();
     
+    // Setup phone validation
+    const phoneField = document.getElementById('phone');
+    if (phoneField) {
+        phoneField.addEventListener('blur', () => {
+            const validation = ValidationUtils.validatePhone(phoneField.value);
+            if (phoneField.value && !validation.isValid) {
+                showFieldError('phone', validation.message);
+            } else {
+                clearFieldError('phone');
+            }
+        });
+    }
+    
     // Pre-llenar datos del usuario si están disponibles
     await prefillUserData();
 }
@@ -92,6 +105,10 @@ async function prefillUserData() {
             
             if (emailField && user.email) {
                 emailField.value = user.email;
+                // Add visual indicator if email is not verified
+                if (!user.verified) {
+                    emailField.title = 'Email no verificado - Verifica tu email desde tu perfil';
+                }
             }
             
             if (fullNameField && user.name) {
