@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Turismo médico en Colombia - Atención médica de calidad">
+    <title>MediTourism Colombia | Iniciar Sesión</title>
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="container" id="container">
+            <!-- Login Form -->
+            <div class="form-container sign-in-container">
+                <form id="loginForm">
+                    <h1>Iniciar Sesión</h1>
+                    <div class="input-group">
+                        <input type="email" id="loginEmail" placeholder="Email" required />
+                        <span class="validation-icon" id="loginEmailIcon"></span>
+                        <div class="validation-message" id="loginEmailError"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" placeholder="Contraseña" required />
+                        <span class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <span class="validation-icon" id="loginPasswordIcon"></span>
+                        <div class="validation-message" id="loginPasswordError"></div>
+                    </div>
+                    <div class="form-options">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="rememberMe">
+                            <span class="checkmark"></span>
+                            Recordarme
+                        </label>
+                        <a href="#" id="forgotPasswordLink" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    <button type="submit" id="loginBtn">
+                        <span class="btn-text">Iniciar Sesión</span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Iniciando...
+                        </span>
+                    </button>
+                    <div id="loginMessage" class="message"></div>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div class="form-container sign-up-container">
+                <form id="registerForm">
+                    <h1>Crear Cuenta</h1>
+                    <div class="input-group">
+                        <input type="text" id="registerUsername" placeholder="Nombre completo" required />
+                        <span class="validation-icon" id="usernameIcon"></span>
+                        <div class="validation-message" id="usernameError"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" id="registerEmail" placeholder="Email" required />
+                        <span class="validation-icon" id="emailIcon"></span>
+                        <div class="validation-message" id="emailError"></div>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="registerPassword" placeholder="Contraseña" required />
+                        <span class="password-toggle" onclick="togglePassword('registerPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <span class="validation-icon" id="passwordIcon"></span>
+                        <div class="validation-message" id="passwordError"></div>
+                        <div class="password-strength" id="passwordStrength">
+                            <div class="strength-meter">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="strength-text" id="strengthText">Ingresa una contraseña</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="confirmPassword" placeholder="Confirmar contraseña" required />
+                        <span class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                        <span class="validation-icon" id="confirmPasswordIcon"></span>
+                        <div class="validation-message" id="confirmPasswordError"></div>
+                    </div>
+                    <button type="submit" id="registerBtn">
+                        <span class="btn-text">Registrarse</span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Registrando...
+                        </span>
+                    </button>
+                    <div id="registerMessage" class="message"></div>
+                </form>
+            </div>
+
+            <!-- Toggle Overlay -->
+            <div class="overlay-container">
+                <div class="overlay">
+                    <div class="overlay-panel overlay-left">
+                        <h1>¡Bienvenido de vuelta!</h1>
+                        <p>Para mantenerte conectado con nosotros, inicia sesión con tu información personal</p>
+                        <button class="ghost login-btn" id="signIn">Iniciar Sesión</button>
+                    </div>
+                    <div class="overlay-panel overlay-right">
+                        <h1>¡Hola!</h1>
+                        <p>Ingresa tus datos personales y comienza tu viaje con nosotros</p>
+                        <button class="ghost register-btn" id="signUp">Registrarse</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeForgotModal">&times;</span>
+            <h2>Recuperar Contraseña</h2>
+            <form id="forgotPasswordForm">
+                <div class="input-group">
+                    <input type="email" id="forgotEmail" placeholder="Ingresa tu email" required />
+                    <span class="validation-icon" id="forgotEmailIcon"></span>
+                    <div class="validation-message" id="forgotEmailError"></div>
+                </div>
+                <button type="submit" id="forgotBtn">
+                    <span class="btn-text">Enviar enlace de recuperación</span>
+                    <span class="btn-loading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Enviando...
+                    </span>
+                </button>
+                <div id="forgotMessage" class="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="assets/js/config/api.js"></script>
+    <script src="assets/js/services/authService.js"></script>
+    <script src="assets/js/utils/ui.js"></script>
+    <script src="assets/js/utils/validation.js"></script>
+    <script src="assets/js/auth.js"></script>
+</body>
+</html>
