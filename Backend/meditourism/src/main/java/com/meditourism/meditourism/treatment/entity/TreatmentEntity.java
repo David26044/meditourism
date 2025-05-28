@@ -48,14 +48,11 @@ public class TreatmentEntity implements Serializable {
     }
 
     // Relación con ClinicTreatmentEntity (borrado en cascada)
-    @OneToMany(mappedBy = "treatment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "treatment", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ClinicTreatmentEntity> clinicTreatments = new ArrayList<>();
 
     // Relación con ContactFormEntity (borrado en cascada)
-    @OneToMany(mappedBy = "treatment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContactFormEntity> contactForms = new ArrayList<>();
-
     @OneToMany(mappedBy = "treatment", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<AppointmentEntity> appointments = new ArrayList<>();
+    private List<ContactFormEntity> contactForms = new ArrayList<>();
 
 }
