@@ -1,0 +1,123 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "report" {
+    class ReportEntity {
+        + Long id
+        + UserEntity reporterUser
+        + ReviewEntity targetReview
+        + CommentEntity targetComment
+        + CommunityRuleEntity communityRule
+        + String reason
+        --
+        + getters/setters for all fields
+    }
+
+    class ReportRequestDTO {
+        + Long targetReviewId
+        + Long targetCommentId
+        + Long communityRuleId
+        + String reason
+        --
+        + getters/setters for all fields
+    }
+
+    class ReportResponseDTO {
+        + Long id
+        + UserResponseDTO reporterUser
+        + ReviewResponseDTO targetReview
+        + CommentDTO targetComment
+        + CommunityRuleResponseDTO communityRule
+        + String reason
+        --
+        + ReportResponseDTO(ReportEntity)
+        + static fromEntityList(List<ReportEntity>)
+        + getters/setters for all fields
+    }
+
+    interface IReportService {
+        + List<ReportResponseDTO> getAllReports()
+        + ReportResponseDTO getReportById(Long)
+        + ReportResponseDTO saveReport(ReportRequestDTO)
+        + ReportResponseDTO updateReport(Long, ReportRequestDTO)
+        + ReportResponseDTO deleteReport(Long)
+    }
+
+    class ReportService {
+        - ReportRepository reportRepository
+        - AuthService authService
+        --
+        + implements all IReportService methods
+    }
+
+    class ReportController {
+        - IReportService reportService
+        --
+        + getAllReports()
+        + getReportById(Long)
+        + createReport(ReportRequestDTO)
+        + updateReport(Long, ReportRequestDTO)
+        + deleteReport(Long)
+    }
+
+    interface ReportRepository {
+        + JpaRepository methods
+    }
+}
+
+' External dependencies (simplified)
+package "user" {
+    class UserEntity {}
+    class UserResponseDTO {}
+}
+
+package "review" {
+    class ReviewEntity {}
+    class ReviewResponseDTO {}
+}
+
+package "comment" {
+    class CommentEntity {}
+    class CommentDTO {}
+}
+
+package "communityRule" {
+    class CommunityRuleEntity {}
+    class CommunityRuleResponseDTO {}
+}
+
+package "auth" {
+    class AuthService {}
+}
+
+' Relationships
+ReportEntity -- UserEntity : reporterUser
+ReportEntity --  ReviewEntity : targetReview
+ReportEntity -- CommentEntity : targetComment
+ReportEntity -- CommunityRuleEntity
+
+ReportService ..|> IReportService
+ReportService --> ReportRepository
+ReportService --> AuthService
+
+ReportController --> ReportService
+
+ReportResponseDTO --> UserResponseDTO
+ReportResponseDTO --> ReviewResponseDTO
+ReportResponseDTO --> CommentDTO
+ReportResponseDTO --> CommunityRuleResponseDTO
+
+ReportRequestDTO <-- ReportController
+ReportResponseDTO <-- ReportController
+ReportResponseDTO <-- ReportService
+
+@enduml

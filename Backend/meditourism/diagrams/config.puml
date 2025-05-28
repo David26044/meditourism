@@ -1,0 +1,67 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "config" {
+    class ApplicationConfig {
+        - IUserService userService
+        --
+        + authenticationManager()
+        + authenticationProvider()
+        + getPasswordEncoder()
+        + userDetailService()
+    }
+
+    class SecurityConfig {
+        - AuthenticationProvider authProvider
+        --
+        + passwordEncoder()
+        + filterChain()
+    }
+
+    class WebConfig {
+        --
+        + addCorsMappings()
+    }
+
+    class JwtAuthenticationFilter {
+        + doFilterInternal()
+    }
+}
+
+' External dependencies
+package "security" {
+    class AuthenticationProvider {}
+    class HttpSecurity {}
+    class AuthenticationConfiguration {}
+}
+
+package "user" {
+    interface IUserService {}
+}
+
+' Relationships
+ApplicationConfig --> IUserService
+ApplicationConfig --> AuthenticationConfiguration
+ApplicationConfig ..> AuthenticationProvider : creates
+
+SecurityConfig --> AuthenticationProvider
+SecurityConfig --> HttpSecurity
+SecurityConfig --> JwtAuthenticationFilter
+
+WebConfig ..|> WebMvcConfigurer
+
+' Dependencies implícitas (simplificadas)
+ApplicationConfig ..> BCryptPasswordEncoder
+SecurityConfig ..> BCryptPasswordEncoder
+SecurityConfig ..> UsernamePasswordAuthenticationFilter
+
+@enduml

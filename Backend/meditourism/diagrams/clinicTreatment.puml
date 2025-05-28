@@ -1,0 +1,119 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "clinicTreatment" {
+    class ClinicTreatmentEntity {
+        + ClinicTreatmentEntityPK id
+        + ClinicEntity clinic
+        + TreatmentEntity treatment
+        + BigDecimal price
+        --
+        + getters/setters for all fields
+    }
+
+    class ClinicTreatmentEntityPK {
+        + Long clinicId
+        + Long treatmentId
+        --
+        + getters/setters for all fields
+    }
+
+    class ClinicTreatmentDTO {
+        + Long clinicId
+        + Long treatmentId
+        + BigDecimal price
+        --
+        + getters/setters for all fields
+    }
+
+    class ClinicTreatmentResponseDTO {
+        + ClinicTreatmentEntityPK pk
+        + ClinicDTO clinicDTO
+        + TreatmentDTO treatmentDTO
+        + BigDecimal price
+        --
+        + getters/setters for all fields
+        + ClinicTreatmentResponseDTO(ClinicTreatmentEntity)
+        + static fromEntityList(List<ClinicTreatmentEntity>)
+    }
+
+    interface IClinicTreatmentService {
+        + List<ClinicDTO> getClinicsByTreatmentId(Long)
+        + List<TreatmentDTO> getTreatmentsByClinicId(Long)
+        + List<ClinicTreatmentResponseDTO> getAllClinicTreatments()
+        + ClinicTreatmentResponseDTO saveClinicTreatment(ClinicTreatmentDTO)
+        + ClinicTreatmentResponseDTO getClinicTreatmentById(ClinicTreatmentDTO)
+        + ClinicTreatmentResponseDTO updateClinicTreatment(Long, Long, ClinicTreatmentDTO)
+        + ClinicTreatmentResponseDTO deleteClinicTreatment(Long, Long)
+    }
+
+    class ClinicTreatmentService {
+        - ClinicTreatmentRepository clinicTreatmentRepository
+        - TreatmentRepository treatmentRepository
+        - ClinicRepository clinicRepository
+        --
+        + implements all IClinicTreatmentService methods
+    }
+
+    class ClinicTreatmentController {
+        - IClinicTreatmentService clinicTreatmentService
+        --
+        + getAllClinicTreatments()
+        + getClinicTreatmentByIds(Long, Long)
+        + getClinicsByTreatmentId(Long)
+        + getTreatmentsByClinicId(Long)
+        + saveClinicTreatment(ClinicTreatmentDTO)
+        + updateClinicTreatment(Long, Long, ClinicTreatmentDTO)
+        + deleteClinicTreatment(Long, Long)
+    }
+
+    interface ClinicTreatmentRepository {
+        + List<ClinicEntity> findClinicByTreatment(Long)
+        + List<TreatmentEntity> findTreatmentByClinic(Long)
+        + other JpaRepository methods
+    }
+}
+
+' External dependencies (simplified)
+package "clinic" {
+    class ClinicEntity {}
+    class ClinicDTO {}
+    interface ClinicRepository {}
+}
+
+package "treatment" {
+    class TreatmentEntity {}
+    class TreatmentDTO {}
+    interface TreatmentRepository {}
+}
+
+' Relationships
+ClinicTreatmentEntity *-- ClinicTreatmentEntityPK
+ClinicTreatmentEntity *-- ClinicEntity
+ClinicTreatmentEntity *-- TreatmentEntity
+
+ClinicTreatmentService ..|> IClinicTreatmentService
+ClinicTreatmentService --> ClinicTreatmentRepository
+ClinicTreatmentService --> TreatmentRepository
+ClinicTreatmentService --> ClinicRepository
+
+ClinicTreatmentController --> ClinicTreatmentService
+
+ClinicTreatmentResponseDTO --> ClinicDTO
+ClinicTreatmentResponseDTO --> TreatmentDTO
+ClinicTreatmentResponseDTO --> ClinicTreatmentEntityPK
+
+ClinicTreatmentDTO <-- ClinicTreatmentController
+ClinicTreatmentResponseDTO <-- ClinicTreatmentController
+ClinicTreatmentResponseDTO <-- ClinicTreatmentService
+
+@enduml

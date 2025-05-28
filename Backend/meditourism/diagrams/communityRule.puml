@@ -1,0 +1,75 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "communityRule" {
+    class CommunityRuleEntity {
+        + Long id
+        + String ruleText
+        --
+        + getters/setters for all fields
+    }
+
+    class CommunityRuleRequestDTO {
+        + String ruleText
+        --
+        + getters/setters for all fields
+    }
+
+    class CommunityRuleResponseDTO {
+        + Long id
+        + String ruleText
+        --
+        + getters/setters for all fields
+        + CommunityRuleResponseDTO(CommunityRuleEntity)
+        + static fromEntityList(List<CommunityRuleEntity>)
+    }
+
+    interface ICommunityRuleService {
+        + List<CommunityRuleResponseDTO> getAllCommunityRules()
+        + CommunityRuleResponseDTO getCommunityRuleById(Long)
+        + CommunityRuleResponseDTO deleteCommunityRule(Long)
+        + CommunityRuleResponseDTO saveCommunityRule(CommunityRuleRequestDTO)
+        + CommunityRuleResponseDTO updateCommunityRule(Long, CommunityRuleRequestDTO)
+    }
+
+    class CommunityRuleService {
+        - CommunityRuleRepository communityRuleRepository
+        --
+        + implements all ICommunityRuleService methods
+    }
+
+    class CommunityRuleController {
+        - ICommunityRuleService communityRuleService
+        --
+        + getAllRules()
+        + getRuleById(Long)
+        + createRule(CommunityRuleRequestDTO)
+        + updateRule(Long, CommunityRuleRequestDTO)
+        + deleteRule(Long)
+    }
+
+    interface CommunityRuleRepository {
+        + JpaRepository standard methods
+    }
+}
+
+' Relationships
+CommunityRuleService ..|> ICommunityRuleService
+CommunityRuleService --> CommunityRuleRepository
+
+CommunityRuleController --> CommunityRuleService
+
+CommunityRuleRequestDTO <-- CommunityRuleController
+CommunityRuleResponseDTO <-- CommunityRuleController
+CommunityRuleResponseDTO <-- CommunityRuleService
+
+@enduml

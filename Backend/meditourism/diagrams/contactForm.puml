@@ -1,0 +1,126 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "contactForm" {
+    class ContactFormEntity {
+        + Long id
+        + String email
+        + String message
+        + LocalDateTime date
+        + UserEntity user
+        + TreatmentEntity treatment
+        --
+        + getters/setters for all fields
+    }
+
+    class ContactFormRequestDTO {
+        + Long userId
+        + Long treatmentId
+        + String email
+        + String message
+        --
+        + getters/setters for all fields
+    }
+
+    class ContactFormResponseDTO {
+        + Long id
+        + UserResponseDTO user
+        + TreatmentDTO treatment
+        + String email
+        + String message
+        + LocalDateTime date
+        --
+        + getters/setters for all fields
+        + ContactFormResponseDTO(ContactFormEntity)
+        + static fromEntityList(List<ContactFormEntity>)
+    }
+
+    class TreatmentContactCountDTO {
+        + Long treatmentId
+        + String treatmentName
+        + Long contactCount
+        --
+        + getters/setters for all fields
+    }
+
+    interface IContactFormService {
+        + List<ContactFormResponseDTO> getAllContactForms()
+        + List<ContactFormResponseDTO> getAllContactFormsByTreatmentId(Long)
+        + ContactFormResponseDTO getContactFormById(Long)
+        + ContactFormResponseDTO saveContactForm(ContactFormRequestDTO)
+        + List<ContactFormResponseDTO> getContactFormByUserId(Long)
+        + ContactFormResponseDTO updateContactForm(Long, ContactFormRequestDTO)
+        + ContactFormResponseDTO deleteContactForm(Long)
+        + List<TreatmentContactCountDTO> getTreatmentContactCounts()
+    }
+
+    class ContactFormService {
+        - ContactFormRepository contactFormRepository
+        - IBlockedUserService blockedUserService
+        --
+        + implements all IContactFormService methods
+    }
+
+    class ContactFormController {
+        - IContactFormService contactFormService
+        --
+        + getAllContactForms()
+        + getContactFormById(Long)
+        + getAllByTreatmentId(Long)
+        + getAllByUserId(Long)
+        + getTreatmentContactCounts()
+        + createContactForm(ContactFormRequestDTO)
+        + updateContactForm(Long, ContactFormRequestDTO)
+        + deleteContactForm(Long)
+    }
+
+    interface ContactFormRepository {
+        + List<ContactFormEntity> findAllByTreatmentId(Long)
+        + List<ContactFormEntity> findAllByUserId(Long)
+        + List<Object[]> findTreatmentContactCounts()
+        + other JpaRepository methods
+    }
+}
+
+' External dependencies (simplified)
+package "user" {
+    class UserEntity {}
+    class UserResponseDTO {}
+}
+
+package "treatment" {
+    class TreatmentEntity {}
+    class TreatmentDTO {}
+}
+
+package "blockedUser" {
+    interface IBlockedUserService {}
+}
+
+' Relationships
+ContactFormEntity -- UserEntity
+ContactFormEntity -- TreatmentEntity
+
+ContactFormService ..|> IContactFormService
+ContactFormService --> ContactFormRepository
+ContactFormService --> IBlockedUserService
+
+ContactFormController --> ContactFormService
+
+ContactFormResponseDTO --> UserResponseDTO
+ContactFormResponseDTO --> TreatmentDTO
+
+ContactFormRequestDTO <-- ContactFormController
+ContactFormResponseDTO <-- ContactFormController
+ContactFormResponseDTO <-- ContactFormService
+
+@enduml

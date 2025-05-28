@@ -1,0 +1,76 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "clinic" {
+    class ClinicEntity {
+        + Long id
+        + String name
+        + String description
+        + String contactInfo
+        + String address
+        --
+        + getters/setters for all fields
+    }
+
+    class ClinicDTO {
+        + Long id
+        + String name
+        + String description
+        + String contactInfo
+        + String address
+        --
+        + getters/setters for all fields
+        + ClinicDTO(ClinicEntity)
+        + static fromEntityList(List<ClinicEntity>)
+    }
+
+    interface IClinicService {
+        + ClinicDTO saveClinic(ClinicDTO)
+        + ClinicDTO updateClinic(Long, ClinicDTO)
+        + ClinicDTO getClinicById(Long)
+        + List<ClinicDTO> getAllClinics()
+        + ClinicDTO deleteClinicById(Long)
+        + ClinicEntity getClinicEntityById(Long)
+    }
+
+    class ClinicService {
+        - ClinicRepository clinicRepository
+        --
+        + implements all IClinicService methods
+    }
+
+    class ClinicController {
+        - ClinicService clinicService
+        --
+        + getAllClinics()
+        + getClinicById(Long)
+        + saveClinic(ClinicDTO)
+        + updateClinic(Long, ClinicDTO)
+        + deleteClinicById(Long)
+    }
+
+    interface ClinicRepository {
+        + JpaRepository methods
+    }
+}
+
+' Relationships
+ClinicService ..|> IClinicService
+ClinicService --> ClinicRepository
+
+ClinicController --> ClinicService
+
+ClinicDTO <-- ClinicController
+ClinicDTO <-- ClinicService
+ClinicDTO --> ClinicEntity
+
+@enduml

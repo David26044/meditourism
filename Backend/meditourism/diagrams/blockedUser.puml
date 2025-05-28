@@ -1,0 +1,94 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "blockedUser" {
+    class BlockedUserEntity {
+        + Long id
+        + UserEntity blockedUser
+        + String reason
+        + LocalDateTime date
+        --
+        + getters/setters for all fields
+    }
+
+    class BlockedUserRequestDTO {
+        + Long userId
+        + String reason
+        --
+        + getters/setters for all fields
+    }
+
+    class BlockedUserResponseDTO {
+        + Long id
+        + UserResponseDTO user
+        + String reason
+        + LocalDateTime date
+        --
+        + getters/setters for all fields
+        + BlockedUserResponseDTO(BlockedUserEntity)
+        + static fromEntityList(List<BlockedUserEntity>)
+    }
+
+    interface IBlockedUserService {
+        + List<BlockedUserResponseDTO> getAllBlockedUsers()
+        + BlockedUserResponseDTO findBlockedUserByUserId(Long)
+        + boolean isBlocked(Long)
+        + BlockedUserResponseDTO saveBlockedUser(BlockedUserRequestDTO)
+        + BlockedUserResponseDTO updateBlockedUser(Long, BlockedUserRequestDTO)
+        + BlockedUserResponseDTO deleteBlockedUser(Long)
+    }
+
+    class BlockedUserService {
+        - BlockedUserRepository blockedUserRepository
+        - IUserService userService
+        --
+        + implements all IBlockedUserService methods
+    }
+
+    class BlockedUserController {
+        - IBlockedUserService blockedUserService
+        --
+        + getAllBlockedUsers()
+        + getBlockedUserById(Long)
+        + postBlockedUser(BlockedUserRequestDTO)
+        + patchBlockedUser(Long, BlockedUserRequestDTO)
+        + deleteBlockedUser(Long)
+    }
+
+    interface BlockedUserRepository {
+        + JpaRepository standard methods
+    }
+}
+
+' External dependencies (simplified)
+package "user" {
+    class UserEntity {}
+    class UserResponseDTO {}
+    interface IUserService {}
+}
+
+' Relationships
+BlockedUserEntity -- UserEntity
+
+BlockedUserService ..|> IBlockedUserService
+BlockedUserService --> BlockedUserRepository
+BlockedUserService --> IUserService
+
+BlockedUserController --> BlockedUserService
+
+BlockedUserResponseDTO --> UserResponseDTO
+
+BlockedUserRequestDTO <-- BlockedUserController
+BlockedUserResponseDTO <-- BlockedUserController
+BlockedUserResponseDTO <-- BlockedUserService
+
+@enduml

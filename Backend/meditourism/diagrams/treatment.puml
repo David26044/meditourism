@@ -1,0 +1,75 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "treatment" {
+    class TreatmentEntity {
+        + Long id
+        + String name
+        + String description
+        --
+        + getters/setters for all fields
+    }
+
+    class TreatmentDTO {
+        + Long id
+        + String name
+        + String description
+        --
+        + TreatmentDTO(TreatmentEntity)
+        + static fromEntityList(List<TreatmentEntity>)
+        + getters/setters for all fields
+    }
+
+    interface ITreatmentService {
+        + TreatmentDTO saveTreatment(TreatmentDTO)
+        + TreatmentDTO updateTreatment(Long, TreatmentDTO)
+        + TreatmentDTO getTreatmentById(Long)
+        + TreatmentDTO deleteTreatmentById(Long)
+        + List<TreatmentDTO> getAllTreatments()
+    }
+
+    class TreatmentService {
+        - TreatmentRepository treatmentRepository
+        --
+        + implements all ITreatmentService methods
+        + handles validation and exceptions
+    }
+
+    class TreatmentController {
+        - ITreatmentService treatmentService
+        --
+        + getAllTreatments()
+        + getTreatmentById(Long)
+        + saveTreatment(TreatmentDTO)
+        + deleteTreatmentById(Long)
+        + updateTreatment(Long, TreatmentDTO)
+    }
+
+    interface TreatmentRepository {
+        + existsByName(String)
+        + other JpaRepository methods
+    }
+}
+
+' Relationships
+TreatmentService ..|> ITreatmentService
+TreatmentService --> TreatmentRepository
+
+TreatmentController --> TreatmentService
+
+TreatmentDTO <-- TreatmentController
+TreatmentDTO <-- TreatmentService
+TreatmentDTO --> TreatmentEntity
+
+TreatmentEntity <-- TreatmentRepository
+
+@enduml

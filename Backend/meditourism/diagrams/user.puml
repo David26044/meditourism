@@ -1,0 +1,102 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "user" {
+    class UserEntity {
+        + Long id
+        + String email
+        + String name
+        + String password
+        + boolean isVerified
+        + RoleEntity roleEntity
+        --
+        + UserDetails methods()
+        + getters/setters for all fields
+    }
+
+    class UserDTO {
+        + String email
+        + String name
+        + String password
+        --
+        + getters/setters for all fields
+    }
+
+    class UserResponseDTO {
+        + Long id
+        + String email
+        + String name
+        + boolean isVerified
+        + RoleEntity role
+        --
+        + UserResponseDTO(UserEntity)
+        + getters/setters for all fields
+    }
+
+    interface IUserService {
+        + List<UserResponseDTO> getAllUsersResponseDTO()
+        + UserResponseDTO getMyUser(String)
+        + void verifyEmail(String)
+        + UserResponseDTO getUserResponseDTOById(Long)
+        + UserEntity getUserEntityById(Long)
+        + UserEntity getUserByEmail(String)
+        + boolean existsByEmail(String)
+        + UserResponseDTO saveUser(UserDTO)
+        + UserResponseDTO updateUser(Long, UserDTO, Authentication)
+        + UserResponseDTO deleteUserById(Long, Authentication)
+        + UserEntity updatePassword(Long, String)
+    }
+
+    class UserService {
+        - UserRepository userRepository
+        --
+        + implements all IUserService methods
+    }
+
+    class UserController {
+        - IUserService userService
+        - EmailService emailService
+        - JwtService jwtService
+        --
+        + getAllUsers()
+        + getUserById(Long)
+        + getMyUser(Authentication)
+        + saveUser(UserDTO)
+        + updateUser(Long, UserDTO, Authentication)
+        + deleteUserById(Long, Authentication)
+    }
+
+    interface UserRepository {
+        + findByEmail(String)
+        + existsByEmail(String)
+        + other JpaRepository methods
+    }
+}
+
+' External dependencies (simplified)
+package "role" {
+    class RoleEntity {}
+}
+
+' Relationships
+UserEntity --  RoleEntity
+UserService ..|> IUserService
+UserService --> UserRepository
+UserController --> UserService
+UserResponseDTO --> RoleEntity
+UserResponseDTO <-- UserController
+UserResponseDTO <-- UserService
+UserDTO <-- UserController
+UserEntity <-- UserResponseDTO
+UserEntity <-- UserDTO
+
+@enduml

@@ -1,0 +1,103 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "auth" {
+    class AuthRequest {
+        + String email
+        + String password
+        --
+        + getters/setters
+    }
+
+    class AuthResponse {
+        + String token
+        --
+        + getters/setters
+    }
+
+    class ChangePasswordDTO {
+        + String newPassword
+        --
+        + getters/setters
+    }
+
+    interface IAuthService {
+        + AuthResponse login(AuthRequest)
+        + AuthResponse register(UserDTO)
+        + void sendEmailChangePassword(String)
+        + void changePassword(String, ChangePasswordDTO)
+        + void sendEmailVerification(String)
+        + void verifyEmail(String)
+        + UserEntity getAuthenticatedUser()
+        + boolean isAdmin()
+        + boolean isOwner(Long)
+    }
+
+    class AuthService {
+        - UserRepository userRepository
+        - IJwtService jwtService
+        - PasswordEncoder passwordEncoder
+        - AuthenticationManager authenticationManager
+        - IEmailService emailService
+        - IRoleService roleService
+        --
+        + implements all IAuthService methods
+    }
+
+    class AuthController {
+        - IAuthService authService
+        --
+        + login(AuthRequest)
+        + register(UserDTO)
+        + sendChangePassword(String)
+        + changePassword(String, ChangePasswordDTO)
+        + sendVerifyEmail(String)
+        + confirmEmail(String)
+    }
+}
+
+' External dependencies (simplified)
+package "user" {
+    class UserEntity {}
+    class UserDTO {}
+    interface UserRepository {}
+}
+
+package "jwt" {
+    interface IJwtService {}
+}
+
+package "email" {
+    interface IEmailService {}
+}
+
+package "role" {
+    interface IRoleService {}
+}
+
+' Relationships
+AuthService ..|> IAuthService
+AuthService --> UserRepository
+AuthService --> IJwtService
+AuthService --> IEmailService
+AuthService --> IRoleService
+
+AuthController --> AuthService
+
+AuthRequest <-- AuthController
+AuthResponse <-- AuthController
+AuthResponse <-- AuthService
+
+ChangePasswordDTO <-- AuthController
+ChangePasswordDTO <-- AuthService
+
+@enduml

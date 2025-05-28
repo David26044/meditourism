@@ -4,6 +4,7 @@ class EmailService {
     static async sendWelcomeEmail(emailData) {
         try {
             const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_WELCOME_EMAIL}`, {
+           
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
