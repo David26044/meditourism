@@ -1,4 +1,8 @@
 package com.meditourism.meditourism.user.entity;
+import com.meditourism.meditourism.blockedUser.entity.BlockedUserEntity;
+import com.meditourism.meditourism.comment.entity.CommentEntity;
+import com.meditourism.meditourism.contactForm.entity.ContactFormEntity;
+import com.meditourism.meditourism.review.entity.ReviewEntity;
 import com.meditourism.meditourism.role.entity.RoleEntity;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -130,6 +134,18 @@ public class UserEntity implements Serializable, UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<CommentEntity> comments;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ContactFormEntity> contactForms;
+
+    @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReviewEntity> reviews;
+
+    @OneToOne(mappedBy = "blockedUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private BlockedUserEntity blockedUser;
 
 }
 
