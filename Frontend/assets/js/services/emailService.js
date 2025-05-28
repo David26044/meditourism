@@ -3,7 +3,8 @@ class EmailService {
     
     static async sendWelcomeEmail(emailData) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EMAIL.BASE}`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_WELCOME_EMAIL}`, {
+           
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -23,17 +24,18 @@ class EmailService {
         try {
             const emailContent = {
                 recipient: 'info@meditourism.com',
-                subject: `Nuevo contacto de ${contactData.name}`,
+                subject: `Nuevo contacto: ${contactData.treatmentName || 'Consulta General'}`,
                 body: `
-                    Nuevo mensaje de contacto:
+                    Nuevo formulario de contacto recibido:
                     
-                    Nombre: ${contactData.name}
+                    Usuario: ${contactData.userName || 'Usuario'}
                     Email: ${contactData.email}
-                    Teléfono: ${contactData.phone || 'No proporcionado'}
-                    Servicio: ${contactData.service || 'No especificado'}
+                    Tratamiento: ${contactData.treatmentName || 'No especificado'}
                     
                     Mensaje:
                     ${contactData.message}
+                    
+                    Fecha: ${new Date().toLocaleString('es-CO')}
                 `
             };
 
