@@ -76,7 +76,7 @@ class AdminService {
             const response = await apiRequest(API_CONFIG.ENDPOINTS.BLOCKED_USERS, {
                 method: 'POST',
                 body: JSON.stringify({
-                    blockedUserId: userId,
+                    userId: userId,
                     reason: reason
                 })
             });
@@ -110,6 +110,26 @@ class AdminService {
             }
         } catch (error) {
             console.error('💥 Error en AdminService.unblockUser:', error);
+            throw error;
+        }
+    }
+
+    static async deleteNormalUser(userId) {
+        console.log(`🗑️ AdminService.deleteNormalUser() - Eliminando usuario normal ${userId}`);
+        try {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.USERS}/${userId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                const deletedUser = await response.json();
+                console.log('✅ Usuario normal eliminado:', deletedUser);
+                return deletedUser;
+            } else {
+                const error = await response.json();
+                throw new Error(error.message || 'Error al eliminar usuario normal');
+            }
+        } catch (error) {
+            console.error('💥 Error en AdminService.deleteNormalUser:', error);
             throw error;
         }
     }

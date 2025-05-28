@@ -27,4 +27,5 @@ public interface IUserService {
     UserResponseDTO updateUserRole(Long userId, Long roleId, Authentication authenticate);
     UserResponseDTO adminUpdateUser(Long id, UserDTO dto, Authentication authenticate);
     UserResponseDTO adminDeleteUser(Long id, Authentication authenticate);
+    UserResponseDTO deleteNormalUser(Long id, Authentication authenticate);
 }
