@@ -1,0 +1,125 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "review" {
+    class ReviewEntity {
+        + Long id
+        + String content
+        + LocalDateTime date
+        + Integer rating
+        + UserEntity user
+        + ClinicEntity clinic
+        --
+        + getters/setters for all fields
+    }
+
+    class ReviewRequestDTO {
+        + Long id
+        + Long userId
+        + Long clinicId
+        + String content
+        + Integer rating
+        --
+        + getters/setters for all fields
+        + ReviewRequestDTO(ReviewEntity)
+    }
+
+    class ReviewResponseDTO {
+        + Long id
+        + UserResponseDTO user
+        + ClinicDTO clinic
+        + String content
+        + LocalDateTime date
+        + Integer rating
+        --
+        + getters/setters for all fields
+        + ReviewResponseDTO(ReviewEntity)
+        + static fromEntityList(List<ReviewEntity>)
+    }
+
+    interface IReviewService {
+        + List<ReviewResponseDTO> getAllReviews()
+        + ReviewResponseDTO getReviewById(Long)
+        + List<ReviewResponseDTO> getReviewsByClinicId(Long)
+        + ReviewEntity getReviewEntityById(Long)
+        + ReviewResponseDTO updateReview(Long, ReviewRequestDTO)
+        + ReviewResponseDTO saveReview(ReviewRequestDTO)
+        + ReviewResponseDTO deleteReview(Long)
+        + List<ReviewResponseDTO> getLatestThreeReviews()
+    }
+
+    class ReviewService {
+        - ReviewRepository reviewRepository
+        - AuthService authService
+        - IBlockedUserService blockedUserService
+        --
+        + implements all IReviewService methods
+    }
+
+    class ReviewController {
+        - IReviewService reviewService
+        --
+        + getAllReviews()
+        + getReviewsByClinicId(Long)
+        + getReviewByReviewId(Long)
+        + postReview(ReviewRequestDTO)
+        + patchReview(Long, ReviewRequestDTO)
+        + deleteReview(Long)
+        + getLatestThreeReviews()
+    }
+
+    interface ReviewRepository {
+        + Optional<List<ReviewEntity>> findAllByClinicId(Long)
+        + List<ReviewEntity> findTop3ByIdOrderByDesc()
+        + other JpaRepository methods
+    }
+}
+
+' External dependencies (simplified)
+package "user" {
+    class UserEntity {}
+    class UserResponseDTO {}
+}
+
+package "clinic" {
+    class ClinicEntity {}
+    class ClinicDTO {}
+}
+
+package "auth" {
+    class AuthService {}
+}
+
+package "blockedUser" {
+    interface IBlockedUserService {}
+}
+
+' Relationships
+ReviewEntity "1" *-- "1" UserEntity
+ReviewEntity "1" *-- "1" ClinicEntity
+
+ReviewService ..|> IReviewService
+ReviewService --> ReviewRepository
+ReviewService --> AuthService
+ReviewService --> IBlockedUserService
+
+ReviewController --> IReviewService
+
+ReviewResponseDTO --> UserResponseDTO
+ReviewResponseDTO --> ClinicDTO
+
+ReviewRequestDTO <-- ReviewController
+ReviewResponseDTO <-- ReviewController
+ReviewResponseDTO <-- ReviewService
+
+@enduml
+

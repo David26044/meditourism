@@ -1,0 +1,104 @@
+@startuml
+
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "comment" {
+    class CommentEntity {
+        + Long id
+        + String content
+        + LocalDateTime date
+        --
+        + getters/setters
+    }
+
+    class CommentDTO {
+        + Long id
+        + String content
+        + Long fatherId
+        + Long reviewId
+        --
+        + getters/setters
+        + CommentDTO(CommentEntity)
+        + static fromEntityList()
+    }
+
+    interface ICommentService {
+        + getAllComments()
+        + getCommentsByReviewId()
+        + getCommentEntityById()
+        + saveComment()
+        + deleteComment()
+        + updateComment()
+        + getRepliesByCommentId()
+        + getCommentById()
+    }
+
+    class CommentService {
+        - CommentRepository commentRepository
+        - AuthService authService
+        - BlockedUserService blockedUserService
+        --
+        + implements ICommentService
+    }
+
+    class CommentController {
+        - CommentService commentService
+        --
+        + getAllComments()
+        + getCommentsByReviewId()
+        + getRepliesByCommentId()
+        + getCommentById()
+        + saveComment()
+        + updateComment()
+        + deleteComment()
+    }
+
+    interface CommentRepository {
+        + findAllByReviewEntityId()
+        + findAllByFatherCommentEntityId()
+        + other JPA methods
+    }
+}
+
+' External dependencies
+package "user" {
+    class UserEntity {}
+    class UserResponseDTO {}
+}
+
+package "review" {
+    class ReviewEntity {}
+}
+
+package "auth" {
+    class AuthService {}
+}
+
+package "blockedUser" {
+    class BlockedUserService {}
+}
+
+' Relationships
+CommentEntity -- UserEntity
+CommentEntity -- ReviewEntity
+CommentEntity -- CommentEntity
+
+CommentService ..|> ICommentService
+CommentService --> CommentRepository
+CommentService --> AuthService
+CommentService --> BlockedUserService
+
+CommentController --> CommentService
+
+CommentDTO -- UserResponseDTO
+CommentDTO <-- CommentController
+CommentDTO <-- CommentService
+
+@enduml

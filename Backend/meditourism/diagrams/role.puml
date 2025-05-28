@@ -1,0 +1,64 @@
+@startuml
+
+' Configuración general
+skinparam class {
+    BackgroundColor White
+    ArrowColor #0078D7
+    BorderColor #0078D7
+    FontSize 13
+}
+hide circle
+hide empty fields
+
+package "role" {
+    class RoleEntity {
+        + Long id
+        + String name
+        + String description
+        --
+        + getters/setters for all fields
+    }
+
+    interface IRoleService {
+        + RoleEntity getRoleById(Long)
+        + RoleEntity saveRole(RoleEntity)
+        + List<RoleEntity> getAllRoles()
+        + RoleEntity deleteRoleById(Long)
+        + RoleEntity updateRole(RoleEntity)
+    }
+
+    class RoleService {
+        - RoleRepository roleRepository
+        --
+        + implements all IRoleService methods
+        + check for existing roles
+        + handle exceptions
+    }
+
+    class RoleController {
+        - IRoleService roleService
+        --
+        + getRoleById(Long)
+        + getAllRoles()
+        + saveRole(RoleEntity)
+        + deleteRoleById(Long)
+        + updateRole(RoleEntity)
+    }
+
+    interface RoleRepository {
+        + existsByName(String)
+        + other JpaRepository methods
+    }
+}
+
+' Relationships
+RoleService ..|> IRoleService
+RoleService --> RoleRepository
+
+RoleController --> IRoleService
+
+RoleEntity <-- RoleController
+RoleEntity <-- RoleService
+RoleEntity <-- RoleRepository
+
+@enduml
