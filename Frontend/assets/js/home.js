@@ -1,9 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 DOM loaded - Iniciando home.js...');
     // Check authentication
     if (!AuthService.isAuthenticated()) {
+        console.log('❌ Usuario no autenticado, redirigiendo a login');
         window.location.href = 'login.html';
         return;
     }
+    console.log('✅ Usuario autenticado, continuando...');
 
     // Initialize page
     initializePage();
@@ -16,11 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializePage() {
+    console.log('🎯 initializePage() - Inicializando página...');
     // Hide loading overlay
     hideLoading();
     
     // Setup user menu
     setupUserMenu();
+    
+    // Update user display and refresh info
+    if (typeof UserService !== 'undefined') {
+        console.log('✅ UserService disponible, actualizando display...');
+        UserService.updateUserDisplay();
+        UserService.updateUserAvatar();
+        UserService.refreshUserInfo();
+    } else {
+        console.error('❌ UserService no está disponible');
+    }
     
     // Setup mobile navigation
     setupMobileNavigation();
@@ -215,24 +229,49 @@ function handleNavigation(e) {
 }
 
 function loadUserData() {
+    console.log('📊 loadUserData() - Cargando datos del usuario...');
     const user = AuthService.getCurrentUser();
+    console.log('👤 Usuario desde AuthService:', user);
     
     if (user) {
-        // Update user avatar with initials
-        updateUserAvatar(user.name || user.email);
+        console.log('✅ Usuario encontrado:', user);
+        
+        // Update user display through UserService
+        if (typeof UserService !== 'undefined') {
+            console.log('🎨 Actualizando display a través de UserService...');
+            UserService.updateUserDisplay();
+            UserService.updateUserAvatar();
+            UserService.refreshUserInfo();
+        } else {
+            console.error('❌ UserService no disponible en loadUserData');
+        }
+        
+        // Show admin features if user is admin
+        if (AuthService.isAdmin()) {
+            console.log('Usuario admin detectado');
+            showAdminFeatures();
+        }
         
         // Load dental-specific data
         loadUserAppointments();
         loadDentalHistory();
         loadLocationPreferences();
+    } else {
+        console.log('❌ No se encontró usuario en loadUserData');
     }
 }
 
-function updateUserAvatar(name) {
-    const userAvatar = document.getElementById('userAvatar');
-    if (userAvatar && name) {
-        const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-        userAvatar.innerHTML = `<span>${initials}</span>`;
+function showAdminFeatures() {
+    // Add admin-specific functionality
+    const navMenu = document.querySelector('.nav-menu');
+    if (navMenu && !document.querySelector('#adminPanel')) {
+        const adminLink = document.createElement('a');
+        adminLink.href = '#admin';
+        adminLink.className = 'nav-link admin-link';
+        adminLink.id = 'adminPanel';
+        adminLink.innerHTML = '<i class="fas fa-cog"></i> Panel Admin';
+        adminLink.style.color = '#ff4757';
+        navMenu.appendChild(adminLink);
     }
 }
 
@@ -281,6 +320,105 @@ function hideLoading() {
     const loadingOverlay = document.getElementById('loadingOverlay');
     if (loadingOverlay) {
         loadingOverlay.style.display = 'none';
+    }
+}
+
+// Home page functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🏠 Segunda inicialización DOM - home functionality...');
+    initializeHome();
+    setupEventListeners();
+});
+
+function initializeHome() {
+    console.log('🏠 initializeHome() - Inicializando funcionalidad home...');
+    updateUserInterface();
+    setupUserDropdown();
+    
+    // Actualizar información del usuario si está autenticado
+    if (AuthService.isAuthenticated()) {
+        console.log('✅ Usuario autenticado en initializeHome');
+        if (typeof UserService !== 'undefined') {
+            console.log('🎨 UserService disponible, actualizando...');
+            UserService.updateUserDisplay();
+            UserService.updateUserAvatar();
+            UserService.refreshUserInfo();
+        } else {
+            console.error('❌ UserService no disponible en initializeHome');
+        }
+    } else {
+        console.log('❌ Usuario no autenticado, redirigiendo...');
+        // Redirigir a login si no está autenticado
+        window.location.href = 'login.html';
+    }
+}
+
+function updateUserInterface() {
+    const userMenu = document.querySelector('.user-menu');
+    
+    if (AuthService.isAuthenticated()) {
+        if (userMenu) {
+            userMenu.style.display = 'flex';
+        }
+    } else {
+        if (userMenu) {
+            userMenu.style.display = 'none';
+        }
+    }
+}
+
+function setupUserDropdown() {
+    const userInfo = document.querySelector('.user-info');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    const userMenu = document.querySelector('.user-menu');
+    
+    if (!userInfo || !dropdownMenu) return;
+
+    userInfo.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        userMenu.classList.toggle('active');
+    });
+
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (!userMenu.contains(e.target)) {
+            userMenu.classList.remove('active');
+        }
+    });
+
+    // Setup logout button
+    const logoutButton = document.getElementById('logoutBtn');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            AuthService.logout();
+        });
+    }
+
+    // Add admin menu items if user is admin
+    if (AuthService.isAdmin()) {
+        addAdminMenuItems();
+    }
+}
+
+function addAdminMenuItems() {
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    if (dropdownMenu && !document.querySelector('#adminMenuItem')) {
+        const divider = dropdownMenu.querySelector('.dropdown-divider');
+        
+        const adminItem = document.createElement('a');
+        adminItem.href = '#admin-dashboard';
+        adminItem.className = 'dropdown-item';
+        adminItem.id = 'adminMenuItem';
+        adminItem.innerHTML = '<i class="fas fa-shield-alt"></i> Panel de Admin';
+        adminItem.style.color = '#ff4757';
+        
+        if (divider) {
+            dropdownMenu.insertBefore(adminItem, divider);
+        } else {
+            dropdownMenu.appendChild(adminItem);
+        }
     }
 }
 

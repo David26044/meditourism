@@ -6,6 +6,7 @@
     <meta name="description" content="Turismo dental en Colombia - Odontomar, clínica dental especializada">
     <title>Odontomar | Turismo Dental Colombia</title>
     <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/contact.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -20,16 +21,19 @@
                 <a href="#servicios" class="nav-link">Servicios</a>
                 <a href="#especialidades" class="nav-link">Especialidades</a>
                 <a href="#sedes" class="nav-link">Sedes</a>
+                <a href="profile.html" class="nav-link">Mi Perfil</a>
                 <a href="#citas" class="nav-link">Mis Citas</a>
-                <a href="#perfil" class="nav-link">Perfil</a>
             </nav>
             <div class="nav-actions">
                 <div class="user-menu">
-                    <div class="user-avatar" id="userAvatar">
-                        <i class="fas fa-user"></i>
+                    <div class="user-info">
+                        <span id="userName" class="user-name"></span>
+                        <div class="user-avatar" id="userAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
                     </div>
                     <div class="dropdown-menu" id="userDropdown">
-                        <a href="#perfil" class="dropdown-item">
+                        <a href="profile.html" class="dropdown-item">
                             <i class="fas fa-user"></i> Mi Perfil
                         </a>
                         <a href="#configuracion" class="dropdown-item">
@@ -336,6 +340,211 @@
         </div>
     </section>
 
+    <!-- Contact Form Section -->
+    <section class="contact-section" id="contacto" style="background: var(--gray-light);">
+        <div class="container">
+            <div class="contact-header">
+                <h2 class="section-title">
+                    <i class="fas fa-envelope"></i>
+                    Contáctanos
+                </h2>
+                <p class="contact-intro">¿Tienes preguntas sobre nuestros servicios? Envíanos un mensaje y te responderemos pronto.</p>
+            </div>
+
+            <div class="contact-content">
+                <!-- Contact Information -->
+                <div class="contact-info">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>Nuestras Sedes</h3>
+                            <p>Marsella, Chapinero y Lago de los Héroes</p>
+                            <p>Bogotá, Colombia</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>Teléfono</h3>
+                            <p>+57 (1) 234-5678</p>
+                            <p>WhatsApp: +57 300 123 4567</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>Email</h3>
+                            <p>info@odontomar.com</p>
+                            <p>citas@odontomar.com</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h3>Horarios</h3>
+                            <p>Lunes a Viernes: 8:00 AM - 6:00 PM</p>
+                            <p>Sábados: 8:00 AM - 2:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="contact-form-container">
+                    <div class="form-wrapper">
+                        <h3 class="form-title">Envíanos un Mensaje</h3>
+                        
+                        <!-- Messages -->
+                        <div id="formMessage" class="form-message" style="display: none;"></div>
+                        
+                        <form id="contactForm" class="contact-form" novalidate>
+                            <!-- Personal Information -->
+                            <div class="form-group">
+                                <label for="fullName">Nombre Completo *</label>
+                                <input type="text" id="fullName" name="fullName" required>
+                                <div class="error-message" id="fullNameError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required readonly>
+                                <div class="error-message" id="emailError"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Teléfono</label>
+                                <input type="tel" id="phone" name="phone" placeholder="+57 300 123 4567">
+                                <div class="error-message" id="phoneError"></div>
+                            </div>
+
+                            <!-- Treatment Selection -->
+                            <div class="form-group">
+                                <label for="treatmentId">Tratamiento de Interés *</label>
+                                <select id="treatmentId" name="treatmentId" required>
+                                    <option value="">Selecciona un tratamiento</option>
+                                    <!-- Options will be loaded dynamically -->
+                                </select>
+                                <div class="error-message" id="treatmentIdError"></div>
+                            </div>
+
+                            <!-- Inquiry Type -->
+                            <div class="form-group">
+                                <label for="inquiryType">Tipo de Consulta *</label>
+                                <select id="inquiryType" name="inquiryType" required>
+                                    <option value="">Selecciona el tipo de consulta</option>
+                                    <option value="informacion-general">Información General</option>
+                                    <option value="cotizacion">Solicitar Cotización</option>
+                                    <option value="agendar-cita">Agendar Cita</option>
+                                    <option value="segunda-opinion">Segunda Opinión</option>
+                                    <option value="seguimiento">Seguimiento de Tratamiento</option>
+                                    <option value="urgencia">Urgencia Odontológica</option>
+                                </select>
+                                <div class="error-message" id="inquiryTypeError"></div>
+                            </div>
+
+                            <!-- Preferred Clinic -->
+                            <div class="form-group">
+                                <label for="preferredClinic">Sede de Preferencia</label>
+                                <select id="preferredClinic" name="preferredClinic">
+                                    <option value="">Selecciona una sede</option>
+                                    <option value="marsella">Clínica Marsella</option>
+                                    <option value="chapinero">Clínica Chapinero</option>
+                                    <option value="lago-heroes">Clínica Lago de los Héroes</option>
+                                    <option value="cualquiera">Cualquier sede disponible</option>
+                                </select>
+                            </div>
+
+                            <!-- Message -->
+                            <div class="form-group">
+                                <label for="message">Mensaje *</label>
+                                <textarea 
+                                    id="message" 
+                                    name="message" 
+                                    rows="5" 
+                                    required
+                                    placeholder="Describe tu consulta, síntomas, fechas preferidas para la cita, etc. Mientras más detalles proporciones, mejor podremos ayudarte."
+                                    maxlength="500"></textarea>
+                                <div class="error-message" id="messageError"></div>
+                                <div class="char-counter">
+                                    <span id="charCount">0</span>/500 caracteres
+                                </div>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="form-group checkbox-group">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="acceptTerms" name="acceptTerms" required>
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">
+                                        Acepto los <a href="#terms" target="_blank">términos y condiciones</a> 
+                                        y la <a href="#privacy" target="_blank">política de privacidad</a> *
+                                    </span>
+                                </div>
+                                <div class="error-message" id="acceptTermsError"></div>
+                            </div>
+
+                            <!-- Marketing Consent -->
+                            <div class="form-group checkbox-group">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="acceptMarketing" name="acceptMarketing">
+                                    <span class="checkmark"></span>
+                                    <span class="checkbox-text">
+                                        Deseo recibir información sobre promociones y servicios de Odontomar
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="contact-submit-btn" id="submitBtn">
+                                <i class="fas fa-paper-plane"></i>
+                                <span>Enviar Mensaje</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="additional-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h4>Información Segura</h4>
+                        <p>Tus datos están protegidos con encriptación SSL y cumplimos con todas las normativas de privacidad.</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>Respuesta Rápida</h4>
+                        <p>Respondemos a todas las consultas en un máximo de 24 horas durante días hábiles.</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <h4>Atención Especializada</h4>
+                        <p>Nuestro equipo médico te brindará la mejor orientación para tu tratamiento dental.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -386,9 +595,15 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="assets/js/config/api.js"></script>
     <script src="assets/js/services/authService.js"></script>
+    <script src="assets/js/services/userService.js"></script>
+    <script src="assets/js/services/contactService.js"></script>
+    <script src="assets/js/services/treatmentService.js"></script>
+    <script src="assets/js/services/emailService.js"></script>
     <script src="assets/js/utils/ui.js"></script>
     <script src="assets/js/home.js"></script>
+    <script src="assets/js/contact.js"></script>
 </body>
 </html>

@@ -16,10 +16,34 @@ class AuthService {
             const data = await response.json();
             
             if (response.ok) {
-                // Store token and user data
+                // Store token
                 localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user || {}));
-                this.cachedUser = data.user;
+                
+                // Get complete user info including role
+                const userResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${data.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
+                    localStorage.setItem('user', JSON.stringify(userData));
+                    this.cachedUser = userData;
+                    
+                    console.log('Usuario logueado:', userData); // Debug
+                    
+                    // Update user display with admin badge if needed
+                    setTimeout(() => {
+                        if (typeof UserService !== 'undefined') {
+                            UserService.updateUserDisplay();
+                            UserService.updateUserAvatar();
+                        }
+                    }, 100);
+                }
+                
                 return { 
                     success: true, 
                     data,
@@ -172,6 +196,14 @@ class AuthService {
         localStorage.removeItem('user');
         localStorage.removeItem('rememberedEmail');
         localStorage.removeItem('rememberUser');
+        this.cachedUser = null;
+        
+        // Remove admin badge before redirect
+        const adminBadge = document.getElementById('adminBadge');
+        if (adminBadge) {
+            adminBadge.remove();
+        }
+        
         window.location.href = 'login.html';
     }
 
@@ -186,5 +218,14 @@ class AuthService {
 
     static isAuthenticated() {
         return !!this.getToken();
+    }
+
+    static isAdmin() {
+        if (typeof UserService !== 'undefined') {
+            return UserService.isAdmin();
+        }
+        
+        const user = this.getCurrentUser();
+        return user && user.roleEntity && user.roleEntity.name === 'ROLE_ADMIN';
     }
 }

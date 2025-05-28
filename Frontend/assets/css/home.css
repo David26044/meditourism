@@ -114,38 +114,57 @@ body {
 
 .user-menu {
     position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.user-info:hover {
+    background-color: rgba(44, 90, 160, 0.1);
+}
+
+.user-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 14px;
+    display: none; /* Initially hidden, shown by JS */
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--white);
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.user-avatar:hover {
-    background: var(--secondary-color);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
 }
 
 .dropdown-menu {
     position: absolute;
     top: 100%;
     right: 0;
-    background: var(--white);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-medium);
-    min-width: 200px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-    transition: var(--transition);
-    z-index: 1001;
+    transition: all 0.3s ease;
+    z-index: 1000;
 }
 
 .user-menu.active .dropdown-menu {
@@ -157,14 +176,16 @@ body {
 .dropdown-item {
     display: flex;
     align-items: center;
+    gap: 8px;
     padding: 12px 16px;
     color: var(--text-primary);
     text-decoration: none;
-    transition: var(--transition);
+    transition: background-color 0.2s ease;
 }
 
 .dropdown-item:hover {
-    background: var(--gray-light);
+    background-color: var(--gray-light);
+    color: var(--primary-color);
 }
 
 .dropdown-item i {
@@ -174,9 +195,8 @@ body {
 
 .dropdown-divider {
     border: none;
-    height: 1px;
-    background: var(--gray-light);
-    margin: 5px 0;
+    border-top: 1px solid #e9ecef;
+    margin: 8px 0;
 }
 
 .mobile-toggle {
