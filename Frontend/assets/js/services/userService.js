@@ -169,4 +169,39 @@ class UserService {
         }
         return userInfo;
     }
+
+    static async isUserBlocked(userId = null) {
+        console.log('🔍 UserService.isUserBlocked() - Verificando si usuario está bloqueado...');
+        try {
+            const targetUserId = userId || this.getCurrentUser()?.id;
+            if (!targetUserId) return false;
+
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.BLOCKED_USERS);
+            if (response.ok) {
+                const blockedUsers = await response.json();
+                const isBlocked = blockedUsers.some(blocked => blocked.user.id === targetUserId);
+                console.log('✅ Estado de bloqueo verificado:', isBlocked);
+                return isBlocked;
+            }
+            return false;
+        } catch (error) {
+            console.error('💥 Error en UserService.isUserBlocked:', error);
+            return false;
+        }
+    }
+
+    static async validateUserCanPerformAction(actionName) {
+        console.log(`🔍 UserService.validateUserCanPerformAction() - Validando acción: ${actionName}`);
+        
+        if (!this.isAuthenticated()) {
+            throw new Error('Debes iniciar sesión para realizar esta acción');
+        }
+
+        const isBlocked = await this.isUserBlocked();
+        if (isBlocked) {
+            throw new Error('Tu cuenta ha sido suspendida. No puedes realizar esta acción.');
+        }
+
+        return true;
+    }
 }

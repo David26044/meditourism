@@ -226,4 +226,19 @@ public class UserService implements IUserService {
         userRepository.deleteById(id);
         return new UserResponseDTO(user);
     }
+
+    @Override
+    public UserResponseDTO deleteNormalUser(Long id, Authentication authenticate) {
+        UserEntity authenticatedUser = ((UserEntity) authenticate.getPrincipal());
+
+        if (!authenticatedUser.getId().equals(id)) {
+            throw new UnauthorizedAccessException("No tienes permiso para eliminar este usuario");
+        }
+
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No existe el usuario con ID: " + id));
+
+        userRepository.deleteById(id);
+        return new UserResponseDTO(user);
+    }
 }

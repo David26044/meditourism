@@ -285,8 +285,9 @@ function displayUsersTable(users) {
             </thead>
             <tbody>
                 ${users.map(user => {
-                    const isBlocked = blockedUsers.some(blocked => blocked.blockedUser.id === user.id);
+                    const isBlocked = blockedUsers.some(blocked => blocked.user.id === user.id);
                     const isCurrentUser = user.id === currentUser.id;
+                    const isAdmin = user.role?.name === 'ADMIN';
                     
                     return `
                         <tr>
@@ -294,8 +295,8 @@ function displayUsersTable(users) {
                             <td>${user.name}</td>
                             <td>${user.email}</td>
                             <td>
-                                <span class="role-badge ${user.role?.name === 'ADMIN' ? 'admin' : 'user'}">
-                                    ${user.role?.name === 'ADMIN' ? 'Admin' : 'Usuario'}
+                                <span class="role-badge ${isAdmin ? 'admin' : 'user'}">
+                                    ${isAdmin ? 'Admin' : 'Usuario'}
                                 </span>
                             </td>
                             <td>
@@ -409,12 +410,11 @@ async function loadTreatmentsData() {
     try {
         treatmentsContainer.innerHTML = '<p class="loading">Cargando tratamientos...</p>';
         
-        const response = await apiRequest(API_CONFIG.ENDPOINTS.TREATMENTS);
-        if (response.ok) {
-            const treatments = await response.json();
-            displayTreatmentsTable(treatments);
+        const result = await TreatmentService.getAllTreatments();
+        if (result.success && result.data) {
+            displayTreatmentsTable(result.data);
         } else {
-            throw new Error('Error al cargar tratamientos');
+            throw new Error(result.message || 'Error al cargar tratamientos');
         }
     } catch (error) {
         console.error('Error loading treatments:', error);
@@ -557,7 +557,7 @@ async function viewUser(userId) {
     const user = allUsers.find(u => u.id === userId);
     if (!user) return;
     
-    const blockedInfo = blockedUsers.find(blocked => blocked.blockedUser.id === userId);
+    const blockedInfo = blockedUsers.find(blocked => blocked.user.id === userId);
     
     showModal(`
         <h3>Detalles del Usuario</h3>
@@ -571,7 +571,7 @@ async function viewUser(userId) {
             ${blockedInfo ? `
                 <p><strong>Estado:</strong> <span class="status-blocked">BLOQUEADO</span></p>
                 <p><strong>Razón del bloqueo:</strong> ${blockedInfo.reason}</p>
-                <p><strong>Fecha de bloqueo:</strong> ${new Date(blockedInfo.blockedDate).toLocaleString()}</p>
+                <p><strong>Fecha de bloqueo:</strong> ${new Date(blockedInfo.date).toLocaleString()}</p>
             ` : `<p><strong>Estado:</strong> <span class="status-active">ACTIVO</span></p>`}
         </div>
     `);
@@ -619,7 +619,7 @@ async function unblockUser(userId) {
     
     if (confirm(`¿Estás seguro de desbloquear a ${user.name}?`)) {
         try {
-            const blockedUser = blockedUsers.find(b => b.blockedUser.id === userId);
+            const blockedUser = blockedUsers.find(b => b.user.id === userId);
             if (blockedUser) {
                 await AdminService.unblockUser(blockedUser.id);
                 showMessage('Usuario desbloqueado exitosamente', 'success');
@@ -629,6 +629,42 @@ async function unblockUser(userId) {
         } catch (error) {
             showMessage('Error al desbloquear usuario: ' + error.message, 'error');
         }
+    }
+}
+
+async function deleteNormalUser(userId) {
+    const user = allUsers.find(u => u.id === userId);
+    if (!user) return;
+    
+    // Don't allow deleting admin users
+    if (user.role?.name === 'ADMIN') {
+        showMessage('No se puede eliminar usuarios administradores', 'error');
+        return;
+    }
+    
+    if (confirm(`¿Estás seguro de eliminar permanentemente al usuario ${user.name}? Esta acción no se puede deshacer.`)) {
+        try {
+            await AdminService.deleteNormalUser(userId);
+            showMessage('Usuario eliminado exitosamente', 'success');
+            await loadUsersData();
+            await loadInitialData();
+        } catch (error) {
+            showMessage('Error al eliminar usuario: ' + error.message, 'error');
+        }
+    }
+}
+
+// Global function to check if current user is blocked
+async function isCurrentUserBlocked() {
+    if (!currentUser) return false;
+    
+    try {
+        // Check if current user is in blocked users list
+        const blockedUsersList = await AdminService.getAllBlockedUsers();
+        return blockedUsersList.some(blocked => blocked.user.id === currentUser.id);
+    } catch (error) {
+        console.error('Error checking blocked status:', error);
+        return false;
     }
 }
 
@@ -681,19 +717,19 @@ async function deleteContactForm(formId) {
 // Treatment functions
 async function viewTreatment(treatmentId) {
     try {
-        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.TREATMENTS}/${treatmentId}`);
-        if (response.ok) {
-            const treatment = await response.json();
+        const result = await TreatmentService.getTreatmentById(treatmentId);
+        if (result.success && result.data) {
+            const treatment = result.data;
             showModal(`
                 <h3>Detalles del Tratamiento</h3>
                 <div class="treatment-details">
                     <p><strong>ID:</strong> ${treatment.id}</p>
                     <p><strong>Nombre:</strong> ${treatment.name}</p>
                     <p><strong>Descripción:</strong> ${treatment.description || 'Sin descripción'}</p>
-                    <p><strong>Duración:</strong> ${treatment.duration || 'No especificada'}</p>
-                    <p><strong>Precio base:</strong> $${treatment.basePrice?.toLocaleString() || 'No especificado'}</p>
                 </div>
             `);
+        } else {
+            showMessage('Error al cargar detalles del tratamiento: ' + result.message, 'error');
         }
     } catch (error) {
         showMessage('Error al cargar detalles del tratamiento', 'error');
@@ -701,62 +737,76 @@ async function viewTreatment(treatmentId) {
 }
 
 async function editTreatment(treatmentId) {
-    // This would open an edit modal - for now show a simple prompt
-    showMessage('Funcionalidad de edición en desarrollo', 'info');
+    try {
+        const result = await TreatmentService.getTreatmentById(treatmentId);
+        if (!result.success || !result.data) {
+            showMessage('Error al cargar tratamiento: ' + result.message, 'error');
+            return;
+        }
+
+        const treatment = result.data;
+        showModal(`
+            <h3>Editar Tratamiento</h3>
+            <form id="editTreatmentForm" class="admin-form">
+                <div class="form-group">
+                    <label for="editTreatmentName">Nombre:</label>
+                    <input type="text" id="editTreatmentName" value="${treatment.name || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label for="editTreatmentDescription">Descripción:</label>
+                    <textarea id="editTreatmentDescription" rows="4">${treatment.description || ''}</textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="admin-btn primary">Actualizar Tratamiento</button>
+                    <button type="button" class="admin-btn secondary" onclick="closeModal()">Cancelar</button>
+                </div>
+            </form>
+        `);
+        
+        document.getElementById('editTreatmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const treatmentData = {
+                name: document.getElementById('editTreatmentName').value.trim(),
+                description: document.getElementById('editTreatmentDescription').value.trim()
+            };
+
+            // Remove empty fields to match backend PATCH behavior
+            if (!treatmentData.description) {
+                delete treatmentData.description;
+            }
+            
+            try {
+                const updateResult = await TreatmentService.updateTreatment(treatmentId, treatmentData);
+                
+                if (updateResult.success) {
+                    showMessage('Tratamiento actualizado exitosamente', 'success');
+                    closeModal();
+                    await loadTreatmentsData();
+                } else {
+                    showMessage('Error al actualizar tratamiento: ' + updateResult.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error al actualizar tratamiento', 'error');
+            }
+        });
+    } catch (error) {
+        showMessage('Error al cargar tratamiento para edición', 'error');
+    }
 }
 
 async function deleteTreatment(treatmentId) {
     if (confirm('¿Estás seguro de eliminar este tratamiento?')) {
         try {
-            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.TREATMENTS}/${treatmentId}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
+            const result = await TreatmentService.deleteTreatment(treatmentId);
+            if (result.success) {
                 showMessage('Tratamiento eliminado exitosamente', 'success');
                 await loadTreatmentsData();
+            } else {
+                showMessage('Error al eliminar tratamiento: ' + result.message, 'error');
             }
         } catch (error) {
             showMessage('Error al eliminar tratamiento', 'error');
-        }
-    }
-}
-
-// Review functions
-async function viewReview(reviewId) {
-    try {
-        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`);
-        if (response.ok) {
-            const review = await response.json();
-            showModal(`
-                <h3>Detalles de la Review</h3>
-                <div class="review-details">
-                    <p><strong>ID:</strong> ${review.id}</p>
-                    <p><strong>Usuario:</strong> ${review.user?.name || 'Usuario eliminado'}</p>
-                    <p><strong>Clínica:</strong> ${review.clinic?.name || 'N/A'}</p>
-                    <p><strong>Calificación:</strong> ${generateStarRating(review.rating)} (${review.rating || 0}/5)</p>
-                    <p><strong>Fecha:</strong> ${new Date(review.date).toLocaleString()}</p>
-                    <p><strong>Contenido:</strong></p>
-                    <div class="review-content">${review.content || 'Sin contenido'}</div>
-                </div>
-            `);
-        }
-    } catch (error) {
-        showMessage('Error al cargar detalles de la review', 'error');
-    }
-}
-
-async function deleteReview(reviewId) {
-    if (confirm('¿Estás seguro de eliminar esta review?')) {
-        try {
-            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
-                showMessage('Review eliminada exitosamente', 'success');
-                await loadReviewsData();
-            }
-        } catch (error) {
-            showMessage('Error al eliminar review', 'error');
         }
     }
 }
@@ -804,6 +854,58 @@ function closeModal() {
     }
 }
 
+// Review functions
+async function viewReview(reviewId) {
+    try {
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`);
+        if (response.ok) {
+            const review = await response.json();
+            showModal(`
+                <h3>Detalles de la Reseña</h3>
+                <div class="review-details">
+                    <p><strong>ID:</strong> ${review.id}</p>
+                    <p><strong>Usuario:</strong> ${review.user?.name || 'Usuario eliminado'}</p>
+                    <p><strong>Clínica:</strong> ${review.clinic?.name || 'N/A'}</p>
+                    <p><strong>Calificación:</strong> ${generateStarRating(review.rating)} (${review.rating || 0})</p>
+                    <p><strong>Fecha:</strong> ${new Date(review.date).toLocaleString()}</p>
+                    <p><strong>Contenido:</strong></p>
+                    <div class="review-content">${review.content || 'Sin contenido'}</div>
+                </div>
+            `);
+        }
+    } catch (error) {
+        showMessage('Error al cargar detalles de la reseña', 'error');
+    }
+}
+
+async function deleteReview(reviewId) {
+    if (confirm('¿Estás seguro de eliminar esta reseña?')) {
+        try {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                showMessage('Reseña eliminada exitosamente', 'success');
+                await loadReviewsData();
+            }
+        } catch (error) {
+            showMessage('Error al eliminar reseña', 'error');
+        }
+    }
+}
+
+// Asegúrate de que TreatmentService esté definido antes de usarlo
+// Si usas módulos, descomenta la siguiente línea y ajusta la ruta según corresponda:
+// import { TreatmentService } from './treatmentService.js';
+
+// Utility functions
+function showAdminLoading(show) {
+    const loader = document.getElementById('admin-loading');
+    if (loader) {
+        loader.style.display = show ? 'flex' : 'none';
+    }
+}
+
 function showMessage(message, type = 'info') {
     const messageDiv = document.createElement('div');
     messageDiv.className = `admin-message ${type}`;
@@ -816,73 +918,10 @@ function showMessage(message, type = 'info') {
     }, 3000);
 }
 
-function showAdminLoading(show) {
-    const loadingElement = document.getElementById('admin-loading');
-    if (loadingElement) {
-        loadingElement.style.display = show ? 'flex' : 'none';
-    }
-}
-
-function handleAdminLogout() {
+// Logout function
+function adminLogout() {
     if (confirm('¿Estás seguro de cerrar sesión?')) {
         AuthService.logout();
         window.location.href = 'login.html';
     }
-}
-
-// Add treatment modal function
-function showAddTreatmentModal() {
-    showModal(`
-        <h3>Agregar Nuevo Tratamiento</h3>
-        <form id="addTreatmentForm" class="admin-form">
-            <div class="form-group">
-                <label for="treatmentName">Nombre:</label>
-                <input type="text" id="treatmentName" required>
-            </div>
-            <div class="form-group">
-                <label for="treatmentDescription">Descripción:</label>
-                <textarea id="treatmentDescription" rows="4"></textarea>
-            </div>
-            <div class="form-group">
-                <label for="treatmentDuration">Duración:</label>
-                <input type="text" id="treatmentDuration">
-            </div>
-            <div class="form-group">
-                <label for="treatmentPrice">Precio base:</label>
-                <input type="number" id="treatmentPrice" min="0">
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="admin-btn primary">Crear Tratamiento</button>
-                <button type="button" class="admin-btn secondary" onclick="closeModal()">Cancelar</button>
-            </div>
-        </form>
-    `);
-    
-    document.getElementById('addTreatmentForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const treatmentData = {
-            name: document.getElementById('treatmentName').value,
-            description: document.getElementById('treatmentDescription').value,
-            duration: document.getElementById('treatmentDuration').value,
-            basePrice: document.getElementById('treatmentPrice').value
-        };
-        
-        try {
-            const response = await apiRequest(API_CONFIG.ENDPOINTS.TREATMENTS, {
-                method: 'POST',
-                body: JSON.stringify(treatmentData)
-            });
-            
-            if (response.ok) {
-                showMessage('Tratamiento creado exitosamente', 'success');
-                closeModal();
-                await loadTreatmentsData();
-            } else {
-                showMessage('Error al crear tratamiento', 'error');
-            }
-        } catch (error) {
-            showMessage('Error al crear tratamiento', 'error');
-        }
-    });
 }

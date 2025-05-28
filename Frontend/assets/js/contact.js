@@ -184,6 +184,11 @@ async function handleContactFormSubmit(e) {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         
+        // Validate user can perform this action (check if blocked)
+        if (UserService.isAuthenticated()) {
+            await UserService.validateUserCanPerformAction('enviar consulta');
+        }
+
         // Obtener datos del formulario
         const formData = getFormData();
         console.log('📝 Datos del formulario obtenidos:', formData);
@@ -228,6 +233,8 @@ async function handleContactFormSubmit(e) {
         let errorMessage = 'Error de conexión. Intenta nuevamente.';
         if (error.message.includes('campos requeridos')) {
             errorMessage = 'Por favor, completa todos los campos requeridos.';
+        } else if (error.message.includes('suspendida')) {
+            errorMessage = 'Tu cuenta ha sido suspendida. No puedes enviar consultas en este momento.';
         }
         
         showMessage(errorMessage, 'error');
