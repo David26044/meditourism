@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Odontomar</title>
+    <link rel="stylesheet" href="assets/css/home.css">
+    <link rel="stylesheet" href="assets/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-tooth"></i>
+                <span>Odontomar</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="home.html" class="nav-link">
+                    <i class="fas fa-home"></i> Inicio
+                </a>
+                <a href="#contactos" class="nav-link">
+                    <i class="fas fa-envelope"></i> Mis Consultas
+                </a>
+                <a href="#configuracion" class="nav-link">
+                    <i class="fas fa-cog"></i> Configuración
+                </a>
+            </nav>
+            <div class="nav-actions">
+                <div class="user-menu">
+                    <div class="user-info">
+                        <span id="userName" class="user-name"></span>
+                        <div class="user-avatar" id="userAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a href="#perfil" class="dropdown-item active">
+                            <i class="fas fa-user"></i> Mi Perfil
+                        </a>
+                        <a href="home.html" class="dropdown-item">
+                            <i class="fas fa-home"></i> Inicio
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a href="#" class="dropdown-item" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Content -->
+    <main class="profile-main">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="header-content">
+                    <h1><i class="fas fa-user-circle"></i> Mi Perfil</h1>
+                    <p>Gestiona tu información personal y configuración de cuenta</p>
+                </div>
+            </div>
+
+            <!-- Profile Tabs -->
+            <div class="profile-tabs">
+                <button class="tab-button active" data-tab="info">
+                    <i class="fas fa-user"></i> Información Personal
+                </button>
+                <button class="tab-button" data-tab="contact-forms">
+                    <i class="fas fa-envelope"></i> Mis Consultas
+                </button>
+                <button class="tab-button" data-tab="security">
+                    <i class="fas fa-shield-alt"></i> Seguridad
+                </button>
+                <button class="tab-button admin-only" data-tab="admin" style="display: none;">
+                    <i class="fas fa-crown"></i> Panel Admin
+                </button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-contents">
+                <!-- Personal Information Tab -->
+                <div class="tab-content active" id="info-tab">
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-user-edit"></i> Información Personal</h2>
+                            <button class="edit-btn" id="editInfoBtn">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </div>
+
+                        <div class="profile-card">
+                            <div class="profile-avatar-section">
+                                <div class="profile-avatar-large" id="profileAvatarLarge">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="profile-role-badge" id="profileRoleBadge"></div>
+                            </div>
+
+                            <div class="profile-info">
+                                <!-- View Mode -->
+                                <div class="info-view" id="infoView">
+                                    <div class="info-item">
+                                        <label>Nombre Completo:</label>
+                                        <span id="displayName">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Email:</label>
+                                        <span id="displayEmail">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Estado de Verificación:</label>
+                                        <span id="displayVerified">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Rol:</label>
+                                        <span id="displayRole">-</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <label>Miembro desde:</label>
+                                        <span id="displayMemberSince">-</span>
+                                    </div>
+                                </div>
+
+                                <!-- Edit Mode -->
+                                <div class="info-edit" id="infoEdit" style="display: none;">
+                                    <form id="updateProfileForm">
+                                        <div class="form-group">
+                                            <label for="editName">Nombre Completo *</label>
+                                            <input type="text" id="editName" name="name" required>
+                                            <div class="error-message" id="nameError"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="editEmail">Email *</label>
+                                            <input type="email" id="editEmail" name="email" required>
+                                            <div class="error-message" id="emailError"></div>
+                                        </div>
+                                        <div class="form-actions">
+                                            <button type="submit" class="btn-primary" id="saveInfoBtn">
+                                                <i class="fas fa-save"></i> Guardar Cambios
+                                            </button>
+                                            <button type="button" class="btn-secondary" id="cancelEditBtn">
+                                                <i class="fas fa-times"></i> Cancelar
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Forms Tab -->
+                <div class="tab-content" id="contact-forms-tab">
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-envelope"></i> Mis Consultas</h2>
+                            <a href="home.html#contacto" class="btn-primary">
+                                <i class="fas fa-plus"></i> Nueva Consulta
+                            </a>
+                        </div>
+
+                        <div class="contact-forms-container">
+                            <div id="contactFormsLoading" class="loading-state">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                <p>Cargando consultas...</p>
+                            </div>
+                            <div id="contactFormsList" class="contact-forms-list"></div>
+                            <div id="noContactForms" class="empty-state" style="display: none;">
+                                <i class="fas fa-envelope-open"></i>
+                                <h3>No tienes consultas</h3>
+                                <p>¿Tienes alguna pregunta? Envía tu primera consulta.</p>
+                                <a href="home.html#contacto" class="btn-primary">
+                                    <i class="fas fa-plus"></i> Enviar Consulta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Tab -->
+                <div class="tab-content" id="security-tab">
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-shield-alt"></i> Seguridad de la Cuenta</h2>
+                        </div>
+
+                        <div class="security-options">
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h3><i class="fas fa-key"></i> Cambiar Contraseña</h3>
+                                    <p>Actualiza tu contraseña por una más segura</p>
+                                </div>
+                                <button class="btn-secondary" id="changePasswordBtn">
+                                    <i class="fas fa-edit"></i> Cambiar
+                                </button>
+                            </div>
+
+                            <div class="security-item">
+                                <div class="security-info">
+                                    <h3><i class="fas fa-envelope-check"></i> Verificación de Email</h3>
+                                    <p id="verificationStatus">Tu email está verificado</p>
+                                </div>
+                                <button class="btn-secondary" id="resendVerificationBtn" style="display: none;">
+                                    <i class="fas fa-paper-plane"></i> Reenviar
+                                </button>
+                            </div>
+
+                            <div class="security-item danger-zone">
+                                <div class="security-info">
+                                    <h3><i class="fas fa-trash"></i> Eliminar Cuenta</h3>
+                                    <p>Esta acción no se puede deshacer</p>
+                                </div>
+                                <button class="btn-danger" id="deleteAccountBtn">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Panel Tab -->
+                <div class="tab-content admin-only" id="admin-tab" style="display: none;">
+                    <div class="profile-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-crown"></i> Panel de Administración</h2>
+                        </div>
+
+                        <div class="admin-dashboard">
+                            <div class="admin-stats">
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h3 id="totalUsers">-</h3>
+                                        <p>Usuarios Totales</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h3 id="totalContactForms">-</h3>
+                                        <p>Consultas Recibidas</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="stat-info">
+                                        <h3 id="totalReviews">-</h3>
+                                        <p>Reseñas Totales</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="admin-actions">
+                                <div class="action-group">
+                                    <h3>Gestión de Usuarios</h3>
+                                    <button class="btn-primary" id="viewAllUsersBtn">
+                                        <i class="fas fa-users"></i> Ver Todos los Usuarios
+                                    </button>
+                                </div>
+                                <div class="action-group">
+                                    <h3>Gestión de Consultas</h3>
+                                    <button class="btn-primary" id="viewAllContactFormsBtn">
+                                        <i class="fas fa-envelope"></i> Ver Todas las Consultas
+                                    </button>
+                                </div>
+                                <div class="action-group">
+                                    <h3>Gestión de Contenido</h3>
+                                    <button class="btn-primary" id="manageTreatmentsBtn">
+                                        <i class="fas fa-medical"></i> Gestionar Tratamientos
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Cambiar Contraseña</h3>
+                <button class="modal-close" id="closePasswordModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Se enviará un enlace de restablecimiento a tu email registrado.</p>
+                <div class="modal-actions">
+                    <button class="btn-primary" id="sendResetEmailBtn">
+                        <i class="fas fa-paper-plane"></i> Enviar Email
+                    </button>
+                    <button class="btn-secondary" id="cancelPasswordChangeBtn">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-tooth"></i>
+            <p>Cargando...</p>
+        </div>
+    </div>
+
+    <!-- Message Container -->
+    <div id="messageContainer" class="message-container"></div>
+
+    <!-- Scripts -->
+    <script src="assets/js/config/api.js"></script>
+    <script src="assets/js/services/authService.js"></script>
+    <script src="assets/js/services/userService.js"></script>
+    <script src="assets/js/services/contactService.js"></script>
+    <script src="assets/js/services/treatmentService.js"></script>
+    <script src="assets/js/utils/ui.js"></script>
+    <script src="assets/js/profile.js"></script>
+</body>
+</html>
