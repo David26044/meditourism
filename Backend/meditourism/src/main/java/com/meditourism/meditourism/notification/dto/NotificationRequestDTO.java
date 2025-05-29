@@ -16,8 +16,9 @@ public class NotificationRequestDTO {
     public NotificationRequestDTO() {
 
     }
-    public NotificationRequestDTO(String content, Long userId) {
+    public NotificationRequestDTO(String content, String title, Long userId) {
         this.content = content;
+        this.title = title;
         this.userId = userId;
     }
 

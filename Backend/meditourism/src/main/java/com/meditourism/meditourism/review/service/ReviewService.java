@@ -1,7 +1,6 @@
 package com.meditourism.meditourism.review.service;
 
 import com.meditourism.meditourism.auth.service.AuthService;
-import com.meditourism.meditourism.blockedUser.service.BlockedUserService;
 import com.meditourism.meditourism.blockedUser.service.IBlockedUserService;
 import com.meditourism.meditourism.clinic.entity.ClinicEntity;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
@@ -53,6 +52,11 @@ public class ReviewService implements IReviewService {
     public List<ReviewResponseDTO> getReviewsByClinicId(Long id) {
         return ReviewResponseDTO.fromEntityList(reviewRepository.findAllByClinicId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No hay reseñas asociadas a la clinica con ID: " + id)));
+    }
+
+    @Override
+    public List<ReviewResponseDTO> getReviewsByUserId(Long id){
+        return ReviewResponseDTO.fromEntityList(reviewRepository.findAllByUserId(id));
     }
 
     @Override
