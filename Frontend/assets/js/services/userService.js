@@ -12,7 +12,7 @@ class UserService {
                 return null;
             }
 
-            console.log('🌐 Haciendo request a:', `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`);
+            console.log('🌐 Haciendo request a:', API_CONFIG.ENDPOINTS.USER_ME);
             const response = await apiRequest(API_CONFIG.ENDPOINTS.USER_ME, {
                 method: 'GET'
             });
@@ -69,12 +69,8 @@ class UserService {
         if (!token) return null;
 
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.USER_ME, {
+                method: 'GET'
             });
 
             if (response.ok) {

@@ -374,7 +374,7 @@ async function saveCroppedAvatar() {
         formData.append('avatar', blob, 'avatar.jpg');
         formData.append('userId', currentUser.id);
         
-        // Upload avatar
+        // Upload avatar - usando apiRequest para consistencia
         const response = await fetch(`${API_CONFIG.BASE_URL}/upload/avatar`, {
             method: 'POST',
             headers: {

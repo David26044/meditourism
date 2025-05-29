@@ -5,11 +5,8 @@ class AuthService {
 
     static async login(email, password) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.LOGIN}`, {
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.LOGIN, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify({ email, password })
             });
 
@@ -20,12 +17,8 @@ class AuthService {
                 localStorage.setItem('token', data.token);
                 
                 // Get complete user info including role
-                const userResponse = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${data.token}`,
-                        'Content-Type': 'application/json'
-                    }
+                const userResponse = await apiRequest(API_CONFIG.ENDPOINTS.USER_ME, {
+                    method: 'GET'
                 });
                 
                 if (userResponse.ok) {
@@ -66,11 +59,8 @@ class AuthService {
 
     static async register(username, email, password) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.REGISTER}`, {
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.REGISTER, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify({ 
                     name: username, 
                     email, 
@@ -104,12 +94,8 @@ class AuthService {
     static async forgotPassword(email) {
         try {
             // Usar query parameter como espera el backend
-            const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.FORGOT_PASSWORD}?email=${encodeURIComponent(email)}`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.FORGOT_PASSWORD}?email=${encodeURIComponent(email)}`, {
+                method: 'POST'
             });
 
             if (response.ok) {
@@ -138,11 +124,8 @@ class AuthService {
 
     static async resetPassword(token, newPassword) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.RESET_PASSWORD}?token=${token}`, {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.RESET_PASSWORD}?token=${token}`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify({ newPassword: newPassword })
             });
 
@@ -167,12 +150,8 @@ class AuthService {
         const token = localStorage.getItem('token'); // Changed from 'authToken' to 'token'
         if (token) {
             try {
-                const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`, // Changed from 'authToken' to 'token'
-                        'Content-Type': 'application/json'
-                    }
+                const response = await apiRequest(API_CONFIG.ENDPOINTS.USER_ME, {
+                    method: 'GET'
                 });
 
                 if (response.ok) {
