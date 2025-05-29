@@ -8,6 +8,7 @@ let currentUser = null;
 let allUsers = [];
 let allRoles = [];
 let blockedUsers = [];
+let dashboardCharts = {}; // Store chart instances
 
 async function initializeAdminPanel() {
     console.log('🎯 Initializing admin panel...');
@@ -140,7 +141,7 @@ async function loadDashboardData() {
     console.log('📊 Loading dashboard data...');
     
     try {
-        // Load stats
+        // Load basic stats
         await Promise.all([
             loadUsersCount(),
             loadContactFormsCount(),
@@ -148,12 +149,256 @@ async function loadDashboardData() {
             loadReviewsCount()
         ]);
         
+        // Load analytics data
+        await loadDashboardAnalytics();
+        
         // Load recent activity
         await loadRecentActivity();
         
     } catch (error) {
         console.error('Error loading dashboard data:', error);
     }
+}
+
+async function loadDashboardAnalytics() {
+    try {
+        console.log('📈 Loading dashboard analytics...');
+        const analytics = await AdminService.getDashboardAnalytics();
+        
+        // Update detailed stats
+        updateDetailedStats(analytics);
+        
+        // Update trends in stat cards
+        updateStatTrends(analytics);
+        
+        // Create charts
+        createDashboardCharts(analytics);
+        
+        console.log('✅ Dashboard analytics loaded successfully');
+    } catch (error) {
+        console.error('Error loading dashboard analytics:', error);
+        showMessage('Error al cargar análisis del dashboard', 'error');
+    }
+}
+
+function updateDetailedStats(analytics) {
+    // User analytics
+    document.getElementById('verified-users').textContent = analytics.users.verified;
+    document.getElementById('blocked-users').textContent = blockedUsers.length;
+    document.getElementById('admin-users').textContent = analytics.users.admins;
+    document.getElementById('new-users-week').textContent = analytics.users.newUsersWeek;
+    document.getElementById('last-user-date').textContent = analytics.users.lastUserDate;
+
+    // Form analytics
+    document.getElementById('forms-today').textContent = analytics.forms.formsToday;
+    document.getElementById('forms-week').textContent = analytics.forms.formsWeek;
+    document.getElementById('most-common-inquiry').textContent = analytics.forms.mostCommonInquiry;
+    document.getElementById('most-consulted-treatment').textContent = analytics.forms.mostConsultedTreatment;
+    document.getElementById('last-form-date').textContent = analytics.forms.lastFormDate;
+
+    // Treatment analytics (will be updated when treatments are loaded)
+    document.getElementById('active-treatments').textContent = analytics.forms.total > 0 ? 'Calculando...' : '0';
+
+    // Review analytics
+    document.getElementById('avg-rating').textContent = analytics.reviews.avgRating;
+    document.getElementById('five-star-reviews').textContent = analytics.reviews.fiveStarReviews;
+    document.getElementById('one-star-reviews').textContent = analytics.reviews.oneStarReviews;
+    document.getElementById('reviews-week').textContent = analytics.reviews.reviewsWeek;
+    document.getElementById('last-review-date').textContent = analytics.reviews.lastReviewDate;
+}
+
+function updateStatTrends(analytics) {
+    // Update user trend
+    const usersTrend = document.getElementById('users-trend');
+    if (usersTrend) {
+        const growth = analytics.users.monthlyGrowth;
+        usersTrend.textContent = `+${growth}% este mes`;
+        usersTrend.className = `stat-trend ${growth > 0 ? 'positive' : growth < 0 ? 'negative' : 'neutral'}`;
+    }
+
+    // Update forms trend
+    const formsTrend = document.getElementById('forms-trend');
+    if (formsTrend) {
+        const growth = analytics.forms.monthlyGrowth;
+        formsTrend.textContent = `+${growth}% este mes`;
+        formsTrend.className = `stat-trend ${growth > 0 ? 'positive' : growth < 0 ? 'negative' : 'neutral'}`;
+    }
+
+    // Update reviews trend
+    const reviewsTrend = document.getElementById('reviews-trend');
+    if (reviewsTrend) {
+        reviewsTrend.textContent = `Promedio: ${analytics.reviews.avgRating}`;
+        reviewsTrend.className = 'stat-trend neutral';
+    }
+}
+
+function createDashboardCharts(analytics) {
+    // Destroy existing charts
+    Object.values(dashboardCharts).forEach(chart => {
+        if (chart) chart.destroy();
+    });
+    dashboardCharts = {};
+
+    // Users trend chart
+    createUsersChart(analytics.users.registrationTrend);
+    
+    // Contact forms by treatment chart
+    createContactFormsChart(analytics.forms.treatmentTrend);
+    
+    // Reviews rating distribution chart
+    createReviewsChart(analytics.reviews.ratingDistribution);
+    
+    // Activity by hour chart
+    createActivityChart(analytics.trends.activityByHour);
+}
+
+function createUsersChart(registrationTrend) {
+    const ctx = document.getElementById('usersChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 30}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+    });
+
+    dashboardCharts.users = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Nuevos Usuarios',
+                data: registrationTrend,
+                borderColor: '#2c5aa0',
+                backgroundColor: 'rgba(44, 90, 160, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createContactFormsChart(treatmentTrend) {
+    const ctx = document.getElementById('contactFormsChart');
+    if (!ctx) return;
+
+    const topTreatments = treatmentTrend.slice(0, 8); // Show top 8 treatments
+
+    dashboardCharts.contactForms = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topTreatments.map(t => t.name),
+            datasets: [{
+                label: 'Consultas',
+                data: topTreatments.map(t => t.count),
+                backgroundColor: [
+                    '#2c5aa0', '#4a90e2', '#27ae60', '#f39c12',
+                    '#e74c3c', '#9b59b6', '#1abc9c', '#34495e'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createReviewsChart(ratingDistribution) {
+    const ctx = document.getElementById('reviewsChart');
+    if (!ctx) return;
+
+    const data = [1, 2, 3, 4, 5].map(rating => ratingDistribution[rating] || 0);
+
+    dashboardCharts.reviews = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['1 Estrella', '2 Estrellas', '3 Estrellas', '4 Estrellas', '5 Estrellas'],
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    '#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#27ae60'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createActivityChart(activityByHour) {
+    const ctx = document.getElementById('activityChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+
+    dashboardCharts.activity = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Actividad',
+                data: activityByHour,
+                backgroundColor: 'rgba(74, 144, 226, 0.8)',
+                borderColor: '#4a90e2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
 }
 
 async function loadUsersCount() {
@@ -413,6 +658,8 @@ async function loadTreatmentsData() {
         const result = await TreatmentService.getAllTreatments();
         if (result.success && result.data) {
             displayTreatmentsTable(result.data);
+            // Update treatment analytics
+            updateTreatmentAnalytics(result.data);
         } else {
             throw new Error(result.message || 'Error al cargar tratamientos');
         }
@@ -422,134 +669,354 @@ async function loadTreatmentsData() {
     }
 }
 
-function displayTreatmentsTable(treatments) {
-    const container = document.getElementById('treatments-list');
+function updateTreatmentAnalytics(treatments) {
+    // Update treatment details in dashboard
+    document.getElementById('active-treatments').textContent = treatments.length;
     
-    const tableHTML = `
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Duración</th>
-                    <th>Precio Base</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${treatments.map(treatment => `
-                    <tr>
-                        <td>${treatment.id}</td>
-                        <td>${treatment.name}</td>
-                        <td>${treatment.description?.substring(0, 50) + '...' || 'Sin descripción'}</td>
-                        <td>${treatment.duration || 'No especificada'}</td>
-                        <td>$${treatment.basePrice?.toLocaleString() || 'No especificado'}</td>
-                        <td class="actions-cell">
-                            <button class="admin-btn small" onclick="viewTreatment(${treatment.id})" title="Ver detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="admin-btn small primary" onclick="editTreatment(${treatment.id})" title="Editar">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="admin-btn small danger" onclick="deleteTreatment(${treatment.id})" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
+    const prices = treatments.filter(t => t.basePrice).map(t => t.basePrice);
+    if (prices.length > 0) {
+        const avgPrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+        document.getElementById('avg-treatment-price').textContent = `$${avgPrice.toLocaleString()}`;
+        
+        const maxPrice = Math.max(...prices);
+        const minPrice = Math.min(...prices);
+        const mostExpensive = treatments.find(t => t.basePrice === maxPrice);
+        const cheapest = treatments.find(t => t.basePrice === minPrice);
+        
+        document.getElementById('most-expensive-treatment').textContent = mostExpensive?.name || '-';
+        document.getElementById('cheapest-treatment').textContent = cheapest?.name || '-';
+    }
     
-    container.innerHTML = tableHTML;
+    // Find most recent treatment
+    const sortedTreatments = treatments.filter(t => t.createdAt)
+                                      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    if (sortedTreatments.length > 0) {
+        document.getElementById('last-treatment-date').textContent = 
+            new Date(sortedTreatments[0].createdAt).toLocaleDateString();
+    }
 }
 
-async function loadReviewsData() {
-    const reviewsContainer = document.getElementById('reviews-list');
+function updateAdminUserDisplay() {
+    const adminUserName = document.getElementById('admin-user-name');
+    if (adminUserName && currentUser) {
+        adminUserName.textContent = `${currentUser.name} (Admin)`;
+    }
+}
+
+function setupAdminNavigation() {
+    const navItems = document.querySelectorAll('.admin-nav-item');
+    
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const section = item.getAttribute('data-section');
+            switchAdminSection(section);
+            
+            // Update active nav item
+            navItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
+}
+
+function switchAdminSection(sectionName) {
+    // Hide all sections
+    const sections = document.querySelectorAll('.admin-section');
+    sections.forEach(section => section.classList.remove('active'));
+    
+    // Show target section
+    const targetSection = document.getElementById(`${sectionName}-section`);
+    if (targetSection) {
+        targetSection.classList.add('active');
+        
+        // Load section data if needed
+        loadSectionData(sectionName);
+    }
+}
+
+async function loadSectionData(sectionName) {
+    switch(sectionName) {
+        case 'dashboard':
+            await loadDashboardData();
+            break;
+        case 'users':
+            await loadUsersData();
+            break;
+        case 'contact-forms':
+            await loadContactFormsData();
+            break;
+        case 'treatments':
+            await loadTreatmentsData();
+            break;
+        case 'reviews':
+            await loadReviewsData();
+            break;
+        default:
+            console.log(`No specific loader for section: ${sectionName}`);
+    }
+}
+
+async function loadDashboardData() {
+    console.log('📊 Loading dashboard data...');
     
     try {
-        reviewsContainer.innerHTML = '<p class="loading">Cargando reviews...</p>';
+        // Load basic stats
+        await Promise.all([
+            loadUsersCount(),
+            loadContactFormsCount(),
+            loadTreatmentsCount(),
+            loadReviewsCount()
+        ]);
         
-        const response = await apiRequest(API_CONFIG.ENDPOINTS.REVIEWS);
-        if (response.ok) {
-            const reviews = await response.json();
-            displayReviewsTable(reviews);
-        } else {
-            throw new Error('Error al cargar reviews');
-        }
+        // Load analytics data
+        await loadDashboardAnalytics();
+        
+        // Load recent activity
+        await loadRecentActivity();
+        
     } catch (error) {
-        console.error('Error loading reviews:', error);
-        reviewsContainer.innerHTML = '<p class="error">Error al cargar reviews</p>';
+        console.error('Error loading dashboard data:', error);
     }
 }
 
-function displayReviewsTable(reviews) {
-    const container = document.getElementById('reviews-list');
-    
-    const tableHTML = `
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Usuario</th>
-                    <th>Clínica</th>
-                    <th>Calificación</th>
-                    <th>Contenido</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${reviews.map(review => `
-                    <tr>
-                        <td>${review.id}</td>
-                        <td>${review.user?.name || 'Usuario eliminado'}</td>
-                        <td>${review.clinic?.name || 'N/A'}</td>
-                        <td>
-                            <div class="rating-display">
-                                ${generateStarRating(review.rating)}
-                                <span>(${review.rating || 0})</span>
-                            </div>
-                        </td>
-                        <td>${review.content?.substring(0, 50) + '...' || 'Sin contenido'}</td>
-                        <td>${new Date(review.date).toLocaleDateString()}</td>
-                        <td class="actions-cell">
-                            <button class="admin-btn small" onclick="viewReview(${review.id})" title="Ver detalles">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="admin-btn small danger" onclick="deleteReview(${review.id})" title="Eliminar">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
-    `;
-    
-    container.innerHTML = tableHTML;
+async function loadDashboardAnalytics() {
+    try {
+        console.log('📈 Loading dashboard analytics...');
+        const analytics = await AdminService.getDashboardAnalytics();
+        
+        // Update detailed stats
+        updateDetailedStats(analytics);
+        
+        // Update trends in stat cards
+        updateStatTrends(analytics);
+        
+        // Create charts
+        createDashboardCharts(analytics);
+        
+        console.log('✅ Dashboard analytics loaded successfully');
+    } catch (error) {
+        console.error('Error loading dashboard analytics:', error);
+        showMessage('Error al cargar análisis del dashboard', 'error');
+    }
 }
 
-function generateStarRating(rating) {
-    const stars = [];
-    const fullStars = Math.floor(rating || 0);
-    const hasHalfStar = (rating || 0) % 1 !== 0;
-    
-    for (let i = 0; i < fullStars; i++) {
-        stars.push('<i class="fas fa-star"></i>');
+function updateDetailedStats(analytics) {
+    // User analytics
+    document.getElementById('verified-users').textContent = analytics.users.verified;
+    document.getElementById('blocked-users').textContent = blockedUsers.length;
+    document.getElementById('admin-users').textContent = analytics.users.admins;
+    document.getElementById('new-users-week').textContent = analytics.users.newUsersWeek;
+    document.getElementById('last-user-date').textContent = analytics.users.lastUserDate;
+
+    // Form analytics
+    document.getElementById('forms-today').textContent = analytics.forms.formsToday;
+    document.getElementById('forms-week').textContent = analytics.forms.formsWeek;
+    document.getElementById('most-common-inquiry').textContent = analytics.forms.mostCommonInquiry;
+    document.getElementById('most-consulted-treatment').textContent = analytics.forms.mostConsultedTreatment;
+    document.getElementById('last-form-date').textContent = analytics.forms.lastFormDate;
+
+    // Treatment analytics (will be updated when treatments are loaded)
+    document.getElementById('active-treatments').textContent = analytics.forms.total > 0 ? 'Calculando...' : '0';
+
+    // Review analytics
+    document.getElementById('avg-rating').textContent = analytics.reviews.avgRating;
+    document.getElementById('five-star-reviews').textContent = analytics.reviews.fiveStarReviews;
+    document.getElementById('one-star-reviews').textContent = analytics.reviews.oneStarReviews;
+    document.getElementById('reviews-week').textContent = analytics.reviews.reviewsWeek;
+    document.getElementById('last-review-date').textContent = analytics.reviews.lastReviewDate;
+}
+
+function updateStatTrends(analytics) {
+    // Update user trend
+    const usersTrend = document.getElementById('users-trend');
+    if (usersTrend) {
+        const growth = analytics.users.monthlyGrowth;
+        usersTrend.textContent = `+${growth}% este mes`;
+        usersTrend.className = `stat-trend ${growth > 0 ? 'positive' : growth < 0 ? 'negative' : 'neutral'}`;
     }
-    
-    if (hasHalfStar) {
-        stars.push('<i class="fas fa-star-half-alt"></i>');
+
+    // Update forms trend
+    const formsTrend = document.getElementById('forms-trend');
+    if (formsTrend) {
+        const growth = analytics.forms.monthlyGrowth;
+        formsTrend.textContent = `+${growth}% este mes`;
+        formsTrend.className = `stat-trend ${growth > 0 ? 'positive' : growth < 0 ? 'negative' : 'neutral'}`;
     }
-    
-    const emptyStars = 5 - Math.ceil(rating || 0);
-    for (let i = 0; i < emptyStars; i++) {
-        stars.push('<i class="far fa-star"></i>');
+
+    // Update reviews trend
+    const reviewsTrend = document.getElementById('reviews-trend');
+    if (reviewsTrend) {
+        reviewsTrend.textContent = `Promedio: ${analytics.reviews.avgRating}`;
+        reviewsTrend.className = 'stat-trend neutral';
     }
+}
+
+function createDashboardCharts(analytics) {
+    // Destroy existing charts
+    Object.values(dashboardCharts).forEach(chart => {
+        if (chart) chart.destroy();
+    });
+    dashboardCharts = {};
+
+    // Users trend chart
+    createUsersChart(analytics.users.registrationTrend);
     
-    return stars.join('');
+    // Contact forms by treatment chart
+    createContactFormsChart(analytics.forms.treatmentTrend);
+    
+    // Reviews rating distribution chart
+    createReviewsChart(analytics.reviews.ratingDistribution);
+    
+    // Activity by hour chart
+    createActivityChart(analytics.trends.activityByHour);
+}
+
+function createUsersChart(registrationTrend) {
+    const ctx = document.getElementById('usersChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 30}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+    });
+
+    dashboardCharts.users = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Nuevos Usuarios',
+                data: registrationTrend,
+                borderColor: '#2c5aa0',
+                backgroundColor: 'rgba(44, 90, 160, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createContactFormsChart(treatmentTrend) {
+    const ctx = document.getElementById('contactFormsChart');
+    if (!ctx) return;
+
+    const topTreatments = treatmentTrend.slice(0, 8); // Show top 8 treatments
+
+    dashboardCharts.contactForms = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topTreatments.map(t => t.name),
+            datasets: [{
+                label: 'Consultas',
+                data: topTreatments.map(t => t.count),
+                backgroundColor: [
+                    '#2c5aa0', '#4a90e2', '#27ae60', '#f39c12',
+                    '#e74c3c', '#9b59b6', '#1abc9c', '#34495e'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createReviewsChart(ratingDistribution) {
+    const ctx = document.getElementById('reviewsChart');
+    if (!ctx) return;
+
+    const data = [1, 2, 3, 4, 5].map(rating => ratingDistribution[rating] || 0);
+
+    dashboardCharts.reviews = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['1 Estrella', '2 Estrellas', '3 Estrellas', '4 Estrellas', '5 Estrellas'],
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    '#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#27ae60'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createActivityChart(activityByHour) {
+    const ctx = document.getElementById('activityChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+
+    dashboardCharts.activity = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Actividad',
+                data: activityByHour,
+                backgroundColor: 'rgba(74, 144, 226, 0.8)',
+                borderColor: '#4a90e2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
 }
 
 // User management functions
@@ -925,3 +1392,5 @@ function adminLogout() {
         window.location.href = 'login.html';
     }
 }
+
+//# sourceMappingURL=admin.js.map
