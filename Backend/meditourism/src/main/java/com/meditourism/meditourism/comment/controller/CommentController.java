@@ -40,6 +40,11 @@ public class CommentController {
         return ResponseEntity.ok(commentService.getCommentById(id));
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<CommentDTO>> getCommentsByUserId(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.getCommentsByUserId(id));
+    }
+
     // Crear nuevo comentario
     @PostMapping
     public ResponseEntity<CommentDTO> saveComment(@RequestBody CommentDTO dto) {

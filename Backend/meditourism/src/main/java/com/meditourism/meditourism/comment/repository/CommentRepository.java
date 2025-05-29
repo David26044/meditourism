@@ -11,4 +11,5 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
     Optional<List<CommentEntity>> findAllByReviewEntityId(Long reviewId);
     Optional<List<CommentEntity>> findAllByFatherCommentEntityId(Long commentId);
 
+    List<CommentEntity> findAllByUserEntityId(Long userId);
 }

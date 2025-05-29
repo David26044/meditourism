@@ -15,4 +15,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
     @Query("SELECT r FROM ReviewEntity r WHERE r.id IN (SELECT MAX(r1.id) FROM ReviewEntity r1 GROUP BY r1.id ORDER BY r1.id DESC LIMIT 3)")
     List<ReviewEntity> findTop3ByIdOrderByDesc();
+
+    List<ReviewEntity> findAllByUserId(Long id);
 }

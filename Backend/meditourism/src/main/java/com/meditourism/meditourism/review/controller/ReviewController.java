@@ -34,6 +34,11 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviewById(id));
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsByUserId(@PathVariable Long id){
+        return ResponseEntity.ok(reviewService.getReviewsByUserId(id));
+    }
+
     @PostMapping
     public ResponseEntity<ReviewResponseDTO> postReview(@RequestBody @Valid ReviewRequestDTO dto){
         ReviewResponseDTO savedReview = reviewService.saveReview(dto);
