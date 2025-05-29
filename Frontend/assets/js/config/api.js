@@ -2,8 +2,8 @@
 const API_CONFIG = {
     // Use environment variable or default to localhost for development
     BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? 'http://localhost:8080/system/api' 
-        : '/system/api', // Use relative path for production
+        ? 'http://localhost:8080/system/api' // URL para desarrollo local
+        : 'https://meditourism-production.up.railway.app/system/api', // URL para producción
     ENDPOINTS: {
         // Auth endpoints - corregidos para coincidir con AuthController
         LOGIN: '/auth/login',
