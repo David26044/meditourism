@@ -3,8 +3,7 @@ class EmailService {
     
     static async sendWelcomeEmail(emailData) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_WELCOME_EMAIL}`, {
-           
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.SEND_WELCOME_EMAIL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,7 +42,7 @@ class EmailService {
                 `
             };
 
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EMAIL}`, {
+            const response = await apiRequest(API_CONFIG.ENDPOINTS.EMAIL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,12 +60,11 @@ class EmailService {
 
     static async sendVerificationEmail(email) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_VERIFY_EMAIL}?email=${encodeURIComponent(email)}`, {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.SEND_VERIFY_EMAIL}?email=${encodeURIComponent(email)}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Accept': 'application/json'
                 }
             });
 
@@ -83,12 +81,11 @@ class EmailService {
 
     static async sendPasswordResetEmail(email) {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.SEND_PASSWORD_RESET}?email=${encodeURIComponent(email)}`, {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.SEND_PASSWORD_RESET}?email=${encodeURIComponent(email)}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Accept': 'application/json'
                 }
             });
 

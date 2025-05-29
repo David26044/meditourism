@@ -8,6 +8,7 @@ let currentUser = null;
 let allUsers = [];
 let allRoles = [];
 let blockedUsers = [];
+let dashboardCharts = {}; // Store chart instances
 
 async function initializeAdminPanel() {
     console.log('🎯 Initializing admin panel...');
@@ -140,13 +141,16 @@ async function loadDashboardData() {
     console.log('📊 Loading dashboard data...');
     
     try {
-        // Load stats
+        // Load basic stats
         await Promise.all([
             loadUsersCount(),
             loadContactFormsCount(),
             loadTreatmentsCount(),
             loadReviewsCount()
         ]);
+        
+        // Load analytics data
+        await loadDashboardAnalytics();
         
         // Load recent activity
         await loadRecentActivity();
@@ -156,13 +160,256 @@ async function loadDashboardData() {
     }
 }
 
+async function loadDashboardAnalytics() {
+    try {
+        console.log('📈 Loading dashboard analytics...');
+        const analytics = await AdminService.getDashboardAnalytics();
+        
+        // Update detailed stats
+        updateDetailedStats(analytics);
+        
+        // Update trends in stat cards
+        updateStatTrends(analytics);
+        
+        // Create charts
+        createDashboardCharts(analytics);
+        
+        console.log('✅ Dashboard analytics loaded successfully');
+    } catch (error) {
+        console.error('Error loading dashboard analytics:', error);
+        UIUtils.showToast('Error al cargar análisis del dashboard', 'error');
+    }
+}
+
+function updateDetailedStats(analytics) {
+    // User analytics
+    document.getElementById('verified-users').textContent = analytics.users?.verified_count || analytics.users?.verified || 0;
+    document.getElementById('blocked-users').textContent = blockedUsers.length;
+    document.getElementById('admin-users').textContent = analytics.users?.admin_count || analytics.users?.admins || 0;
+    document.getElementById('new-users-week').textContent = analytics.users?.new_users_week || 0;
+    document.getElementById('last-user-date').textContent = analytics.users?.last_user_date || '-';
+
+    // Form analytics
+    document.getElementById('forms-today').textContent = analytics.forms?.forms_today || 0;
+    document.getElementById('forms-week').textContent = analytics.forms?.forms_week || 0;
+    document.getElementById('most-common-inquiry').textContent = analytics.forms?.most_common_inquiry_type || analytics.forms?.mostCommonInquiry || '-';
+    document.getElementById('most-consulted-treatment').textContent = analytics.forms?.most_consulted_treatment_name || analytics.forms?.mostConsultedTreatment || '-';
+    document.getElementById('last-form-date').textContent = analytics.forms?.last_form_date || '-';
+
+    // Treatment analytics
+    document.getElementById('active-treatments').textContent = analytics.treatments?.active_count || 0;
+
+    // Review analytics
+    document.getElementById('avg-rating').textContent = analytics.reviews?.average_rating || analytics.reviews?.avgRating || '0.0';
+    document.getElementById('five-star-reviews').textContent = analytics.reviews?.five_star_reviews_count || analytics.reviews?.fiveStarReviews || 0;
+    document.getElementById('one-star-reviews').textContent = analytics.reviews?.one_star_reviews_count || analytics.reviews?.oneStarReviews || 0;
+    document.getElementById('reviews-week').textContent = analytics.reviews?.reviews_this_week_count || analytics.reviews?.reviewsWeek || 0;
+    document.getElementById('last-review-date').textContent = analytics.reviews?.last_review_date || '-';
+}
+
+function updateStatTrends(analytics) {
+    // Update user trend
+    const usersTrend = document.getElementById('users-trend');
+    if (usersTrend && analytics.users) {
+        const growth = analytics.users.monthlyGrowth || 0;
+        usersTrend.textContent = `+${growth}% este mes`;
+        usersTrend.className = `stat-trend ${growth > 0 ? 'positive' : growth < 0 ? 'negative' : 'neutral'}`;
+    }
+
+    // Update forms trend
+    const formsTrend = document.getElementById('forms-trend');
+    if (formsTrend && analytics.forms) {
+        const growth = analytics.forms.monthlyGrowth || 0;
+        formsTrend.textContent = `+${growth}% este mes`;
+        formsTrend.className = `stat-trend ${growth > 0 ? 'positive' : growth < 0 ? 'negative' : 'neutral'}`;
+    }
+
+    // Update reviews trend
+    const reviewsTrend = document.getElementById('reviews-trend');
+    if (reviewsTrend && analytics.reviews) {
+        reviewsTrend.textContent = `Promedio: ${analytics.reviews.avgRating || analytics.reviews.average_rating || 0}`;
+        reviewsTrend.className = 'stat-trend neutral';
+    }
+}
+
+function createDashboardCharts(analytics) {
+    // Destroy existing charts
+    Object.values(dashboardCharts).forEach(chart => {
+        if (chart) chart.destroy();
+    });
+    dashboardCharts = {};
+
+    // Only create charts if analytics data is available
+    if (analytics.users?.registrationTrend) {
+        createUsersChart(analytics.users.registrationTrend);
+    }
+    
+    if (analytics.forms?.treatmentTrend) {
+        createContactFormsChart(analytics.forms.treatmentTrend);
+    }
+    
+    if (analytics.reviews?.ratingDistribution) {
+        createReviewsChart(analytics.reviews.ratingDistribution);
+    }
+    
+    if (analytics.trends?.activityByHour) {
+        createActivityChart(analytics.trends.activityByHour);
+    }
+}
+
+function createUsersChart(registrationTrend) {
+    const ctx = document.getElementById('usersChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 30}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        return date.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
+    });
+
+    dashboardCharts.users = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Nuevos Usuarios',
+                data: registrationTrend,
+                borderColor: '#2c5aa0',
+                backgroundColor: 'rgba(44, 90, 160, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createContactFormsChart(treatmentTrend) {
+    const ctx = document.getElementById('contactFormsChart');
+    if (!ctx) return;
+
+    const topTreatments = treatmentTrend.slice(0, 8); // Show top 8 treatments
+
+    dashboardCharts.contactForms = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: topTreatments.map(t => t.name),
+            datasets: [{
+                label: 'Consultas',
+                data: topTreatments.map(t => t.count),
+                backgroundColor: [
+                    '#2c5aa0', '#4a90e2', '#27ae60', '#f39c12',
+                    '#e74c3c', '#9b59b6', '#1abc9c', '#34495e'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createReviewsChart(ratingDistribution) {
+    const ctx = document.getElementById('reviewsChart');
+    if (!ctx) return;
+
+    const data = [1, 2, 3, 4, 5].map(rating => ratingDistribution[rating] || 0);
+
+    dashboardCharts.reviews = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['1 Estrella', '2 Estrellas', '3 Estrellas', '4 Estrellas', '5 Estrellas'],
+            datasets: [{
+                data: data,
+                backgroundColor: [
+                    '#e74c3c', '#f39c12', '#f1c40f', '#2ecc71', '#27ae60'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+function createActivityChart(activityByHour) {
+    const ctx = document.getElementById('activityChart');
+    if (!ctx) return;
+
+    const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+
+    dashboardCharts.activity = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Actividad',
+                data: activityByHour,
+                backgroundColor: 'rgba(74, 144, 226, 0.8)',
+                borderColor: '#4a90e2',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
 async function loadUsersCount() {
     try {
-        const response = await apiRequest(API_CONFIG.ENDPOINTS.USERS);
-        if (response.ok) {
-            const users = await response.json();
-            document.getElementById('total-users').textContent = users.length;
-        }
+        const users = await UserService.getAllUsers();
+        document.getElementById('total-users').textContent = users?.length || 0;
     } catch (error) {
         console.error('Error loading users count:', error);
         document.getElementById('total-users').textContent = '-';
@@ -184,11 +431,8 @@ async function loadContactFormsCount() {
 
 async function loadTreatmentsCount() {
     try {
-        const response = await apiRequest(API_CONFIG.ENDPOINTS.TREATMENTS);
-        if (response.ok) {
-            const treatments = await response.json();
-            document.getElementById('total-treatments').textContent = treatments.length;
-        }
+        const treatments = await TreatmentService.getAllTreatments();
+        document.getElementById('total-treatments').textContent = treatments?.length || 0;
     } catch (error) {
         console.error('Error loading treatments count:', error);
         document.getElementById('total-treatments').textContent = '-';
@@ -285,7 +529,7 @@ function displayUsersTable(users) {
             </thead>
             <tbody>
                 ${users.map(user => {
-                    const isBlocked = blockedUsers.some(blocked => blocked.user.id === user.id);
+                    const isBlocked = blockedUsers.some(blocked => blocked.user_id === user.id || (blocked.user && blocked.user.id === user.id));
                     const isCurrentUser = user.id === currentUser.id;
                     const isAdmin = user.role?.name === 'ADMIN';
                     
@@ -300,8 +544,8 @@ function displayUsersTable(users) {
                                 </span>
                             </td>
                             <td>
-                                <span class="status-badge ${user.verified ? 'verified' : 'unverified'}">
-                                    ${user.verified ? 'Sí' : 'No'}
+                                <span class="status-badge ${user.is_verified || user.verified ? 'verified' : 'unverified'}">
+                                    ${user.is_verified || user.verified ? 'Sí' : 'No'}
                                 </span>
                             </td>
                             <td>
@@ -309,7 +553,7 @@ function displayUsersTable(users) {
                                     ${isBlocked ? 'Bloqueado' : 'Activo'}
                                 </span>
                             </td>
-                            <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                            <td>${new Date(user.created_at || user.createdAt).toLocaleDateString()}</td>
                             <td class="actions-cell">
                                 <button class="admin-btn small" onclick="viewUser(${user.id})" title="Ver detalles">
                                     <i class="fas fa-eye"></i>
@@ -382,11 +626,11 @@ function displayContactFormsTable(contactForms) {
                     <tr>
                         <td>${form.id}</td>
                         <td>${form.user ? form.user.name : 'Anónimo'}</td>
-                        <td>${form.fullName}</td>
+                        <td>${form.full_name || form.fullName}</td>
                         <td>${form.email}</td>
                         <td>${form.treatment?.name || 'N/A'}</td>
-                        <td>${form.inquiryType}</td>
-                        <td>${new Date(form.createdDate).toLocaleDateString()}</td>
+                        <td>${form.inquiry_type || form.inquiryType}</td>
+                        <td>${new Date(form.created_at || form.createdDate).toLocaleDateString()}</td>
                         <td class="actions-cell">
                             <button class="admin-btn small" onclick="viewContactForm(${form.id})" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
@@ -410,21 +654,32 @@ async function loadTreatmentsData() {
     try {
         treatmentsContainer.innerHTML = '<p class="loading">Cargando tratamientos...</p>';
         
-        const result = await TreatmentService.getAllTreatments();
-        if (result.success && result.data) {
-            displayTreatmentsTable(result.data);
+        const treatments = await TreatmentService.getAllTreatments();
+        
+        if (treatments && Array.isArray(treatments)) {
+            displayTreatmentsTable(treatments);
+            updateTreatmentAnalytics(treatments);
         } else {
-            throw new Error(result.message || 'Error al cargar tratamientos');
+            throw new Error('Formato de datos de tratamientos inesperado');
         }
     } catch (error) {
         console.error('Error loading treatments:', error);
-        treatmentsContainer.innerHTML = '<p class="error">Error al cargar tratamientos</p>';
+        treatmentsContainer.innerHTML = `<p class="error">Error al cargar tratamientos: ${error.message}</p>`;
     }
 }
 
 function displayTreatmentsTable(treatments) {
     const container = document.getElementById('treatments-list');
-    
+    if (!container) {
+        console.error('Treatments container not found');
+        return;
+    }
+
+    if (!treatments || treatments.length === 0) {
+        container.innerHTML = '<p>No hay tratamientos para mostrar.</p>';
+        return;
+    }
+
     const tableHTML = `
         <table class="admin-table">
             <thead>
@@ -432,19 +687,17 @@ function displayTreatmentsTable(treatments) {
                     <th>ID</th>
                     <th>Nombre</th>
                     <th>Descripción</th>
-                    <th>Duración</th>
-                    <th>Precio Base</th>
+                    <th>Fecha Creación</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 ${treatments.map(treatment => `
                     <tr>
-                        <td>${treatment.id}</td>
-                        <td>${treatment.name}</td>
-                        <td>${treatment.description?.substring(0, 50) + '...' || 'Sin descripción'}</td>
-                        <td>${treatment.duration || 'No especificada'}</td>
-                        <td>$${treatment.basePrice?.toLocaleString() || 'No especificado'}</td>
+                        <td>${treatment.id || 'N/A'}</td>
+                        <td>${treatment.name || 'Sin nombre'}</td>
+                        <td>${treatment.description || 'Sin descripción'}</td>
+                        <td>${treatment.created_at ? new Date(treatment.created_at).toLocaleDateString() : 'N/A'}</td>
                         <td class="actions-cell">
                             <button class="admin-btn small" onclick="viewTreatment(${treatment.id})" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
@@ -463,6 +716,18 @@ function displayTreatmentsTable(treatments) {
     `;
     
     container.innerHTML = tableHTML;
+}
+
+function updateTreatmentAnalytics(treatments) {
+    document.getElementById('active-treatments').textContent = treatments.length;
+    
+    // Find most recent treatment
+    const sortedTreatments = treatments.filter(t => t.created_at)
+                                      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    if (sortedTreatments.length > 0) {
+        document.getElementById('last-treatment-date').textContent = 
+            new Date(sortedTreatments[0].created_at).toLocaleDateString();
+    }
 }
 
 async function loadReviewsData() {
@@ -495,7 +760,6 @@ function displayReviewsTable(reviews) {
                     <th>Usuario</th>
                     <th>Clínica</th>
                     <th>Calificación</th>
-                    <th>Contenido</th>
                     <th>Fecha</th>
                     <th>Acciones</th>
                 </tr>
@@ -506,14 +770,8 @@ function displayReviewsTable(reviews) {
                         <td>${review.id}</td>
                         <td>${review.user?.name || 'Usuario eliminado'}</td>
                         <td>${review.clinic?.name || 'N/A'}</td>
-                        <td>
-                            <div class="rating-display">
-                                ${generateStarRating(review.rating)}
-                                <span>(${review.rating || 0})</span>
-                            </div>
-                        </td>
-                        <td>${review.content?.substring(0, 50) + '...' || 'Sin contenido'}</td>
-                        <td>${new Date(review.date).toLocaleDateString()}</td>
+                        <td>${generateStarRating(review.rating)} (${review.rating || 0})</td>
+                        <td>${new Date(review.created_at || review.date).toLocaleDateString()}</td>
                         <td class="actions-cell">
                             <button class="admin-btn small" onclick="viewReview(${review.id})" title="Ver detalles">
                                 <i class="fas fa-eye"></i>
@@ -531,33 +789,12 @@ function displayReviewsTable(reviews) {
     container.innerHTML = tableHTML;
 }
 
-function generateStarRating(rating) {
-    const stars = [];
-    const fullStars = Math.floor(rating || 0);
-    const hasHalfStar = (rating || 0) % 1 !== 0;
-    
-    for (let i = 0; i < fullStars; i++) {
-        stars.push('<i class="fas fa-star"></i>');
-    }
-    
-    if (hasHalfStar) {
-        stars.push('<i class="fas fa-star-half-alt"></i>');
-    }
-    
-    const emptyStars = 5 - Math.ceil(rating || 0);
-    for (let i = 0; i < emptyStars; i++) {
-        stars.push('<i class="far fa-star"></i>');
-    }
-    
-    return stars.join('');
-}
-
 // User management functions
 async function viewUser(userId) {
     const user = allUsers.find(u => u.id === userId);
     if (!user) return;
     
-    const blockedInfo = blockedUsers.find(blocked => blocked.user.id === userId);
+    const blockedInfo = blockedUsers.find(blocked => blocked.user_id === userId || (blocked.user && blocked.user.id === userId));
     
     showModal(`
         <h3>Detalles del Usuario</h3>
@@ -566,12 +803,12 @@ async function viewUser(userId) {
             <p><strong>Nombre:</strong> ${user.name}</p>
             <p><strong>Email:</strong> ${user.email}</p>
             <p><strong>Rol:</strong> ${user.role?.name === 'ADMIN' ? 'Administrador' : 'Usuario'}</p>
-            <p><strong>Verificado:</strong> ${user.verified ? 'Sí' : 'No'}</p>
-            <p><strong>Fecha de registro:</strong> ${new Date(user.createdAt).toLocaleString()}</p>
+            <p><strong>Verificado:</strong> ${user.is_verified || user.verified ? 'Sí' : 'No'}</p>
+            <p><strong>Fecha de registro:</strong> ${new Date(user.created_at || user.createdAt).toLocaleString()}</p>
             ${blockedInfo ? `
                 <p><strong>Estado:</strong> <span class="status-blocked">BLOQUEADO</span></p>
                 <p><strong>Razón del bloqueo:</strong> ${blockedInfo.reason}</p>
-                <p><strong>Fecha de bloqueo:</strong> ${new Date(blockedInfo.date).toLocaleString()}</p>
+                <p><strong>Fecha de bloqueo:</strong> ${new Date(blockedInfo.blocked_at || blockedInfo.date).toLocaleString()}</p>
             ` : `<p><strong>Estado:</strong> <span class="status-active">ACTIVO</span></p>`}
         </div>
     `);
@@ -587,11 +824,11 @@ async function changeUserRole(userId) {
     
     if (confirm(`¿Estás seguro de cambiar el rol de ${user.name} a ${newRole}?`)) {
         try {
-            const response = await AdminService.updateUserRole(userId, newRoleId);
-            showMessage('Rol actualizado exitosamente', 'success');
+            await AdminService.updateUserRole(userId, newRoleId);
+            UIUtils.showToast('Rol actualizado exitosamente', 'success');
             await loadUsersData();
         } catch (error) {
-            showMessage('Error al actualizar rol: ' + error.message, 'error');
+            UIUtils.showToast('Error al actualizar rol: ' + error.message, 'error');
         }
     }
 }
@@ -605,11 +842,11 @@ async function blockUser(userId) {
     
     try {
         await AdminService.blockUser(userId, reason);
-        showMessage('Usuario bloqueado exitosamente', 'success');
+        UIUtils.showToast('Usuario bloqueado exitosamente', 'success');
         await loadUsersData();
         await loadInitialData();
     } catch (error) {
-        showMessage('Error al bloquear usuario: ' + error.message, 'error');
+        UIUtils.showToast('Error al bloquear usuario: ' + error.message, 'error');
     }
 }
 
@@ -619,52 +856,18 @@ async function unblockUser(userId) {
     
     if (confirm(`¿Estás seguro de desbloquear a ${user.name}?`)) {
         try {
-            const blockedUser = blockedUsers.find(b => b.user.id === userId);
-            if (blockedUser) {
-                await AdminService.unblockUser(blockedUser.id);
-                showMessage('Usuario desbloqueado exitosamente', 'success');
+            const blockedEntry = blockedUsers.find(b => b.user_id === userId || (b.user && b.user.id === userId));
+            if (blockedEntry) {
+                await AdminService.unblockUser(blockedEntry.id);
+                UIUtils.showToast('Usuario desbloqueado exitosamente', 'success');
                 await loadUsersData();
                 await loadInitialData();
+            } else {
+                UIUtils.showToast('No se encontró registro de bloqueo para este usuario.', 'warning');
             }
         } catch (error) {
-            showMessage('Error al desbloquear usuario: ' + error.message, 'error');
+            UIUtils.showToast('Error al desbloquear usuario: ' + error.message, 'error');
         }
-    }
-}
-
-async function deleteNormalUser(userId) {
-    const user = allUsers.find(u => u.id === userId);
-    if (!user) return;
-    
-    // Don't allow deleting admin users
-    if (user.role?.name === 'ADMIN') {
-        showMessage('No se puede eliminar usuarios administradores', 'error');
-        return;
-    }
-    
-    if (confirm(`¿Estás seguro de eliminar permanentemente al usuario ${user.name}? Esta acción no se puede deshacer.`)) {
-        try {
-            await AdminService.deleteNormalUser(userId);
-            showMessage('Usuario eliminado exitosamente', 'success');
-            await loadUsersData();
-            await loadInitialData();
-        } catch (error) {
-            showMessage('Error al eliminar usuario: ' + error.message, 'error');
-        }
-    }
-}
-
-// Global function to check if current user is blocked
-async function isCurrentUserBlocked() {
-    if (!currentUser) return false;
-    
-    try {
-        // Check if current user is in blocked users list
-        const blockedUsersList = await AdminService.getAllBlockedUsers();
-        return blockedUsersList.some(blocked => blocked.user.id === currentUser.id);
-    } catch (error) {
-        console.error('Error checking blocked status:', error);
-        return false;
     }
 }
 
@@ -679,22 +882,22 @@ async function viewContactForm(formId) {
                 <div class="form-details">
                     <p><strong>ID:</strong> ${form.id}</p>
                     <p><strong>Usuario:</strong> ${form.user ? form.user.name : 'Anónimo'}</p>
-                    <p><strong>Nombre completo:</strong> ${form.fullName}</p>
+                    <p><strong>Nombre completo:</strong> ${form.full_name || form.fullName}</p>
                     <p><strong>Email:</strong> ${form.email}</p>
                     <p><strong>Teléfono:</strong> ${form.phone || 'No proporcionado'}</p>
                     <p><strong>Tratamiento:</strong> ${form.treatment?.name || 'N/A'}</p>
-                    <p><strong>Tipo de consulta:</strong> ${form.inquiryType}</p>
-                    <p><strong>Clínica preferida:</strong> ${form.preferredClinic || 'No especificada'}</p>
-                    <p><strong>Fecha:</strong> ${new Date(form.createdDate).toLocaleString()}</p>
+                    <p><strong>Tipo de consulta:</strong> ${form.inquiry_type || form.inquiryType}</p>
+                    <p><strong>Clínica preferida:</strong> ${form.preferred_clinic || form.preferredClinic || 'No especificada'}</p>
+                    <p><strong>Fecha:</strong> ${new Date(form.created_at || form.createdDate).toLocaleString()}</p>
                     <p><strong>Mensaje:</strong></p>
                     <div class="message-content">${form.message}</div>
-                    <p><strong>Acepta términos:</strong> ${form.acceptTerms ? 'Sí' : 'No'}</p>
-                    <p><strong>Acepta marketing:</strong> ${form.acceptMarketing ? 'Sí' : 'No'}</p>
+                    <p><strong>Acepta términos:</strong> ${form.accept_terms || form.acceptTerms ? 'Sí' : 'No'}</p>
+                    <p><strong>Acepta marketing:</strong> ${form.accept_marketing || form.acceptMarketing ? 'Sí' : 'No'}</p>
                 </div>
             `);
         }
     } catch (error) {
-        showMessage('Error al cargar detalles de la consulta', 'error');
+        UIUtils.showToast('Error al cargar detalles de la consulta', 'error');
     }
 }
 
@@ -705,11 +908,11 @@ async function deleteContactForm(formId) {
                 method: 'DELETE'
             });
             if (response.ok) {
-                showMessage('Consulta eliminada exitosamente', 'success');
+                UIUtils.showToast('Consulta eliminada exitosamente', 'success');
                 await loadContactFormsData();
             }
         } catch (error) {
-            showMessage('Error al eliminar consulta', 'error');
+            UIUtils.showToast('Error al eliminar consulta', 'error');
         }
     }
 }
@@ -717,9 +920,8 @@ async function deleteContactForm(formId) {
 // Treatment functions
 async function viewTreatment(treatmentId) {
     try {
-        const result = await TreatmentService.getTreatmentById(treatmentId);
-        if (result.success && result.data) {
-            const treatment = result.data;
+        const treatment = await TreatmentService.getTreatmentById(treatmentId);
+        if (treatment) {
             showModal(`
                 <h3>Detalles del Tratamiento</h3>
                 <div class="treatment-details">
@@ -728,23 +930,20 @@ async function viewTreatment(treatmentId) {
                     <p><strong>Descripción:</strong> ${treatment.description || 'Sin descripción'}</p>
                 </div>
             `);
-        } else {
-            showMessage('Error al cargar detalles del tratamiento: ' + result.message, 'error');
         }
     } catch (error) {
-        showMessage('Error al cargar detalles del tratamiento', 'error');
+        UIUtils.showToast('Error al cargar detalles del tratamiento', 'error');
     }
 }
 
 async function editTreatment(treatmentId) {
     try {
-        const result = await TreatmentService.getTreatmentById(treatmentId);
-        if (!result.success || !result.data) {
-            showMessage('Error al cargar tratamiento: ' + result.message, 'error');
+        const treatment = await TreatmentService.getTreatmentById(treatmentId);
+        if (!treatment) {
+            UIUtils.showToast('Error al cargar tratamiento', 'error');
             return;
         }
 
-        const treatment = result.data;
         showModal(`
             <h3>Editar Tratamiento</h3>
             <form id="editTreatmentForm" class="admin-form">
@@ -771,27 +970,26 @@ async function editTreatment(treatmentId) {
                 description: document.getElementById('editTreatmentDescription').value.trim()
             };
 
-            // Remove empty fields to match backend PATCH behavior
             if (!treatmentData.description) {
                 delete treatmentData.description;
             }
             
             try {
-                const updateResult = await TreatmentService.updateTreatment(treatmentId, treatmentData);
+                const updated = await TreatmentService.updateTreatment(treatmentId, treatmentData);
                 
-                if (updateResult.success) {
-                    showMessage('Tratamiento actualizado exitosamente', 'success');
+                if (updated) {
+                    UIUtils.showToast('Tratamiento actualizado exitosamente', 'success');
                     closeModal();
                     await loadTreatmentsData();
                 } else {
-                    showMessage('Error al actualizar tratamiento: ' + updateResult.message, 'error');
+                    UIUtils.showToast('Error al actualizar tratamiento', 'error');
                 }
             } catch (error) {
-                showMessage('Error al actualizar tratamiento', 'error');
+                UIUtils.showToast('Error al actualizar tratamiento', 'error');
             }
         });
     } catch (error) {
-        showMessage('Error al cargar tratamiento para edición', 'error');
+        UIUtils.showToast('Error al cargar tratamiento para edición', 'error');
     }
 }
 
@@ -799,14 +997,54 @@ async function deleteTreatment(treatmentId) {
     if (confirm('¿Estás seguro de eliminar este tratamiento?')) {
         try {
             const result = await TreatmentService.deleteTreatment(treatmentId);
-            if (result.success) {
-                showMessage('Tratamiento eliminado exitosamente', 'success');
+            if (result) {
+                UIUtils.showToast('Tratamiento eliminado exitosamente', 'success');
                 await loadTreatmentsData();
             } else {
-                showMessage('Error al eliminar tratamiento: ' + result.message, 'error');
+                UIUtils.showToast('Error al eliminar tratamiento', 'error');
             }
         } catch (error) {
-            showMessage('Error al eliminar tratamiento', 'error');
+            UIUtils.showToast('Error al eliminar tratamiento', 'error');
+        }
+    }
+}
+
+// Review functions
+async function viewReview(reviewId) {
+    try {
+        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`);
+        if (response.ok) {
+            const review = await response.json();
+            showModal(`
+                <h3>Detalles de la Reseña</h3>
+                <div class="review-details">
+                    <p><strong>ID:</strong> ${review.id}</p>
+                    <p><strong>Usuario:</strong> ${review.user?.name || 'Usuario eliminado'}</p>
+                    <p><strong>Clínica:</strong> ${review.clinic?.name || 'N/A'}</p>
+                    <p><strong>Calificación:</strong> ${generateStarRating(review.rating)} (${review.rating || 0})</p>
+                    <p><strong>Fecha:</strong> ${new Date(review.created_at || review.date).toLocaleString()}</p>
+                    <p><strong>Contenido:</strong></p>
+                    <div class="review-content">${review.comment || review.content || 'Sin contenido'}</div>
+                </div>
+            `);
+        }
+    } catch (error) {
+        UIUtils.showToast('Error al cargar detalles de la reseña', 'error');
+    }
+}
+
+async function deleteReview(reviewId) {
+    if (confirm('¿Estás seguro de eliminar esta reseña?')) {
+        try {
+            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                UIUtils.showToast('Reseña eliminada exitosamente', 'success');
+                await loadReviewsData();
+            }
+        } catch (error) {
+            UIUtils.showToast('Error al eliminar reseña', 'error');
         }
     }
 }
@@ -854,50 +1092,6 @@ function closeModal() {
     }
 }
 
-// Review functions
-async function viewReview(reviewId) {
-    try {
-        const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`);
-        if (response.ok) {
-            const review = await response.json();
-            showModal(`
-                <h3>Detalles de la Reseña</h3>
-                <div class="review-details">
-                    <p><strong>ID:</strong> ${review.id}</p>
-                    <p><strong>Usuario:</strong> ${review.user?.name || 'Usuario eliminado'}</p>
-                    <p><strong>Clínica:</strong> ${review.clinic?.name || 'N/A'}</p>
-                    <p><strong>Calificación:</strong> ${generateStarRating(review.rating)} (${review.rating || 0})</p>
-                    <p><strong>Fecha:</strong> ${new Date(review.date).toLocaleString()}</p>
-                    <p><strong>Contenido:</strong></p>
-                    <div class="review-content">${review.content || 'Sin contenido'}</div>
-                </div>
-            `);
-        }
-    } catch (error) {
-        showMessage('Error al cargar detalles de la reseña', 'error');
-    }
-}
-
-async function deleteReview(reviewId) {
-    if (confirm('¿Estás seguro de eliminar esta reseña?')) {
-        try {
-            const response = await apiRequest(`${API_CONFIG.ENDPOINTS.REVIEWS}/${reviewId}`, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
-                showMessage('Reseña eliminada exitosamente', 'success');
-                await loadReviewsData();
-            }
-        } catch (error) {
-            showMessage('Error al eliminar reseña', 'error');
-        }
-    }
-}
-
-// Asegúrate de que TreatmentService esté definido antes de usarlo
-// Si usas módulos, descomenta la siguiente línea y ajusta la ruta según corresponda:
-// import { TreatmentService } from './treatmentService.js';
-
 // Utility functions
 function showAdminLoading(show) {
     const loader = document.getElementById('admin-loading');
@@ -906,16 +1100,16 @@ function showAdminLoading(show) {
     }
 }
 
-function showMessage(message, type = 'info') {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `admin-message ${type}`;
-    messageDiv.textContent = message;
-    
-    document.body.appendChild(messageDiv);
-    
-    setTimeout(() => {
-        messageDiv.remove();
-    }, 3000);
+function generateStarRating(rating) {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars.push('★');
+        } else {
+            stars.push('☆');
+        }
+    }
+    return stars.join('');
 }
 
 // Logout function
@@ -925,3 +1119,5 @@ function adminLogout() {
         window.location.href = 'login.html';
     }
 }
+
+//# sourceMappingURL=admin.js.map

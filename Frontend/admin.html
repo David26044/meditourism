@@ -6,6 +6,11 @@
     <title>Panel Administrativo - MediTourism</title>
     <link rel="stylesheet" href="assets/css/admin.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="admin-body">
     <!-- Header del Admin -->
@@ -67,6 +72,34 @@
                 <div class="admin-section-header">
                     <h1>Dashboard de Administración</h1>
                     <p>Resumen general del sistema MediTourism</p>
+                    <!-- Export Controls -->
+                    <div class="export-controls">
+                        <div class="export-dropdown">
+                            <button class="admin-btn secondary export-btn" id="export-dropdown-btn">
+                                <i class="fas fa-download"></i>
+                                Exportar
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="export-dropdown-menu" id="export-dropdown-menu">
+                                <button onclick="exportToPDF()" class="export-option">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Exportar PDF
+                                </button>
+                                <button onclick="exportToExcel()" class="export-option">
+                                    <i class="fas fa-file-excel"></i>
+                                    Exportar Excel
+                                </button>
+                                <button onclick="exportChartsAsImages()" class="export-option">
+                                    <i class="fas fa-image"></i>
+                                    Exportar Gráficos
+                                </button>
+                                <button onclick="exportFullReport()" class="export-option">
+                                    <i class="fas fa-file-archive"></i>
+                                    Reporte Completo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Stats Cards -->
@@ -78,6 +111,7 @@
                         <div class="stat-content">
                             <h3 id="total-users">0</h3>
                             <p>Total Usuarios</p>
+                            <small class="stat-trend" id="users-trend">+0% este mes</small>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -87,6 +121,7 @@
                         <div class="stat-content">
                             <h3 id="total-contact-forms">0</h3>
                             <p>Consultas Recibidas</p>
+                            <small class="stat-trend" id="forms-trend">+0% este mes</small>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -96,6 +131,7 @@
                         <div class="stat-content">
                             <h3 id="total-treatments">0</h3>
                             <p>Tratamientos</p>
+                            <small class="stat-trend" id="treatments-trend">Total activos</small>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -105,6 +141,166 @@
                         <div class="stat-content">
                             <h3 id="total-reviews">0</h3>
                             <p>Reviews</p>
+                            <small class="stat-trend" id="reviews-trend">Promedio: 0.0</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-grid">
+                    <!-- Users Chart -->
+                    <div class="admin-card chart-card">
+                        <div class="admin-card-header">
+                            <h3><i class="fas fa-chart-line"></i> Tendencia de Usuarios</h3>
+                            <select id="users-chart-period" class="chart-selector">
+                                <option value="7">Últimos 7 días</option>
+                                <option value="30" selected>Últimos 30 días</option>
+                                <option value="90">Últimos 90 días</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Contact Forms Chart -->
+                    <div class="admin-card chart-card">
+                        <div class="admin-card-header">
+                            <h3><i class="fas fa-chart-bar"></i> Consultas por Tratamiento</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="contactFormsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Chart -->
+                    <div class="admin-card chart-card">
+                        <div class="admin-card-header">
+                            <h3><i class="fas fa-chart-pie"></i> Distribución de Calificaciones</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="reviewsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Activity Timeline -->
+                    <div class="admin-card chart-card">
+                        <div class="admin-card-header">
+                            <h3><i class="fas fa-clock"></i> Actividad por Hora</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Details Grid -->
+                <div class="details-grid">
+                    <!-- User Analytics -->
+                    <div class="admin-card detail-card">
+                        <h3><i class="fas fa-users-cog"></i> Análisis de Usuarios</h3>
+                        <div class="detail-content">
+                            <div class="detail-item">
+                                <span class="detail-label">Usuarios Verificados:</span>
+                                <span class="detail-value" id="verified-users">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Usuarios Bloqueados:</span>
+                                <span class="detail-value" id="blocked-users">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Administradores:</span>
+                                <span class="detail-value" id="admin-users">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Nuevos (7 días):</span>
+                                <span class="detail-value" id="new-users-week">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Último registro:</span>
+                                <span class="detail-value" id="last-user-date">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consultation Analytics -->
+                    <div class="admin-card detail-card">
+                        <h3><i class="fas fa-envelope-open"></i> Análisis de Consultas</h3>
+                        <div class="detail-content">
+                            <div class="detail-item">
+                                <span class="detail-label">Consultas Hoy:</span>
+                                <span class="detail-value" id="forms-today">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Esta Semana:</span>
+                                <span class="detail-value" id="forms-week">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tipo más común:</span>
+                                <span class="detail-value" id="most-common-inquiry">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tratamiento más consultado:</span>
+                                <span class="detail-value" id="most-consulted-treatment">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Última consulta:</span>
+                                <span class="detail-value" id="last-form-date">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Treatment Analytics -->
+                    <div class="admin-card detail-card">
+                        <h3><i class="fas fa-tooth"></i> Análisis de Tratamientos</h3>
+                        <div class="detail-content">
+                            <div class="detail-item">
+                                <span class="detail-label">Tratamientos Activos:</span>
+                                <span class="detail-value" id="active-treatments">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Precio Promedio:</span>
+                                <span class="detail-value" id="avg-treatment-price">$0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Más Costoso:</span>
+                                <span class="detail-value" id="most-expensive-treatment">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Más Económico:</span>
+                                <span class="detail-value" id="cheapest-treatment">-</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Último agregado:</span>
+                                <span class="detail-value" id="last-treatment-date">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review Analytics -->
+                    <div class="admin-card detail-card">
+                        <h3><i class="fas fa-star-half-alt"></i> Análisis de Reviews</h3>
+                        <div class="detail-content">
+                            <div class="detail-item">
+                                <span class="detail-label">Calificación Promedio:</span>
+                                <span class="detail-value" id="avg-rating">0.0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Reviews 5 estrellas:</span>
+                                <span class="detail-value" id="five-star-reviews">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Reviews 1 estrella:</span>
+                                <span class="detail-value" id="one-star-reviews">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Reviews esta semana:</span>
+                                <span class="detail-value" id="reviews-week">0</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Último review:</span>
+                                <span class="detail-value" id="last-review-date">-</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -127,9 +323,14 @@
                 <div class="admin-card">
                     <div class="admin-card-header">
                         <h3><i class="fas fa-users"></i> Lista de Usuarios</h3>
-                        <button class="admin-btn primary" onclick="refreshUsers()">
-                            <i class="fas fa-refresh"></i> Actualizar
-                        </button>
+                        <div class="card-actions">
+                            <button class="admin-btn secondary" onclick="exportUsersToExcel()">
+                                <i class="fas fa-file-excel"></i> Exportar Excel
+                            </button>
+                            <button class="admin-btn primary" onclick="refreshUsers()">
+                                <i class="fas fa-refresh"></i> Actualizar
+                            </button>
+                        </div>
                     </div>
                     <div id="users-list" class="admin-table-container">
                         <p class="loading">Cargando usuarios...</p>
@@ -146,9 +347,14 @@
                 <div class="admin-card">
                     <div class="admin-card-header">
                         <h3><i class="fas fa-envelope"></i> Lista de Consultas</h3>
-                        <button class="admin-btn primary" onclick="refreshContactForms()">
-                            <i class="fas fa-refresh"></i> Actualizar
-                        </button>
+                        <div class="card-actions">
+                            <button class="admin-btn secondary" onclick="exportContactFormsToExcel()">
+                                <i class="fas fa-file-excel"></i> Exportar Excel
+                            </button>
+                            <button class="admin-btn primary" onclick="refreshContactForms()">
+                                <i class="fas fa-refresh"></i> Actualizar
+                            </button>
+                        </div>
                     </div>
                     <div id="contact-forms-list" class="admin-table-container">
                         <p class="loading">Cargando consultas...</p>
@@ -165,12 +371,17 @@
                 <div class="admin-card">
                     <div class="admin-card-header">
                         <h3><i class="fas fa-tooth"></i> Lista de Tratamientos</h3>
-                        <button class="admin-btn primary" onclick="showAddTreatmentModal()">
-                            <i class="fas fa-plus"></i> Agregar Tratamiento
-                        </button>
-                        <button class="admin-btn primary" onclick="loadTreatmentsData()">
-                            <i class="fas fa-refresh"></i> Actualizar
-                        </button>
+                        <div class="card-actions">
+                            <button class="admin-btn secondary" onclick="exportTreatmentsToExcel()">
+                                <i class="fas fa-file-excel"></i> Exportar Excel
+                            </button>
+                            <button class="admin-btn primary" onclick="showAddTreatmentModal()">
+                                <i class="fas fa-plus"></i> Agregar Tratamiento
+                            </button>
+                            <button class="admin-btn primary" onclick="loadTreatmentsData()">
+                                <i class="fas fa-refresh"></i> Actualizar
+                            </button>
+                        </div>
                     </div>
                     <div id="treatments-list" class="admin-table-container">
                         <p class="loading">Cargando tratamientos...</p>
@@ -187,9 +398,14 @@
                 <div class="admin-card">
                     <div class="admin-card-header">
                         <h3><i class="fas fa-star"></i> Lista de Reviews</h3>
-                        <button class="admin-btn primary" onclick="refreshReviews()">
-                            <i class="fas fa-refresh"></i> Actualizar
-                        </button>
+                        <div class="card-actions">
+                            <button class="admin-btn secondary" onclick="exportReviewsToExcel()">
+                                <i class="fas fa-file-excel"></i> Exportar Excel
+                            </button>
+                            <button class="admin-btn primary" onclick="refreshReviews()">
+                                <i class="fas fa-refresh"></i> Actualizar
+                            </button>
+                        </div>
                     </div>
                     <div id="reviews-list" class="admin-table-container">
                         <p class="loading">Cargando reviews...</p>
@@ -237,6 +453,19 @@
         </div>
     </div>
 
+    <!-- Export Progress Modal -->
+    <div id="export-modal" class="modal">
+        <div class="modal-content export-modal-content">
+            <div class="export-progress">
+                <h3 id="export-title">Exportando datos...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="export-progress-fill"></div>
+                </div>
+                <p id="export-status">Preparando exportación...</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="assets/js/config/api.js"></script>
     <script src="assets/js/services/authService.js"></script>
@@ -245,6 +474,7 @@
     <script src="assets/js/services/treatmentService.js"></script>
     <script src="assets/js/utils/ui.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script src="assets/js/services/exportService.js"></script>
     <script>
         function handleAdminLogout() {
             if (confirm('¿Estás seguro de cerrar sesión?')) {
@@ -254,6 +484,51 @@
         
         function showAddTreatmentModal() {
             UIUtils.showToast('Función en desarrollo', 'info');
+        }
+
+        // Export dropdown functionality
+        document.getElementById('export-dropdown-btn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('export-dropdown-menu');
+            menu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function() {
+            const menu = document.getElementById('export-dropdown-menu');
+            menu.classList.remove('show');
+        });
+
+        // Export functions
+        async function exportToPDF() {
+            await ExportService.exportDashboardToPDF();
+        }
+
+        async function exportToExcel() {
+            await ExportService.exportAllDataToExcel();
+        }
+
+        async function exportChartsAsImages() {
+            await ExportService.exportChartsAsImages();
+        }
+
+        async function exportFullReport() {
+            await ExportService.exportFullReport();
+        }
+
+        async function exportUsersToExcel() {
+            await ExportService.exportUsersToExcel();
+        }
+
+        async function exportContactFormsToExcel() {
+            await ExportService.exportContactFormsToExcel();
+        }
+
+        async function exportTreatmentsToExcel() {
+            await ExportService.exportTreatmentsToExcel();
+        }
+
+        async function exportReviewsToExcel() {
+            await ExportService.exportReviewsToExcel();
         }
     </script>
 </body>

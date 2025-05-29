@@ -1,6 +1,9 @@
 // API Configuration
 const API_CONFIG = {
-    BASE_URL: 'http://localhost:8080/system/api', // Actualizado para coincidir con application.properties
+    // Use environment variable or default to localhost for development
+    BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+        ? 'http://localhost:8080/system/api' 
+        : '/system/api', // Use relative path for production
     ENDPOINTS: {
         // Auth endpoints - corregidos para coincidir con AuthController
         LOGIN: '/auth/login',
@@ -10,6 +13,7 @@ const API_CONFIG = {
         REFRESH_TOKEN: '/auth/refresh',
         VERIFY_EMAIL: '/auth/verify-email',
         SEND_VERIFY_EMAIL: '/auth/send-verify-email',
+        SEND_PASSWORD_RESET: '/auth/send-change-password', // Agregar endpoint faltante
         // User endpoints
         USER_ME: '/users/me',
         USERS: '/users',

@@ -39,12 +39,12 @@ async function initializeContactForm() {
 async function loadTreatments() {
     try {
         showLoading(true);
-        const result = await TreatmentService.getAllTreatments();
+        const treatments = await TreatmentService.getAllTreatments();
         
-        if (result.success && result.data) {
-            populateTreatmentSelect(result.data);
+        if (treatments && treatments.length > 0) {
+            populateTreatmentSelect(treatments);
         } else {
-            console.error('Error al cargar tratamientos:', result.message);
+            console.error('Error al cargar tratamientos o no hay tratamientos disponibles');
             addDefaultTreatmentOptions();
         }
     } catch (error) {
