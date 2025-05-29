@@ -3,55 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificar Email - MediTourism</title>
+    <title>Verificación de Email - MediTourism</title>
     <link rel="stylesheet" href="assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="verify-page">
-        <div class="verify-container">
-            <div class="verify-card">
-                <div class="verify-header">
-                    <div class="verify-logo">
-                        <i class="fas fa-envelope-circle-check"></i>
-                    </div>
-                    <h1>Verificación de Email</h1>
-                    <p class="verify-subtitle">Validando tu dirección de correo electrónico</p>
-                </div>
-                
-                <div class="verify-content">
-                    <div id="verifyLoading" class="verify-loading">
-                        <div class="loading-spinner">
-                            <i class="fas fa-spinner fa-spin"></i>
-                        </div>
-                        <p>Verificando tu email...</p>
-                        <div class="loading-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                    </div>
-                    
-                    <div id="verifyMessage" class="verify-message"></div>
-                </div>
-                
-                <div class="verify-actions">
-                    <a href="auth.html" class="verify-btn verify-btn-primary">
-                        <i class="fas fa-sign-in-alt"></i>
-                        <span>Ir al Login</span>
-                    </a>
-                    <a href="home.html" class="verify-btn verify-btn-secondary">
-                        <i class="fas fa-home"></i>
-                        <span>Ir al Inicio</span>
-                    </a>
-                </div>
-                
-                <div class="verify-footer">
-                    <p>¿Problemas con la verificación?</p>
-                    <a href="mailto:soporte@meditourism.com" class="support-link">
-                        <i class="fas fa-headset"></i> Contactar Soporte
-                    </a>
-                </div>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1><i class="fas fa-envelope-open"></i> Verificación de Email</h1>
+            </div>
+            
+            <div id="verifyLoading" class="verify-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Verificando tu email...</p>
+            </div>
+            
+            <div id="verifyMessage" class="message" style="display: none;"></div>
+            
+            <div class="auth-footer">
+                <a href="login.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Volver al login
+                </a>
             </div>
         </div>
     </div>
@@ -89,33 +62,34 @@
                         'Tu cuenta ha sido activada. Ya puedes acceder a todos nuestros servicios.'
                     );
                 } else {
-                    const errorData = await response.json().catch(() => ({}));
+                    const errorData = await response.json().catch(() => ({ message: 'Error de verificación' }));
                     showVerificationResult('error', 
-                        'Error al verificar el email', 
-                        errorData.message || 'El token puede haber expirado o ser inválido. Intenta solicitar un nuevo enlace de verificación.'
+                        'Error de verificación', 
+                        errorData.message || 'No se pudo verificar tu email. El enlace puede haber expirado.'
                     );
                 }
             } catch (error) {
                 verifyLoading.style.display = 'none';
-                console.error('Error verifying email:', error);
                 showVerificationResult('error', 
                     'Error de conexión', 
-                    'No se pudo conectar con el servidor. Verifica tu conexión a internet e intenta nuevamente.'
+                    'No se pudo conectar con el servidor. Intenta nuevamente más tarde.'
                 );
             }
         });
 
         function showVerificationResult(type, title, message) {
             const verifyMessage = document.getElementById('verifyMessage');
-            const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-triangle';
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
             
             verifyMessage.innerHTML = `
-                <div class="verify-result verify-result-${type}">
-                    <div class="result-icon">
-                        <i class="${iconClass}"></i>
-                    </div>
+                <div class="verification-result ${type}">
+                    <i class="fas fa-${icon}"></i>
                     <h3>${title}</h3>
                     <p>${message}</p>
+                    ${type === 'success' ? 
+                        '<a href="login.html" class="btn-primary">Ir al Login</a>' : 
+                        '<a href="auth.html" class="btn-primary">Volver al Registro</a>'
+                    }
                 </div>
             `;
             verifyMessage.style.display = 'block';

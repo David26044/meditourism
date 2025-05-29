@@ -1,5 +1,7 @@
 // User Service
 class UserService {
+    static cachedUser = null;
+
     static async getCurrentUserInfo() {
         console.log('🔍 UserService.getCurrentUserInfo() - Iniciando...');
         try {
@@ -37,8 +39,8 @@ class UserService {
     static getStoredUser() {
         console.log('📦 UserService.getStoredUser() - Obteniendo usuario almacenado...');
         const userStr = localStorage.getItem('user');
-        console.log('🗃️ Usuario en localStorage (raw):', userStr);
         const user = userStr ? JSON.parse(userStr) : null;
+        console.log('🗃️ Usuario en localStorage (raw):', userStr);
         console.log('👤 Usuario parseado:', user);
         return user;
     }
@@ -46,11 +48,45 @@ class UserService {
     static isAdmin() {
         console.log('🛡️ UserService.isAdmin() - Verificando permisos de admin...');
         const user = this.getStoredUser();
-        // Corregir la ruta del rol - usar 'role' en lugar de 'roleEntity'
-        const isAdmin = user && user.role && (user.role.name === 'ADMIN' || user.role.name === 'ROLE_ADMIN');
         console.log('👤 Usuario para verificar admin:', user);
+        const isAdmin = user && user.role && user.role.name === 'ADMIN';
         console.log('🔐 Es admin:', isAdmin);
         return isAdmin;
+    }
+
+    static isAuthenticated() {
+        const token = localStorage.getItem('token');
+        return !!token;
+    }
+
+    static getCurrentUser() {
+        return this.getStoredUser();
+    }
+
+    static async refreshUserInfo() {
+        console.log('🔄 UserService.refreshUserInfo() - Refrescando información del usuario...');
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.USER_ME}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const user = await response.json();
+                localStorage.setItem('user', JSON.stringify(user));
+                this.cachedUser = user;
+                return user;
+            }
+        } catch (error) {
+            console.error('Error refreshing user info:', error);
+        }
+        return null;
     }
 
     static updateUserDisplay() {
@@ -139,35 +175,18 @@ class UserService {
         
         if (user) {
             console.log('👤 Usuario encontrado, mostrando avatar');
-            // Add admin styling to avatar if user is admin
-            if (this.isAdmin()) {
-                console.log('🛡️ Aplicando estilos de admin al avatar');
-                userAvatar.style.border = '2px solid #ff4757';
-                userAvatar.style.backgroundColor = '#ffe8e8';
-            } else {
-                userAvatar.style.border = '';
-                userAvatar.style.backgroundColor = '';
-            }
-            
             userAvatar.style.display = 'flex';
+            
+            if (user.avatar) {
+                userAvatar.innerHTML = `<img src="${user.avatar}" alt="Avatar" class="avatar-img">`;
+            } else {
+                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            }
             console.log('✅ Avatar visible');
         } else {
             console.log('❌ No hay usuario, ocultando avatar');
             userAvatar.style.display = 'none';
         }
-    }
-
-    static async refreshUserInfo() {
-        console.log('🔄 UserService.refreshUserInfo() - Refrescando información del usuario...');
-        const userInfo = await this.getCurrentUserInfo();
-        if (userInfo) {
-            console.log('✅ Información obtenida, actualizando display');
-            this.updateUserDisplay();
-            this.updateUserAvatar();
-        } else {
-            console.log('❌ No se pudo obtener información del usuario');
-        }
-        return userInfo;
     }
 
     static async isUserBlocked(userId = null) {
@@ -203,5 +222,16 @@ class UserService {
         }
 
         return true;
+    }
+
+    static showAdminBadge() {
+        const userInfo = document.querySelector('.user-info');
+        if (userInfo && !document.getElementById('adminBadge')) {
+            const badge = document.createElement('span');
+            badge.id = 'adminBadge';
+            badge.className = 'admin-badge-small';
+            badge.innerHTML = '<i class="fas fa-crown"></i> Admin';
+            userInfo.appendChild(badge);
+        }
     }
 }

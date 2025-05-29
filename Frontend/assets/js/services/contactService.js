@@ -124,3 +124,8 @@ class ContactService {
         }
     }
 }
+
+// Make ContactService globally available
+if (typeof window !== 'undefined') {
+    window.ContactService = ContactService;
+}

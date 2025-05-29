@@ -96,3 +96,8 @@ class TreatmentService {
         }
     }
 }
+
+// Make TreatmentService globally available
+if (typeof window !== 'undefined') {
+    window.TreatmentService = TreatmentService;
+}

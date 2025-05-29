@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Turismo dental en Colombia - Odontomar, clínica dental especializada">
-    <title>Odontomar | Turismo Dental Colombia</title>
+    <meta name="description" content="Turismo dental en Colombia - MediTourism, clínica dental especializada">
+    <title>MediTourism | Turismo Dental Colombia</title>
     <link rel="stylesheet" href="assets/css/home.css">
     <link rel="stylesheet" href="assets/css/contact.css">
+    <link rel="stylesheet" href="assets/css/reviews.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -15,7 +16,7 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <i class="fas fa-tooth"></i>
-                <span>Odontomar</span>
+                <span>MediTourism</span>
             </div>
             <nav class="nav-menu" id="navMenu">
                 <a href="#servicios" class="nav-link">Servicios</a>
@@ -55,7 +56,7 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-text">
-                <h1>Bienvenido a <span class="highlight">Odontomar</span></h1>
+                <h1>Bienvenido a <span class="highlight">MediTourism</span></h1>
                 <p class="hero-subtitle">Turismo dental de calidad en Colombia con Dr. Carlos Monroy</p>
                 <div class="hero-stats">
                     <div class="stat-item">
@@ -84,25 +85,17 @@
     </section>
 
     <!-- Quick Actions -->
-    <section class="quick-actions">
+    <section class="quick-actions" style="background: #fff;">
         <div class="container">
             <h2>Servicios Principales</h2>
             <div class="actions-grid">
-                <div class="action-card" data-action="agendar-cita">
-                    <div class="action-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <h3>Agendar Cita</h3>
-                    <p>Programa tu consulta dental</p>
-                    <button class="action-btn">Agendar Ahora</button>
-                </div>
                 <div class="action-card" data-action="operatoria-dental">
                     <div class="action-icon">
                         <i class="fas fa-tooth"></i>
                     </div>
                     <h3>Operatoria Dental</h3>
                     <p>Obturaciones desde $100.000</p>
-                    <button class="action-btn">Ver Precios</button>
+                    
                 </div>
                 <div class="action-card" data-action="implantes">
                     <div class="action-icon">
@@ -110,7 +103,7 @@
                     </div>
                     <h3>Implantes Dentales</h3>
                     <p>Implantes completos desde $3.500.000</p>
-                    <button class="action-btn">Consultar</button>
+                    
                 </div>
                 <div class="action-card" data-action="estetica-dental">
                     <div class="action-icon">
@@ -118,132 +111,37 @@
                     </div>
                     <h3>Estética Dental</h3>
                     <p>Diseño de sonrisa y aclaramientos</p>
-                    <button class="action-btn">Explorar</button>
+    
+                </div>
+            </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Dashboard Widgets -->
-    <section class="dashboard-widgets">
+    <!-- Sección eliminada y reemplazada por información relevante -->
+    <section class="info-relevante-section">
         <div class="container">
-            <div class="widgets-grid">
-                <!-- Próximas Citas -->
-                <div class="widget">
-                    <div class="widget-header">
-                        <h3><i class="fas fa-calendar-check"></i> Próximas Citas</h3>
-                        <a href="#citas" class="widget-link">Ver todas</a>
-                    </div>
-                    <div class="widget-content">
-                        <div class="appointment-item">
-                            <div class="appointment-date">
-                                <span class="day">15</span>
-                                <span class="month">Nov</span>
-                            </div>
-                            <div class="appointment-info">
-                                <h4>Dr. Carlos Monroy</h4>
-                                <p>Consulta General - 2:30 PM</p>
-                                <span class="appointment-status confirmed">Confirmada</span>
-                            </div>
-                        </div>
-                        <div class="appointment-item">
-                            <div class="appointment-date">
-                                <span class="day">20</span>
-                                <span class="month">Nov</span>
-                            </div>
-                            <div class="appointment-info">
-                                <h4>Especialista en Endodoncia</h4>
-                                <p>Tratamiento de Conductos - 10:00 AM</p>
-                                <span class="appointment-status pending">Pendiente</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Especialidades -->
-                <div class="widget">
-                    <div class="widget-header">
-                        <h3><i class="fas fa-stethoscope"></i> Especialidades Disponibles</h3>
-                        <a href="#especialidades" class="widget-link">Ver todas</a>
-                    </div>
-                    <div class="widget-content">
-                        <div class="service-item">
-                            <div class="service-icon">
-                                <i class="fas fa-tooth"></i>
-                            </div>
-                            <div class="service-info">
-                                <h4>Endodoncia</h4>
-                                <p>Tratamientos de conductos especializados</p>
-                                <div class="service-pricing">
-                                    <span class="price">Desde $320.000</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="service-item">
-                            <div class="service-icon">
-                                <i class="fas fa-plus-circle"></i>
-                            </div>
-                            <div class="service-info">
-                                <h4>Implantología</h4>
-                                <p>Implantes dentales con titanio grado 5</p>
-                                <div class="service-pricing">
-                                    <span class="price">Desde $3.500.000</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="service-item">
-                            <div class="service-icon">
-                                <i class="fas fa-smile"></i>
-                            </div>
-                            <div class="service-info">
-                                <h4>Estética Dental</h4>
-                                <p>Diseño de sonrisa y aclaramientos</p>
-                                <div class="service-pricing">
-                                    <span class="price">Desde $680.000</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sedes Disponibles -->
-                <div class="widget">
-                    <div class="widget-header">
-                        <h3><i class="fas fa-map-marker-alt"></i> Nuestras Sedes</h3>
-                        <a href="#sedes" class="widget-link">Ver detalles</a>
-                    </div>
-                    <div class="widget-content">
-                        <div class="location-item">
-                            <div class="location-icon">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <div class="location-info">
-                                <h4>Sede Marsella</h4>
-                                <p>Atención con cita previa</p>
-                                <span class="location-status available">Disponible</span>
-                            </div>
-                        </div>
-                        <div class="location-item">
-                            <div class="location-icon">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <div class="location-info">
-                                <h4>Sede Chapinero</h4>
-                                <p>Atención con cita previa</p>
-                                <span class="location-status available">Disponible</span>
-                            </div>
-                        </div>
-                        <div class="location-item">
-                            <div class="location-icon">
-                                <i class="fas fa-building"></i>
-                            </div>
-                            <div class="location-info">
-                                <h4>Sede Lago de los Héroes</h4>
-                                <p>Atención con cita previa</p>
-                                <span class="location-status available">Disponible</span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="why-meditourism-card wide">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    ¿Por qué elegir MediTourism?
+                </h2>
+                <div class="info-relevante-content">
+                    <p>
+                        En <strong>MediTourism</strong> nos especializamos en brindar atención odontológica de alta calidad para pacientes nacionales e internacionales. Nuestro equipo, liderado por el Dr. Carlos Monroy, cuenta con más de 16 años de experiencia y utiliza tecnología de punta para garantizar resultados óptimos y seguros.
+                    </p>
+                    <ul>
+                        <li><strong>Turismo dental:</strong> Asesoría personalizada para pacientes extranjeros.</li>
+                        <li><strong>Especialidades integrales:</strong> Endodoncia, implantología, estética dental, ortodoncia y más.</li>
+                        <li><strong>Atención en varias sedes:</strong> Marsella, Chapinero y Lago de los Héroes en Bogotá.</li>
+                        <li><strong>Protocolos de bioseguridad:</strong> Cumplimos con los más altos estándares de higiene y seguridad.</li>
+                        <li><strong>Testimonios reales:</strong> Más de 1.000 pacientes satisfechos avalan nuestro trabajo.</li>
+                    </ul>
+                    <p>
+                        ¡Agenda tu cita y vive una experiencia odontológica diferente en Colombia!
+                    </p>
                 </div>
             </div>
         </div>
@@ -336,6 +234,102 @@
             </div>
         </div>
     </section>
+
+    <!-- Reviews Section -->
+    <section class="reviews-section">
+        <div class="container">
+            <div class="reviews-header">
+                <h2 class="section-title">
+                    <i class="fas fa-star"></i>
+                    Lo que dicen nuestros pacientes
+                </h2>
+                <p class="section-subtitle">Conoce las experiencias reales de quienes han confiado en MediTourism</p>
+            </div>
+            
+            <div id="latestReviews" class="reviews-container">
+                <!-- Reviews will be loaded here dynamically -->
+                <div class="reviews-loading">
+                    <div class="loading-content">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Cargando reseñas...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Write Review Section -->
+            <div class="write-review-section">
+                <div class="write-review-card">
+                    <div class="write-review-content">
+                        <div class="write-review-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="write-review-text">
+                            <h3>¿Has sido nuestro paciente?</h3>
+                            <p>Comparte tu experiencia y ayuda a otros pacientes a conocer la calidad de nuestros servicios</p>
+                        </div>
+                        <button id="openReviewModalBtn" class="btn-write-review" style="display: none;">
+                            <i class="fas fa-plus"></i>
+                            Escribir reseña
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal review-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-star"></i> Compartir tu experiencia</h3>
+                <button class="modal-close" id="closeReviewModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="reviewForm" class="modal-body">
+                <div class="form-group">
+                    <label for="reviewClinic">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Clínica visitada *
+                    </label>
+                    <select id="reviewClinic" name="clinicId" required>
+                        <option value="">Selecciona la clínica que visitaste</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reviewRating">
+                        <i class="fas fa-star"></i>
+                        Tu calificación *
+                    </label>
+                    <select id="reviewRating" name="rating" required>
+                        <option value="">¿Cómo calificarías tu experiencia?</option>
+                        <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+                        <option value="4">⭐⭐⭐⭐ Muy Bueno</option>
+                        <option value="3">⭐⭐⭐ Bueno</option>
+                        <option value="2">⭐⭐ Regular</option>
+                        <option value="1">⭐ Necesita mejorar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reviewContent">
+                        <i class="fas fa-comment"></i>
+                        Cuéntanos tu experiencia *
+                    </label>
+                    <textarea id="reviewContent" name="content" rows="4" required 
+                              placeholder="Comparte los detalles de tu experiencia: atención recibida, instalaciones, tratamiento, etc."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i> Enviar reseña
+                    </button>
+                    <button type="button" class="btn-secondary" id="cancelReviewBtn">
+                        Cancelar
+                    </button>
+                </div>
+                <div id="reviewFormError" class="error-message" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
 
     <!-- Contact Form Section -->
     <section class="contact-section" id="contacto" style="background: var(--gray-light);">
@@ -496,7 +490,7 @@
                                     <input type="checkbox" id="acceptMarketing" name="acceptMarketing">
                                     <span class="checkmark"></span>
                                     <span class="checkbox-text">
-                                        Deseo recibir información sobre promociones y servicios de Odontomar
+                                        Deseo recibir información sobre promociones y servicios de MediTourism
                                     </span>
                                 </div>
                             </div>
@@ -547,7 +541,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>Odontomar</h3>
+                    <h3>MediTourism</h3>
                     <p>Clínica dental especializada dirigida por el Dr. Carlos Monroy con 16 años de experiencia docente y especialización en múltiples áreas odontológicas.</p>
                     <p><strong>Registro REPS:</strong> 79 708 910</p>
                 </div>
@@ -579,7 +573,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Odontomar - Dr. Carlos Monroy. Todos los derechos reservados.</p>
+                <p>&copy; 2024 MediTourism - Dr. Carlos Monroy. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
@@ -596,11 +590,14 @@
     <script src="assets/js/config/api.js"></script>
     <script src="assets/js/services/authService.js"></script>
     <script src="assets/js/services/userService.js"></script>
+    <script src="assets/js/services/reviewService.js"></script>
+    <script src="assets/js/services/clinicService.js"></script>
     <script src="assets/js/services/contactService.js"></script>
     <script src="assets/js/services/treatmentService.js"></script>
     <script src="assets/js/services/emailService.js"></script>
     <script src="assets/js/utils/ui.js"></script>
     <script src="assets/js/home.js"></script>
     <script src="assets/js/contact.js"></script>
+    <script src="assets/js/reviews.js"></script>
 </body>
 </html>

@@ -298,6 +298,7 @@ body {
 /* Quick Actions */
 .quick-actions {
     padding: 80px 0;
+    background: #fff;
 }
 
 .quick-actions h2 {
@@ -899,62 +900,576 @@ body {
     margin: 0;
 }
 
-/* Responsive Design */
+/* Reviews Section */
+.reviews-section {
+    padding: 80px 0;
+    background: var(--gray-light);
+}
+
+.reviews-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.section-title i {
+    color: var(--warning-color);
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.reviews-container {
+    margin-bottom: 50px;
+}
+
+.reviews-loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.reviews-loading .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.reviews-loading i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+.reviews-loading p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+}
+
+.review-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: var(--shadow-light);
+    transition: var(--transition);
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.review-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+}
+
+.review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-color);
+}
+
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.reviewer-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.avatar-initials {
+    color: var(--white);
+}
+
+.reviewer-details h4 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.review-clinic-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.clinic-icon {
+    color: var(--primary-color);
+}
+
+.review-rating-section {
+    text-align: right;
+}
+
+.star-rating {
+    margin-bottom: 5px;
+}
+
+.star-rating i {
+    color: var(--warning-color);
+    margin-right: 2px;
+}
+
+.rating-value {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.review-content-section {
+    margin: 20px 0;
+}
+
+.review-text {
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-style: italic;
+    position: relative;
+    padding-left: 20px;
+}
+
+.review-text::before {
+    content: '"';
+    position: absolute;
+    left: 0;
+    top: -5px;
+    font-size: 2rem;
+    color: var(--primary-color);
+    opacity: 0.3;
+}
+
+.review-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray-light);
+}
+
+.review-date-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.date-icon {
+    color: var(--primary-color);
+}
+
+.review-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.helpful-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid var(--gray-medium);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.helpful-btn:hover {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.empty-reviews-state {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-light);
+}
+
+.empty-state-icon {
+    margin-bottom: 30px;
+}
+
+.empty-state-icon i {
+    font-size: 4rem;
+    color: var(--gray-medium);
+}
+
+.empty-state-title {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.empty-state-description {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.empty-state-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+}
+
+/* Write Review Section */
+.write-review-section {
+    margin-top: 40px;
+}
+
+.write-review-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: var(--shadow-light);
+    border: 2px dashed var(--gray-medium);
+    transition: var(--transition);
+}
+
+.write-review-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-medium);
+}
+
+.write-review-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    text-align: left;
+}
+
+.write-review-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.write-review-text {
+    flex: 1;
+}
+
+.write-review-text h3 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.write-review-text p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.btn-write-review {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 15px 25px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.btn-write-review:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+/* Review Modal */
+.review-modal .modal-content {
+    max-width: 800px; /* antes 600px */
+    border-radius: 16px; /* más redondeado */
+}
+
+.review-modal .modal-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: var(--white);
+    padding: 25px 30px;
+    border-radius: 12px 12px 0 0;
+}
+
+.review-modal .modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.review-modal .modal-close {
+    background: none;
+    border: none;
+    color: var(--white);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.review-modal .modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.review-modal .modal-body {
+    padding: 30px;
+}
+
+.review-modal .form-group {
+    margin-bottom: 25px;
+}
+
+.review-modal .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.review-modal .form-group label i {
+    color: var(--accent-color);
+}
+
+.review-modal .form-group select,
+.review-modal .form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.review-modal .form-group select:focus,
+.review-modal .form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.review-modal .modal-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    margin-top: 30px;
+}
+
+.review-modal .btn-primary,
+.review-modal .btn-secondary {
+    padding: 12px 25px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.review-modal .btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+}
+
+.review-modal .btn-primary:hover {
+    background: var(--secondary-color);
+}
+
+.review-modal .btn-secondary {
+    background: var(--gray-light);
+    color: var(--text-primary);
+    border: 1px solid var(--gray-medium);
+}
+
+.review-modal .btn-secondary:hover {
+    background: var(--gray-medium);
+}
+
+.review-modal .error-message {
+    background: #fee;
+    color: var(--error-color);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    margin-top: 15px;
+    border: 1px solid #fcc;
+}
+
+/* Responsive Reviews */
 @media (max-width: 768px) {
-    .mobile-toggle {
-        display: flex;
-    }
-    
-    .nav-menu {
-        display: none;
-    }
-    
-    .hero-content {
+    .reviews-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .write-review-content {
+        flex-direction: column;
         text-align: center;
-        gap: 40px;
-    }
-    
-    .hero-text h1 {
-        font-size: 2rem;
-    }
-    
-    .hero-stats {
-        justify-content: center;
         gap: 20px;
     }
     
-    .actions-grid {
-        grid-template-columns: 1fr;
+    .review-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
     
-    .widgets-grid {
-        grid-template-columns: 1fr;
+    .review-rating-section {
+        text-align: left;
     }
     
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .pricing-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .equipment-list {
-        grid-template-columns: 1fr;
+    .review-card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
 }
 
 @media (max-width: 480px) {
-    .hero-stats {
-        flex-direction: column;
-        gap: 15px;
+    .review-card {
+        padding: 20px;
     }
     
-    .stat-item {
-        padding: 10px;
-        background: rgba(255,255,255,0.1);
-        border-radius: var(--border-radius);
+    .write-review-card {
+        padding: 25px;
     }
+    
+    .section-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .review-modal .modal-content {
+        max-width: 98vw;
+    }
+}
+
+/* Nueva sección centrada para "Por qué elegir Meditourism" */
+.why-meditourism-card {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08), 0 1.5px 6px rgba(0,0,0,0.04);
+    padding: 2.5rem 2rem;
+    text-align: center;
+    transition: box-shadow 0.2s;
+}
+
+.why-meditourism-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12), 0 3px 12px rgba(0,0,0,0.06);
+}
+
+.why-meditourism-card .section-title {
+    margin-bottom: 1.2rem;
+    font-size: 2rem;
+    color: #1e88e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.why-meditourism-card .info-relevante-content {
+    text-align: center;
+}
+
+.why-meditourism-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 1.2rem 0;
+}
+
+.why-meditourism-card ul li {
+    margin: 0.5rem 0;
+    font-size: 1.08rem;
+    position: relative;
+    padding-left: 1.5em;
+}
+
+.why-meditourism-card ul li::before {
+    content: "✔";
+    color: #43a047;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.why-meditourism-card p {
+    margin: 0.7rem 0;
+    font-size: 1.08rem;
+}
+
+.why-meditourism-card.wide {
+    max-width: 900px;
+    /* Puedes ajustar el valor si quieres aún más ancho */
 }
