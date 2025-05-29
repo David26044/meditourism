@@ -9,13 +9,14 @@ class TreatmentService {
 
             if (response.ok) {
                 const treatments = await response.json();
-                return { success: true, data: treatments };
+                // El backend devuelve directamente el array de tratamientos, no un objeto con success/data
+                return treatments;
             } else {
-                return { success: false, message: 'Error al obtener tratamientos' };
+                return [];
             }
         } catch (error) {
             console.error('Error en TreatmentService.getAllTreatments:', error);
-            return { success: false, message: 'Error de conexión' };
+            return [];
         }
     }
 
