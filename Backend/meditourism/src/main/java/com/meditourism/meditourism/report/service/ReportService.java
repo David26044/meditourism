@@ -15,16 +15,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Servicio para la gestión de reportes en el sistema.
+ * Permite crear, consultar, actualizar y eliminar reportes de comentarios o reseñas
+ * que violen las normas de la comunidad.
+ */
 @Service
 public class ReportService implements IReportService {
 
     @Autowired
-    ReportRepository reportRepository;
+    private ReportRepository reportRepository;
+
     @Autowired
     private AuthService authService;
 
     /**
-     * @return 
+     * Obtiene todos los reportes existentes en el sistema.
+     *
+     * @return Lista de todos los reportes en formato DTO
      */
     @Override
     public List<ReportResponseDTO> getAllReports() {
@@ -32,8 +40,11 @@ public class ReportService implements IReportService {
     }
 
     /**
-     * @param id 
-     * @return
+     * Obtiene un reporte específico por su ID.
+     *
+     * @param id ID del reporte a buscar
+     * @return DTO con los datos del reporte encontrado
+     * @throws ResourceNotFoundException si no se encuentra el reporte
      */
     @Override
     public ReportResponseDTO getReportById(Long id) {
@@ -42,8 +53,10 @@ public class ReportService implements IReportService {
     }
 
     /**
-     * @param dto 
-     * @return
+     * Crea un nuevo reporte en el sistema.
+     *
+     * @param dto DTO con los datos del reporte a crear
+     * @return DTO con los datos del reporte creado
      */
     @Override
     public ReportResponseDTO saveReport(ReportRequestDTO dto) {
@@ -51,16 +64,21 @@ public class ReportService implements IReportService {
         UserEntity user = authService.getAuthenticatedUser();
         CommunityRuleEntity communityRule = new CommunityRuleEntity();
         communityRule.setId(dto.getCommunityRuleId());
+
+        // Establece el comentario reportado si existe
         if(dto.getTargetCommentId() != null) {
             CommentEntity comment = new CommentEntity();
             comment.setId(dto.getTargetCommentId());
             entity.setTargetComment(comment);
         }
+
+        // Establece la reseña reportada si existe
         if (dto.getTargetReviewId() != null) {
             ReviewEntity review = new ReviewEntity();
             review.setId(dto.getTargetReviewId());
             entity.setTargetReview(review);
         }
+
         entity.setReporterUser(user);
         entity.setCommunityRule(communityRule);
         entity.setReason(dto.getReason());
@@ -69,22 +87,31 @@ public class ReportService implements IReportService {
     }
 
     /**
-     * @param dto 
-     * @return
+     * Actualiza un reporte existente.
+     *
+     * @param id ID del reporte a actualizar
+     * @param dto DTO con los nuevos datos del reporte
+     * @return DTO con los datos del reporte actualizado
+     * @throws ResourceNotFoundException si no se encuentra el reporte
      */
     @Override
     public ReportResponseDTO updateReport(Long id, ReportRequestDTO dto) {
         ReportEntity entity = reportRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el reporte con ID: "+ id));
+
         if (dto.getReason() != null) {
             entity.setReason(dto.getReason());
         }
+
         return new ReportResponseDTO(reportRepository.save(entity));
     }
 
     /**
-     * @param id 
-     * @return
+     * Elimina un reporte del sistema.
+     *
+     * @param id ID del reporte a eliminar
+     * @return DTO con los datos del reporte eliminado
+     * @throws ResourceNotFoundException si no se encuentra el reporte
      */
     @Override
     public ReportResponseDTO deleteReport(Long id) {

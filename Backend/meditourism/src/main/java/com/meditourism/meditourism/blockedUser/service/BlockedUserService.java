@@ -13,8 +13,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Servicio para gestionar usuarios bloqueados en el sistema.
+ */
 @Service
-public class BlockedUserService implements IBlockedUserService{
+public class BlockedUserService implements IBlockedUserService {
 
     @Autowired
     BlockedUserRepository blockedUserRepository;
@@ -22,9 +25,10 @@ public class BlockedUserService implements IBlockedUserService{
     @Autowired
     IUserService userService;
 
-
     /**
-     * @return 
+     * Obtiene todos los usuarios bloqueados en el sistema.
+     *
+     * @return Lista de DTOs con la información de todos los usuarios bloqueados
      */
     @Override
     public List<BlockedUserResponseDTO> getAllBlockedUsers() {
@@ -32,8 +36,11 @@ public class BlockedUserService implements IBlockedUserService{
     }
 
     /**
-     * @param id 
-     * @return
+     * Busca un usuario bloqueado por su ID.
+     *
+     * @param id ID del usuario bloqueado a buscar
+     * @return DTO con la información del usuario bloqueado
+     * @throws ResourceNotFoundException Si no se encuentra el usuario bloqueado con el ID especificado
      */
     @Override
     public BlockedUserResponseDTO findBlockedUserByUserId(Long id) {
@@ -41,14 +48,23 @@ public class BlockedUserService implements IBlockedUserService{
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró al usuario bloqueado con ID: " + id)));
     }
 
+    /**
+     * Verifica si un usuario está bloqueado.
+     *
+     * @param id ID del usuario a verificar
+     * @return true si el usuario está bloqueado, false en caso contrario
+     */
     @Override
-    public boolean isBlocked(Long id){
+    public boolean isBlocked(Long id) {
         return blockedUserRepository.findById(id).isPresent();
     }
 
     /**
-     * @param dto 
-     * @return
+     * Guarda un nuevo usuario bloqueado en el sistema.
+     *
+     * @param dto DTO con la información del usuario a bloquear
+     * @return DTO con la información del usuario bloqueado guardado
+     * @throws ResourceAlreadyExistsException Si el usuario ya está bloqueado
      */
     @Override
     public BlockedUserResponseDTO saveBlockedUser(BlockedUserRequestDTO dto) {
@@ -64,28 +80,34 @@ public class BlockedUserService implements IBlockedUserService{
     }
 
     /**
-     * @param id 
-     * @param dto
-     * @return
+     * Actualiza la información de un usuario bloqueado.
+     *
+     * @param id ID del usuario bloqueado a actualizar
+     * @param dto DTO con la nueva información del usuario bloqueado
+     * @return DTO con la información actualizada del usuario bloqueado
+     * @throws ResourceNotFoundException Si no se encuentra el usuario bloqueado con el ID especificado
      */
     @Override
     public BlockedUserResponseDTO updateBlockedUser(Long id, BlockedUserRequestDTO dto) {
         BlockedUserEntity blockedUser = blockedUserRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró al usuario bloqueado con ID: " +id));
-        if (dto.getReason() != null){
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró al usuario bloqueado con ID: " + id));
+        if (dto.getReason() != null) {
             blockedUser.setReason(dto.getReason());
         }
         return new BlockedUserResponseDTO(blockedUserRepository.save(blockedUser));
     }
 
     /**
-     * @param id 
-     * @return
+     * Elimina un usuario bloqueado del sistema.
+     *
+     * @param id ID del usuario bloqueado a eliminar
+     * @return DTO con la información del usuario bloqueado eliminado
+     * @throws ResourceNotFoundException Si no se encuentra el usuario bloqueado con el ID especificado
      */
     @Override
     public BlockedUserResponseDTO deleteBlockedUser(Long id) {
         BlockedUserEntity blockedUser = blockedUserRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se encontró al usuario bloqueado con ID: " +id));
+                .orElseThrow(() -> new ResourceNotFoundException("No se encontró al usuario bloqueado con ID: " + id));
         blockedUserRepository.delete(blockedUser);
         return new BlockedUserResponseDTO(blockedUser);
     }

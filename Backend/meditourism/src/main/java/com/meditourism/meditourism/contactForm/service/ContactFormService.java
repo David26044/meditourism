@@ -16,23 +16,35 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Servicio para manejar las operaciones relacionadas con los formularios de contacto.
+ */
 @Service
 public class ContactFormService implements IContactFormService {
 
-
     @Autowired
     private ContactFormRepository contactFormRepository;
+
     @Autowired
     private IBlockedUserService blockedUserService;
 
     /**
-     * @return 
+     * Obtiene todos los formularios de contacto existentes.
+     *
+     * @return Lista de DTOs con la información de todos los formularios de contacto
      */
     @Override
     public List<ContactFormResponseDTO> getAllContactForms() {
         return ContactFormResponseDTO.fromEntityList(contactFormRepository.findAll());
     }
 
+    /**
+     * Obtiene todos los formularios de contacto asociados a un tratamiento específico.
+     *
+     * @param id ID del tratamiento
+     * @return Lista de DTOs con los formularios de contacto del tratamiento
+     * @throws ResourceNotFoundException si no se encuentran formularios para el tratamiento
+     */
     @Override
     public List<ContactFormResponseDTO> getAllContactFormsByTreatmentId(Long id) {
         List<ContactFormEntity> contactForms = contactFormRepository.findAllByTreatmentId(id);
@@ -45,8 +57,11 @@ public class ContactFormService implements IContactFormService {
     }
 
     /**
-     * @param id
-     * @return
+     * Obtiene todos los formularios de contacto asociados a un usuario específico.
+     *
+     * @param id ID del usuario
+     * @return Lista de DTOs con los formularios de contacto del usuario
+     * @throws ResourceNotFoundException si no se encuentran formularios para el usuario
      */
     @Override
     public List<ContactFormResponseDTO> getContactFormByUserId(Long id) {
@@ -58,10 +73,12 @@ public class ContactFormService implements IContactFormService {
         return ContactFormResponseDTO.fromEntityList(contactForms);
     }
 
-
     /**
-     * @param id 
-     * @return
+     * Obtiene un formulario de contacto específico por su ID.
+     *
+     * @param id ID del formulario de contacto
+     * @return DTO con la información del formulario de contacto
+     * @throws ResourceNotFoundException si no se encuentra el formulario
      */
     @Override
     public ContactFormResponseDTO getContactFormById(Long id) {
@@ -69,6 +86,11 @@ public class ContactFormService implements IContactFormService {
                 .orElseThrow(() -> new ResourceNotFoundException("No existe el formulaio de contacto con ID: "+ id)));
     }
 
+    /**
+     * Obtiene el conteo de contactos por tratamiento.
+     *
+     * @return Lista de DTOs con el ID del tratamiento, su nombre y el conteo de contactos
+     */
     public List<TreatmentContactCountDTO> getTreatmentContactCounts() {
         List<Object[]> results = contactFormRepository.findTreatmentContactCounts();
         return results.stream()
@@ -79,10 +101,12 @@ public class ContactFormService implements IContactFormService {
                 .toList();
     }
 
-
     /**
-     * @param dto
-     * @return
+     * Guarda un nuevo formulario de contacto.
+     *
+     * @param dto DTO con la información del formulario a guardar
+     * @return DTO con la información del formulario guardado
+     * @throws UnauthorizedAccessException si el usuario está bloqueado
      */
     @Override
     public ContactFormResponseDTO saveContactForm(ContactFormRequestDTO dto) {
@@ -90,21 +114,21 @@ public class ContactFormService implements IContactFormService {
         if (dto.getUserId() != null && blockedUserService.isBlocked(dto.getUserId())) {
             throw new UnauthorizedAccessException("No tienes permisos");
         }
-        
+
         ContactFormEntity entity = new ContactFormEntity();
-        
+
         // Set user reference only if userId is provided
         if (dto.getUserId() != null) {
             UserEntity userEntity = new UserEntity();
             userEntity.setId(dto.getUserId());
             entity.setUser(userEntity);
         }
-        
+
         // Set treatment reference
         TreatmentEntity treatmentEntity = new TreatmentEntity();
         treatmentEntity.setId(dto.getTreatmentId());
         entity.setTreatment(treatmentEntity);
-        
+
         // Map all fields
         entity.setFullName(dto.getFullName());
         entity.setEmail(dto.getEmail());
@@ -114,14 +138,17 @@ public class ContactFormService implements IContactFormService {
         entity.setMessage(dto.getMessage());
         entity.setAcceptTerms(dto.getAcceptTerms());
         entity.setAcceptMarketing(dto.getAcceptMarketing());
-        
+
         return new ContactFormResponseDTO(contactFormRepository.save(entity));
     }
 
     /**
-     * @param id 
-     * @param contactFormRequestDTO
-     * @return
+     * Actualiza un formulario de contacto existente.
+     *
+     * @param id ID del formulario a actualizar
+     * @param contactFormRequestDTO DTO con la información actualizada
+     * @return DTO con la información del formulario actualizado
+     * @throws ResourceNotFoundException si no se encuentra el formulario
      */
     @Override
     public ContactFormResponseDTO updateContactForm(Long id, ContactFormRequestDTO contactFormRequestDTO) {
@@ -137,8 +164,11 @@ public class ContactFormService implements IContactFormService {
     }
 
     /**
-     * @param id 
-     * @return
+     * Elimina un formulario de contacto.
+     *
+     * @param id ID del formulario a eliminar
+     * @return DTO con la información del formulario eliminado
+     * @throws ResourceNotFoundException si no se encuentra el formulario
      */
     @Override
     public ContactFormResponseDTO deleteContactForm(Long id) {
@@ -147,6 +177,4 @@ public class ContactFormService implements IContactFormService {
         contactFormRepository.delete(entity);
         return new ContactFormResponseDTO(entity);
     }
-
-
 }

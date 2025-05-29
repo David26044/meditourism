@@ -13,14 +13,21 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servicio para gestionar operaciones relacionadas con tratamientos médicos
+ */
 @Service
-public class TreatmentService implements ITreatmentService{
+public class TreatmentService implements ITreatmentService {
 
     @Autowired
     private TreatmentRepository treatmentRepository;
-    @Autowired
-    private ClinicTreatmentService clinicTreatmentService;
 
+    /**
+     * Guarda un nuevo tratamiento en la base de datos
+     * @param dto Objeto DTO con los datos del tratamiento
+     * @return TreatmentDTO con los datos del tratamiento guardado
+     * @throws ResourceAlreadyExistsException si ya existe un tratamiento con el mismo nombre
+     */
     @Override
     public TreatmentDTO saveTreatment(TreatmentDTO dto) {
         if (treatmentRepository.existsByName(dto.getName())){
@@ -35,9 +42,15 @@ public class TreatmentService implements ITreatmentService{
         return new TreatmentDTO(treatmentRepository.save(treatment));
     }
 
+    /**
+     * Actualiza un tratamiento existente
+     * @param id ID del tratamiento a actualizar
+     * @param dto Objeto DTO con los nuevos datos del tratamiento
+     * @return TreatmentDTO con los datos del tratamiento actualizado
+     * @throws ResourceNotFoundException si no se encuentra el tratamiento
+     */
     @Override
     public TreatmentDTO updateTreatment(Long id, TreatmentDTO dto) {
-
         TreatmentEntity treatment = treatmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tratamiento no encontrado con ID: " + dto.getId()));
 
@@ -50,12 +63,24 @@ public class TreatmentService implements ITreatmentService{
         return new TreatmentDTO(treatmentRepository.save(treatment));
     }
 
+    /**
+     * Obtiene un tratamiento por su ID
+     * @param id ID del tratamiento a buscar
+     * @return TreatmentDTO con los datos del tratamiento encontrado
+     * @throws ResourceNotFoundException si no se encuentra el tratamiento
+     */
     @Override
     public TreatmentDTO getTreatmentById(Long id) {
         return new TreatmentDTO(treatmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tratamiento no encontrado con ID: " + id)));
     }
 
+    /**
+     * Elimina un tratamiento por su ID
+     * @param id ID del tratamiento a eliminar
+     * @return TreatmentDTO con los datos del tratamiento eliminado
+     * @throws ResourceNotFoundException si no se encuentra el tratamiento
+     */
     @Override
     public TreatmentDTO deleteTreatmentById(Long id) {
         TreatmentEntity treatment = treatmentRepository.findById(id)
@@ -64,6 +89,10 @@ public class TreatmentService implements ITreatmentService{
         return new TreatmentDTO(treatment);
     }
 
+    /**
+     * Obtiene todos los tratamientos disponibles
+     * @return Lista de TreatmentDTO con todos los tratamientos
+     */
     @Override
     public List<TreatmentDTO> getAllTreatments() {
         List<TreatmentEntity> treatments = treatmentRepository.findAll();

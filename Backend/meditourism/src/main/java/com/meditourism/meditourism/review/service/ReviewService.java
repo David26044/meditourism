@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Servicio para gestionar las operaciones relacionadas con las reseñas.
+ */
 @Service
 public class ReviewService implements IReviewService {
 
@@ -26,17 +29,21 @@ public class ReviewService implements IReviewService {
     private IBlockedUserService blockedUserService;
 
     /**
-     * @return
+     * Obtiene todas las reseñas existentes.
+     *
+     * @return Lista de todas las reseñas en formato DTO
      */
     @Override
     public List<ReviewResponseDTO> getAllReviews() {
-
         return ReviewResponseDTO.fromEntityList(reviewRepository.findAll());
     }
 
     /**
-     * @param id
-     * @return
+     * Obtiene una reseña específica por su ID.
+     *
+     * @param id ID de la reseña a buscar
+     * @return Reseña encontrada en formato DTO
+     * @throws ResourceNotFoundException Si no se encuentra la reseña
      */
     @Override
     public ReviewResponseDTO getReviewById(Long id) {
@@ -45,8 +52,11 @@ public class ReviewService implements IReviewService {
     }
 
     /**
-     * @param id
-     * @return
+     * Obtiene todas las reseñas asociadas a una clínica específica.
+     *
+     * @param id ID de la clínica
+     * @return Lista de reseñas de la clínica en formato DTO
+     * @throws ResourceNotFoundException Si no hay reseñas para la clínica
      */
     @Override
     public List<ReviewResponseDTO> getReviewsByClinicId(Long id) {
@@ -54,19 +64,37 @@ public class ReviewService implements IReviewService {
                 .orElseThrow(() -> new ResourceNotFoundException("No hay reseñas asociadas a la clinica con ID: " + id)));
     }
 
+    /**
+     * Obtiene todas las reseñas realizadas por un usuario específico.
+     *
+     * @param id ID del usuario
+     * @return Lista de reseñas del usuario en formato DTO
+     */
     @Override
-    public List<ReviewResponseDTO> getReviewsByUserId(Long id){
+    public List<ReviewResponseDTO> getReviewsByUserId(Long id) {
         return ReviewResponseDTO.fromEntityList(reviewRepository.findAllByUserId(id));
     }
 
+    /**
+     * Obtiene la entidad de reseña por su ID.
+     *
+     * @param id ID de la reseña
+     * @return Entidad de la reseña
+     * @throws ResourceNotFoundException Si no se encuentra la reseña
+     */
     @Override
-    public ReviewEntity getReviewEntityById(Long id){
+    public ReviewEntity getReviewEntityById(Long id) {
         return reviewRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No existe la reseña con ID: " + id));
     }
 
     /**
-     * @param dto
-     * @return
+     * Actualiza una reseña existente.
+     *
+     * @param id ID de la reseña a actualizar
+     * @param dto Datos para actualizar la reseña
+     * @return Reseña actualizada en formato DTO
+     * @throws ResourceNotFoundException Si no se encuentra la reseña
+     * @throws UnauthorizedAccessException Si el usuario no tiene permisos para editar
      */
     @Override
     public ReviewResponseDTO updateReview(Long id, ReviewRequestDTO dto) {
@@ -87,8 +115,11 @@ public class ReviewService implements IReviewService {
     }
 
     /**
-     * @param dto
-     * @return
+     * Guarda una nueva reseña.
+     *
+     * @param dto Datos de la nueva reseña
+     * @return Reseña creada en formato DTO
+     * @throws UnauthorizedAccessException Si el usuario está bloqueado
      */
     @Override
     public ReviewResponseDTO saveReview(ReviewRequestDTO dto) {
@@ -96,9 +127,9 @@ public class ReviewService implements IReviewService {
         if (blockedUserService.isBlocked(authService.getAuthenticatedUser().getId())) {
             throw new UnauthorizedAccessException("No tienes permisos");
         }
-        
+
         ReviewEntity review = new ReviewEntity();
-        
+
         // Crear referencia a la clínica
         ClinicEntity clinic = new ClinicEntity();
         clinic.setId(dto.getClinicId());
@@ -113,7 +144,12 @@ public class ReviewService implements IReviewService {
     }
 
     /**
-     * @param id
+     * Elimina una reseña existente.
+     *
+     * @param id ID de la reseña a eliminar
+     * @return Reseña eliminada en formato DTO
+     * @throws ResourceNotFoundException Si no se encuentra la reseña
+     * @throws UnauthorizedAccessException Si el usuario no tiene permisos para eliminar
      */
     @Override
     public ReviewResponseDTO deleteReview(Long id) {
@@ -126,9 +162,13 @@ public class ReviewService implements IReviewService {
         return new ReviewResponseDTO(review);
     }
 
+    /**
+     * Obtiene las últimas tres reseñas creadas.
+     *
+     * @return Lista de las últimas tres reseñas en formato DTO
+     */
     @Override
     public List<ReviewResponseDTO> getLatestThreeReviews() {
         return ReviewResponseDTO.fromEntityList(reviewRepository.findTop3ByIdOrderByDesc());
     }
-
 }

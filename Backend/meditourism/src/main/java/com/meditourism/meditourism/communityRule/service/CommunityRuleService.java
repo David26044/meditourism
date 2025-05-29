@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Servicio para manejar las operaciones relacionadas con las reglas de la comunidad.
+ */
 @Service
 public class CommunityRuleService implements ICommunityRuleService {
 
@@ -17,7 +20,9 @@ public class CommunityRuleService implements ICommunityRuleService {
     private CommunityRuleRepository communityRuleRepository;
 
     /**
-     * @return 
+     * Obtiene todas las reglas de la comunidad.
+     *
+     * @return Lista de DTOs de respuesta con todas las reglas de la comunidad
      */
     @Override
     public List<CommunityRuleResponseDTO> getAllCommunityRules() {
@@ -25,8 +30,11 @@ public class CommunityRuleService implements ICommunityRuleService {
     }
 
     /**
-     * @param id 
-     * @return
+     * Obtiene una regla de la comunidad por su ID.
+     *
+     * @param id Identificador único de la regla de comunidad
+     * @return DTO de respuesta con la regla de comunidad encontrada
+     * @throws ResourceNotFoundException Si no se encuentra la regla con el ID especificado
      */
     @Override
     public CommunityRuleResponseDTO getCommunityRuleById(Long id) {
@@ -35,8 +43,11 @@ public class CommunityRuleService implements ICommunityRuleService {
     }
 
     /**
-     * @param id 
-     * @return
+     * Elimina una regla de la comunidad por su ID.
+     *
+     * @param id Identificador único de la regla de comunidad a eliminar
+     * @return DTO de respuesta con la regla de comunidad eliminada
+     * @throws ResourceNotFoundException Si no se encuentra la regla con el ID especificado
      */
     @Override
     public CommunityRuleResponseDTO deleteCommunityRule(Long id) {
@@ -47,8 +58,10 @@ public class CommunityRuleService implements ICommunityRuleService {
     }
 
     /**
-     * @param dto 
-     * @return
+     * Guarda una nueva regla de comunidad.
+     *
+     * @param dto DTO de solicitud con los datos de la nueva regla
+     * @return DTO de respuesta con la regla de comunidad guardada
      */
     @Override
     public CommunityRuleResponseDTO saveCommunityRule(CommunityRuleRequestDTO dto) {
@@ -58,9 +71,12 @@ public class CommunityRuleService implements ICommunityRuleService {
     }
 
     /**
-     * @param id 
-     * @param dto
-     * @return
+     * Actualiza una regla de comunidad existente.
+     *
+     * @param id Identificador único de la regla de comunidad a actualizar
+     * @param dto DTO de solicitud con los nuevos datos de la regla
+     * @return DTO de respuesta con la regla de comunidad actualizada
+     * @throws ResourceNotFoundException Si no se encuentra la regla con el ID especificado
      */
     @Override
     public CommunityRuleResponseDTO updateCommunityRule(Long id, CommunityRuleRequestDTO dto) {
