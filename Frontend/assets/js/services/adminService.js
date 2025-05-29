@@ -134,3 +134,8 @@ class AdminService {
         }
     }
 }
+
+// Make AdminService globally available
+if (typeof window !== 'undefined') {
+    window.AdminService = AdminService;
+}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo - Odontomar</title>
+    <title>Panel Administrativo - MediTourism</title>
     <link rel="stylesheet" href="assets/css/admin.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
         <div class="admin-header-content">
             <div class="admin-logo">
                 <i class="fas fa-user-shield"></i>
-                <span>Panel Administrativo - Odontomar</span>
+                <span>Panel Administrativo - MediTourism</span>
             </div>
             <div class="admin-user-info">
                 <span id="admin-user-name">Cargando...</span>
@@ -66,7 +66,7 @@
             <section id="dashboard-section" class="admin-section active">
                 <div class="admin-section-header">
                     <h1>Dashboard de Administración</h1>
-                    <p>Resumen general del sistema Odontomar</p>
+                    <p>Resumen general del sistema MediTourism</p>
                 </div>
                 
                 <!-- Stats Cards -->
@@ -122,7 +122,7 @@
             <section id="users-section" class="admin-section">
                 <div class="admin-section-header">
                     <h1>Gestión de Usuarios</h1>
-                    <p>Administrar usuarios del sistema</p>
+                    <p>Administrar usuarios del sistema MediTourism</p>
                 </div>
                 <div class="admin-card">
                     <div class="admin-card-header">
@@ -201,7 +201,7 @@
             <section id="settings-section" class="admin-section">
                 <div class="admin-section-header">
                     <h1>Configuración del Sistema</h1>
-                    <p>Configuraciones generales de Odontomar</p>
+                    <p>Configuraciones generales de MediTourism</p>
                 </div>
                 <div class="admin-card">
                     <h3><i class="fas fa-cog"></i> Configuraciones</h3>
@@ -245,5 +245,16 @@
     <script src="assets/js/services/treatmentService.js"></script>
     <script src="assets/js/utils/ui.js"></script>
     <script src="assets/js/admin.js"></script>
+    <script>
+        function handleAdminLogout() {
+            if (confirm('¿Estás seguro de cerrar sesión?')) {
+                AuthService.logout();
+            }
+        }
+        
+        function showAddTreatmentModal() {
+            UIUtils.showToast('Función en desarrollo', 'info');
+        }
+    </script>
 </body>
 </html>

@@ -55,7 +55,4 @@ public class TreatmentEntity implements Serializable {
     @OneToMany(mappedBy = "treatment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ContactFormEntity> contactForms = new ArrayList<>();
 
-    @OneToMany(mappedBy = "treatment", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<AppointmentEntity> appointments = new ArrayList<>();
-
 }

@@ -229,3 +229,8 @@ class AuthService {
         return user && user.roleEntity && user.roleEntity.name === 'ROLE_ADMIN';
     }
 }
+
+// Make AuthService globally available
+if (typeof window !== 'undefined') {
+    window.AuthService = AuthService;
+}

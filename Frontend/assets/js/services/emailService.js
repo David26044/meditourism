@@ -103,3 +103,8 @@ class EmailService {
         }
     }
 }
+
+// Make EmailService globally available
+if (typeof window !== 'undefined') {
+    window.EmailService = EmailService;
+}

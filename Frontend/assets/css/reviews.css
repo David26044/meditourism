@@ -1,0 +1,431 @@
+/* Reviews Section - Enhanced Design */
+:root {
+    --review-primary: #2c5aa0;
+    --review-secondary: #1e3d72;
+    --review-accent: #4a90e2;
+    --review-success: #27ae60;
+    --review-warning: #f39c12;
+    --review-white: #ffffff;
+    --review-light: #f8fafc;
+    --review-gray: #ecf0f1;
+    --review-text: #2c3e50;
+    --review-text-light: #7f8c8d;
+    --review-shadow: 0 4px 20px rgba(44, 90, 160, 0.1);
+    --review-shadow-hover: 0 8px 30px rgba(44, 90, 160, 0.15);
+    --review-border-radius: 16px;
+    --review-transition: all 0.3s ease;
+}
+
+/* Reviews Header */
+.reviews-header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+.reviews-header h2 {
+    color: var(--review-primary);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.reviews-header h2 i {
+    color: var(--review-warning);
+    font-size: 2rem;
+}
+
+.reviews-subtitle {
+    color: var(--review-text-light);
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Reviews Section */
+.reviews-section {
+    background: var(--white);
+    padding: 3rem 0;
+    margin: 2rem 0;
+}
+
+.reviews-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary);
+}
+
+.reviews-section h2 i {
+    color: #ffc107;
+    margin-right: 0.5rem;
+}
+
+/* Reviews Grid Layout */
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    margin-top: 24px;
+}
+
+/* Review Card Styling */
+.review-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.review-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #28a745);
+}
+
+/* Review Card Header */
+.review-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reviewer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.reviewer-details {
+    flex: 1;
+}
+
+.reviewer-name {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.review-clinic-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.clinic-icon {
+    color: #28a745;
+    font-size: 12px;
+}
+
+.clinic-name {
+    font-weight: 500;
+}
+
+/* Rating Section */
+.review-rating-section {
+    text-align: right;
+}
+
+.star-rating {
+    margin-bottom: 4px;
+}
+
+.star-rating .fas.fa-star {
+    color: #ffc107;
+    font-size: 14px;
+    margin-right: 2px;
+}
+
+.star-rating .far.fa-star {
+    color: #dee2e6;
+    font-size: 14px;
+    margin-right: 2px;
+}
+
+.star-rating .fas.fa-star-half-alt {
+    color: #ffc107;
+    font-size: 14px;
+    margin-right: 2px;
+}
+
+.rating-value {
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Review Content */
+.review-content-section {
+    margin: 16px 0;
+}
+
+.review-text {
+    color: #495057;
+    line-height: 1.6;
+    font-size: 15px;
+    margin: 0;
+    text-align: justify;
+}
+
+/* Review Footer */
+.review-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f8f9fa;
+}
+
+.review-date-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c757d;
+    font-size: 13px;
+}
+
+.date-icon {
+    font-size: 12px;
+    color: #007bff;
+}
+
+.review-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.helpful-btn {
+    background: none;
+    border: 1px solid #e9ecef;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.helpful-btn:hover {
+    background: #f8f9fa;
+    color: #007bff;
+    border-color: #007bff;
+}
+
+.helpful-btn i {
+    font-size: 11px;
+}
+
+/* No Reviews State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--gray-dark);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--gray);
+}
+
+/* Empty State */
+.empty-reviews-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: 16px;
+    margin: 24px 0;
+}
+
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #007bff, #28a745);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+}
+
+.empty-state-title {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.empty-state-description {
+    color: #6c757d;
+    margin-bottom: 24px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.empty-state-btn {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 24px;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.empty-state-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3);
+}
+
+/* Loading State */
+.reviews-loading {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+    font-size: 16px;
+}
+
+.reviews-loading i {
+    margin-right: 8px;
+    color: #007bff;
+}
+
+/* Error State */
+.reviews-error {
+    text-align: center;
+    padding: 40px;
+    color: #dc3545;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    margin: 24px 0;
+}
+
+/* Review Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 90, 160, 0.8);
+    z-index: 10000;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--review-white);
+    border-radius: 20px;
+    max-width: 800px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(44, 90, 160, 0.3);
+    margin: auto;
+    margin-top: 7%;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .reviews-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .review-card {
+        padding: 20px;
+    }
+    .review-card-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .review-rating-section {
+        text-align: left;
+    }
+    .review-card-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .reviewer-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+    .reviewer-name {
+        font-size: 15px;
+    }
+    .review-text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .modal-content {
+        max-width: 98vw;
+    }
+}
