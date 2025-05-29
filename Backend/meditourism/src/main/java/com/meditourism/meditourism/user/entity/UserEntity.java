@@ -36,17 +36,9 @@ public class UserEntity implements Serializable, UserDetails {
     @Column(name="is_verified")
     private boolean isVerified;
 
-    @Column(name = "created_at")
-    private java.time.LocalDateTime createdAt;
-
-
     @ManyToOne
     @JoinColumn(name = "role_id")
     private RoleEntity roleEntity;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id") // o el nombre de la columna que estás usando
-    private UserEntity userReporter;
 
     public boolean isVerified() {
         return isVerified;

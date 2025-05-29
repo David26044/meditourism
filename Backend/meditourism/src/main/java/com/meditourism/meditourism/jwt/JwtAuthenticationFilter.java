@@ -41,19 +41,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String token = getTOkenFromRequest(request);
-        final String email;
-
-        if(token == null){
+        // 🚫 Ignorar el filtro para el login y otros endpoints públicos
+        String path = request.getServletPath();
+        if (path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
         }
-        email = jwtService.getUsernameFromToken(token);
 
-        if(email != null && SecurityContextHolder.getContext().getAuthentication()==null){
-            UserDetails userDetails=userDetailService.loadUserByUsername(email);
+        final String token = getTOkenFromRequest(request);
+        final String email;
+
+        if (token == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
+            email = jwtService.getUsernameFromToken(token);
+        } catch (Exception e) {
+            // Si el token no es válido, no continuar
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailService.loadUserByUsername(email);
             if (jwtService.isTokenValid(token, userDetails)) {
-                // Obtener las authorities desde el token
                 var claims = jwtService.getAllClaims(token);
                 var authoritiesFromToken = (List<String>) claims.get("authorities");
 
@@ -68,8 +81,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+
         filterChain.doFilter(request, response);
     }
+
 
     private String getTOkenFromRequest(HttpServletRequest request) {
         final String authHeader=request.getHeader(HttpHeaders.AUTHORIZATION);
