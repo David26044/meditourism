@@ -1,9 +1,9 @@
 // API Configuration
 const API_CONFIG = {
-    // Use environment variable or default to localhost for development
-    BASE_URL: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    // Use environment variable or detect if running on Vercel/production
+    BASE_URL: (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:8080/system/api' // URL para desarrollo local
-        : 'https://meditourism-production.up.railway.app/system/api', // URL para producción
+        : 'https://meditourism-production.up.railway.app/system/api', // URL para producción (Railway)
     ENDPOINTS: {
         // Auth endpoints - corregidos para coincidir con AuthController
         LOGIN: '/auth/login',
@@ -57,5 +57,11 @@ const apiRequest = async (endpoint, options = {}) => {
         config.headers.Authorization = `Bearer ${token}`;
     }
 
-    return fetch(url, config);
+    try {
+        const response = await fetch(url, config);
+        return response;
+    } catch (error) {
+        console.error('API Request failed:', error);
+        throw error;
+    }
 };
