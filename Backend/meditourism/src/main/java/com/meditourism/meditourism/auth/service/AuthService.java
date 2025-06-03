@@ -81,6 +81,14 @@ public class AuthService implements IAuthService {
         user.setVerified(false);
         userRepository.save(user);
 
+        // Enviar correo de bienvenida automáticamente
+        try {
+            sendWelcomeEmail(user.getEmail(), user.getName());
+        } catch (Exception e) {
+            // Log del error pero no fallar el registro si el correo no se puede enviar
+            System.err.println("Error enviando correo de bienvenida a " + user.getEmail() + ": " + e.getMessage());
+        }
+
         AuthResponse response = new AuthResponse();
         response.setToken(jwtService.getToken(user));
         return response;
@@ -213,5 +221,32 @@ public class AuthService implements IAuthService {
      */
     public boolean isOwnerOrAdmin(Long ownerId) {
         return isOwner(ownerId) || isAdmin();
+    }
+
+    /**
+     * Envía un correo electrónico de bienvenida al usuario recién registrado.
+     *
+     * @param email Email del usuario
+     * @param name Nombre del usuario
+     */
+    private void sendWelcomeEmail(String email, String name) {
+        String subject = "¡Bienvenido a MediTourism!";
+        String body = "¡Hola " + name + "!\n\n" +
+                "¡Bienvenido a MediTourism! 🎉\n\n" +
+                "Tu cuenta ha sido creada exitosamente. Nos complace tenerte como parte de nuestra comunidad dedicada al turismo médico.\n\n" +
+                "Con MediTourism podrás:\n" +
+                "• Explorar tratamientos médicos de alta calidad\n" +
+                "• Consultar con especialistas certificados\n" +
+                "• Acceder a servicios médicos a precios competitivos\n" +
+                "• Obtener información sobre destinos médicos confiables\n\n" +
+                "Para comenzar a usar todos nuestros servicios, te recomendamos verificar tu correo electrónico.\n\n" +
+                "Si tienes alguna pregunta o necesitas ayuda, no dudes en contactarnos.\n\n" +
+                "¡Gracias por elegir MediTourism para tu cuidado médico!\n\n" +
+                "Saludos cordiales,\n" +
+                "El equipo de MediTourism\n\n" +
+                "---\n" +
+                "Este es un correo automático, por favor no respondas a esta dirección.";
+
+        emailService.sendEmail(email, subject, body);
     }
 }
