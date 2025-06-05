@@ -56,7 +56,6 @@ public class ContactFormController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(example = "{\"timestamp\": \"2025-05-29T12:30:00.000000\", \"status\": 500, \"error\": \"Internal Server Error\", \"message\": \"Mensaje de error genérico\"}")))
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<ContactFormResponseDTO>> getAllContactForms() {
         return ResponseEntity.ok(contactFormService.getAllContactForms());
@@ -87,7 +86,6 @@ public class ContactFormController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(example = "{\"timestamp\": \"2025-05-29T12:30:00.000000\", \"status\": 500, \"error\": \"Internal Server Error\", \"message\": \"Mensaje de error genérico\"}")))
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<ContactFormResponseDTO> getContactFormById(
             @Parameter(description = "ID del formulario de contacto a recuperar", required = true, example = "1")
@@ -120,7 +118,6 @@ public class ContactFormController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(example = "{\"timestamp\": \"2025-05-29T12:30:00.000000\", \"status\": 500, \"error\": \"Internal Server Error\", \"message\": \"Mensaje de error genérico\"}")))
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/treatment/{treatmentId}")
     public ResponseEntity<List<ContactFormResponseDTO>> getAllByTreatmentId(
             @Parameter(description = "ID del tratamiento para filtrar los formularios de contacto", required = true, example = "1")
@@ -153,7 +150,6 @@ public class ContactFormController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(example = "{\"timestamp\": \"2025-05-29T12:30:00.000000\", \"status\": 500, \"error\": \"Internal Server Error\", \"message\": \"Mensaje de error genérico\"}")))
     })
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ContactFormResponseDTO>> getAllByUserId(
             @Parameter(description = "ID del usuario para filtrar los formularios de contacto", required = true, example = "1")
