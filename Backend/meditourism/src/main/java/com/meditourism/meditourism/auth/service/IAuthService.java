@@ -19,8 +19,6 @@ public interface IAuthService {
 
     void verifyEmail(String token);
 
-    void sendWelcomeEmail(String email);
-
     UserEntity getAuthenticatedUser();
 
     boolean isAdmin();

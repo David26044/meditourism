@@ -6,11 +6,13 @@ import com.meditourism.meditourism.auth.dto.ChangePasswordDTO;
 import com.meditourism.meditourism.email.service.IEmailService;
 import com.meditourism.meditourism.exception.ResourceAlreadyExistsException;
 import com.meditourism.meditourism.exception.ResourceNotFoundException;
+import com.meditourism.meditourism.exception.UserNotVerifiedException;
 import com.meditourism.meditourism.jwt.IJwtService;
 import com.meditourism.meditourism.role.service.IRoleService;
 import com.meditourism.meditourism.user.dto.UserDTO;
 import com.meditourism.meditourism.user.entity.UserEntity;
 import com.meditourism.meditourism.user.repository.UserRepository;
+import com.meditourism.meditourism.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +46,7 @@ public class AuthService implements IAuthService {
     private String frontendResetPasswordUrl;
     @Value("${app.email.verification-url}")
     private String verificationUrlBase;
+    private UserService userService;
 
     /**
      * Autentica a un usuario y genera un token JWT.
@@ -54,10 +57,15 @@ public class AuthService implements IAuthService {
      */
     @Override
     public AuthResponse login(AuthRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserDetails user = userRepository.findByEmail(request.getEmail())
+        UserEntity userEntity = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("No existe usuario registrado con el correo: " + request.getEmail()));
-        String token = jwtService.getToken(user);
+        if (!userEntity.isVerified()) {
+            throw new UserNotVerifiedException("La cuenta no está verificada, debe verificarla antes de iniciar sesion.");
+        }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+        String token = jwtService.getToken(userEntity);
+
         return new AuthResponse(token);
     }
 
@@ -80,15 +88,8 @@ public class AuthService implements IAuthService {
         user.setRoleEntity(roleService.getRoleById(2L));
         user.setVerified(false);
         userRepository.save(user);
-
-        // Enviar correo de bienvenida automáticamente
-        try {
-            sendWelcomeEmail(user.getEmail(), user.getName());
-        } catch (Exception e) {
-            // Log del error pero no fallar el registro si el correo no se puede enviar
-            System.err.println("Error enviando correo de bienvenida a " + user.getEmail() + ": " + e.getMessage());
-        }
-
+        //Envía email para que se verifique
+        sendEmailVerification(user.getEmail());
         AuthResponse response = new AuthResponse();
         response.setToken(jwtService.getToken(user));
         return response;
