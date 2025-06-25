@@ -43,8 +43,6 @@
 | JWT (jjwt)       | 0.11.5       |
 | BCrypt           | Integrado    |
 | Spring Mail      | Integrado    |
-| Spring Validation| Integrado    |
-| Spring Actuator  | Integrado    |
 | Swagger UI       | 2.7.0        |
 | Maven            | build tool   |
 
@@ -74,3 +72,14 @@ El proyecto incluye:
 git clone https://github.com/tu-usuario/meditourism.git
 cd meditourism
 ./mvnw spring-boot:run
+
+Una vez ejecutado, puedes acceder a la documentación interactiva de los endpoints en:
+
+📚 http://localhost:8080/system/api/swagger-ui/index.html
+
+
+###Usuario con rol de ADMIN para probar:
+{
+"email":"davidcarrenoprueba@gmail.com",
+  "password": "123456"
+}
