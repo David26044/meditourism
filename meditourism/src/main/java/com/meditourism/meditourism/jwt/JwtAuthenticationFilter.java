@@ -34,12 +34,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailService;
 
-    // Autowire ObjectMapper to convert Map to JSON
     private final ObjectMapper objectMapper;
 
     public JwtAuthenticationFilter() {
         this.objectMapper = new ObjectMapper();
-        this.objectMapper.registerModule(new JavaTimeModule()); // Register JavaTimeModule for LocalDateTime
+        this.objectMapper.registerModule(new JavaTimeModule());
     }
 
     /**

@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "blocked_user")
+@Table(name = "blocked_users")
 public class BlockedUserEntity {
 
     @Id

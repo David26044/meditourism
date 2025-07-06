@@ -2,7 +2,6 @@ package com.meditourism.meditourism.clinic.entity;
 
 import com.meditourism.meditourism.clinicTreatmen.entity.ClinicTreatmentEntity;
 import com.meditourism.meditourism.review.entity.ReviewEntity;
-import com.meditourism.meditourism.schedule.entity.ScheduleEntity;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -17,14 +16,14 @@ public class ClinicEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = true)
     private String description;
 
-    @Column(name = "contact_info")
-    private String contactInfo;
+    @Column(unique = true)
+    private String email;
 
     @Column
     private String address;
@@ -61,17 +60,13 @@ public class ClinicEntity implements Serializable {
         this.description = description;
     }
 
-    public String getContactInfo() {
-        return contactInfo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
+    public void setEmail(String contactInfo) {
+        this.email = contactInfo;
     }
-
-    // Relación con ScheduleEntity
-    @OneToMany(mappedBy = "clinic", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ScheduleEntity> schedules = new ArrayList<>();
 
     // Relación con ReviewEntity
     @OneToMany(mappedBy = "clinic", cascade = CascadeType.REMOVE, orphanRemoval = true)

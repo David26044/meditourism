@@ -2,6 +2,7 @@ package com.meditourism.meditourism.contactForm.service;
 
 import com.meditourism.meditourism.blockedUser.service.BlockedUserService;
 import com.meditourism.meditourism.blockedUser.service.IBlockedUserService;
+import com.meditourism.meditourism.clinic.entity.ClinicEntity;
 import com.meditourism.meditourism.contactForm.dto.ContactFormRequestDTO;
 import com.meditourism.meditourism.contactForm.dto.ContactFormResponseDTO;
 import com.meditourism.meditourism.contactForm.dto.TreatmentContactCountDTO;
@@ -110,34 +111,23 @@ public class ContactFormService implements IContactFormService {
      */
     @Override
     public ContactFormResponseDTO saveContactForm(ContactFormRequestDTO dto) {
-        // Validar solo si el usuario no es nulo
-        if (dto.getUserId() != null && blockedUserService.isBlocked(dto.getUserId())) {
-            throw new UnauthorizedAccessException("No tienes permisos");
-        }
 
         ContactFormEntity entity = new ContactFormEntity();
 
-        // Set user reference only if userId is provided
-        if (dto.getUserId() != null) {
-            UserEntity userEntity = new UserEntity();
-            userEntity.setId(dto.getUserId());
-            entity.setUser(userEntity);
-        }
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(dto.getUserId());
+        entity.setUser(userEntity);
 
-        // Set treatment reference
+        ClinicEntity clinicEntity = new ClinicEntity();
+        clinicEntity.setId(dto.getPreferredClinic());
+        entity.setPreferredClinic(clinicEntity);
+
         TreatmentEntity treatmentEntity = new TreatmentEntity();
         treatmentEntity.setId(dto.getTreatmentId());
         entity.setTreatment(treatmentEntity);
 
-        // Map all fields
-        entity.setFullName(dto.getFullName());
         entity.setEmail(dto.getEmail());
-        entity.setPhone(dto.getPhone());
-        entity.setInquiryType(dto.getInquiryType());
-        entity.setPreferredClinic(dto.getPreferredClinic());
         entity.setMessage(dto.getMessage());
-        entity.setAcceptTerms(dto.getAcceptTerms());
-        entity.setAcceptMarketing(dto.getAcceptMarketing());
 
         return new ContactFormResponseDTO(contactFormRepository.save(entity));
     }

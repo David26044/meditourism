@@ -29,7 +29,7 @@ public class ClinicService implements IClinicService {
         ClinicEntity clinicEntity = new ClinicEntity();
         clinicEntity.setDescription(dto.getDescription());
         clinicEntity.setName(dto.getName());
-        clinicEntity.setContactInfo(dto.getContactInfo());
+        clinicEntity.setEmail(dto.getContactInfo());
         clinicEntity.setAddress(dto.getAddress());
         return new ClinicDTO(clinicRepository.save(clinicEntity));
     }
@@ -53,7 +53,7 @@ public class ClinicService implements IClinicService {
             updateClinic.setDescription(dto.getDescription());
         }
         if (dto.getContactInfo() != null){
-            updateClinic.setContactInfo(dto.getContactInfo());
+            updateClinic.setEmail(dto.getContactInfo());
         }
         if(dto.getAddress() != null){
             updateClinic.setAddress(dto.getAddress());

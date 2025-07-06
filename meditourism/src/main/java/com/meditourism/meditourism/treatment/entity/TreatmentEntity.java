@@ -1,6 +1,5 @@
 package com.meditourism.meditourism.treatment.entity;
 
-import com.meditourism.meditourism.appointment.entity.AppointmentEntity;
 import com.meditourism.meditourism.clinicTreatmen.entity.ClinicTreatmentEntity;
 import com.meditourism.meditourism.contactForm.entity.ContactFormEntity;
 import jakarta.persistence.*;

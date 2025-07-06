@@ -1,5 +1,4 @@
 package com.meditourism.meditourism.user.entity;
-import com.meditourism.meditourism.appointment.entity.AppointmentEntity;
 import com.meditourism.meditourism.blockedUser.entity.BlockedUserEntity;
 import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.contactForm.entity.ContactFormEntity;
@@ -12,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -137,7 +135,7 @@ public class UserEntity implements Serializable, UserDetails {
      */
     @Override
     public boolean isEnabled() {
-        return true;
+        return isVerified;
     }
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -155,7 +153,5 @@ public class UserEntity implements Serializable, UserDetails {
     @OneToMany(mappedBy = "reporterUser", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<ReportEntity> reports;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<AppointmentEntity> appointments;
 }
 

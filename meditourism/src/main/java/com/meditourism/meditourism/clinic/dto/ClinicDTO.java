@@ -1,9 +1,7 @@
 package com.meditourism.meditourism.clinic.dto;
 
 import com.meditourism.meditourism.clinic.entity.ClinicEntity;
-import com.meditourism.meditourism.user.entity.UserEntity;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +36,7 @@ public class ClinicDTO {
         this.id = clinicEntity.getId();
         this.name = clinicEntity.getName();
         this.description = clinicEntity.getDescription();
-        this.contactInfo = clinicEntity.getContactInfo();
+        this.contactInfo = clinicEntity.getEmail();
         this.address = clinicEntity.getAddress();
     }
 

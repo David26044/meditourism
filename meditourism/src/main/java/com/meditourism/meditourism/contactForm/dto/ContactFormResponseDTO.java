@@ -1,5 +1,6 @@
 package com.meditourism.meditourism.contactForm.dto;
 
+import com.meditourism.meditourism.clinic.dto.ClinicDTO;
 import com.meditourism.meditourism.treatment.dto.TreatmentDTO;
 import com.meditourism.meditourism.treatment.entity.TreatmentEntity;
 import com.meditourism.meditourism.user.dto.UserResponseDTO;
@@ -14,14 +15,16 @@ public class ContactFormResponseDTO {
     private Long id;
     private UserResponseDTO user;
     private TreatmentDTO treatment;
+    private ClinicDTO clinic;
     private String email;
     private String message;
     private LocalDateTime date;
 
-    public ContactFormResponseDTO(Long id, UserResponseDTO user, TreatmentDTO treatment, String email, String message, LocalDateTime date) {
+    public ContactFormResponseDTO(Long id, UserResponseDTO user, TreatmentDTO treatment, String email, String message, LocalDateTime date, ClinicDTO clinic) {
         this.id = id;
         this.user = user;
         this.treatment = treatment;
+        this.clinic = clinic;
         this.email = email;
         this.message = message;
         this.date = date;
@@ -31,6 +34,7 @@ public class ContactFormResponseDTO {
         this.id = entity.getId();
         this.user = entity.getUser() != null ? new UserResponseDTO(entity.getUser()) : null;
         this.treatment = new TreatmentDTO(entity.getTreatment());
+        this.clinic = new ClinicDTO(entity.getPreferredClinic());
         this.email = entity.getEmail();
         this.message = entity.getMessage();
         this.date = entity.getDate();
