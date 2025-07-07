@@ -93,7 +93,7 @@ public class UserEntity implements Serializable, UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (roleEntity != null && roleEntity.getName() != null) {
-            return List.of(new SimpleGrantedAuthority(roleEntity.getName()));
+            return List.of(new SimpleGrantedAuthority("ROLE_" + roleEntity.getName()));
         }
         return List.of(); // Return empty list if no role assigned
     }

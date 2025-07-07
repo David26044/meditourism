@@ -46,7 +46,8 @@ CREATE TABLE clinics (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) UNIQUE,
-    address VARCHAR(255)
+    address VARCHAR(255),
+    description TEXT
 );
 
 CREATE TABLE clinic_treatment (
