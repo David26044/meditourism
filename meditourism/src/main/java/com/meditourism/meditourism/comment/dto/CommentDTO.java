@@ -3,6 +3,7 @@ package com.meditourism.meditourism.comment.dto;
 import com.meditourism.meditourism.comment.entity.CommentEntity;
 import com.meditourism.meditourism.user.dto.UserResponseDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class CommentDTO {
     private String content;
     private Long fatherId;
     private UserResponseDTO user;
-    @NotBlank(message = "El id de la reseña no puede ser nula")
+    @NotNull(message = "El id de la reseña no puede ser nulo")
     private Long reviewId;
 
     public CommentDTO(Long id, String content, Long fatherId, Long reviewId) {
@@ -30,7 +31,9 @@ public class CommentDTO {
     public CommentDTO(CommentEntity entity){
         this.id = entity.getId();
         this.content = entity.getContent();
-        this.fatherId = entity.getFatherCommentEntity().getId();
+        this.fatherId = entity.getFatherCommentEntity() != null
+                ? entity.getFatherCommentEntity().getId()
+                : null;
         this.reviewId = entity.getReviewEntity().getId();
         this.user = new UserResponseDTO(entity.getUserEntity());
     }
