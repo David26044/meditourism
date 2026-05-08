@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +33,8 @@ public class JwtService implements IJwtService {
     @Autowired
     private IUserService userService;
 
-    // Clave secreta para firmar los tokens (256 bits - 32 caracteres)
-    private static final String SECRET = "4f8c1e2b3d5f6a7e8b9c0d1e2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2";
+    @Value("${app.jwt.secret}")
+    private String jwtSecret;
 
     /**
      * Genera un token JWT para un usuario autenticado.
@@ -78,7 +79,7 @@ public class JwtService implements IJwtService {
      */
     @Override
     public Key getKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

@@ -52,6 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        final String token;
+        final String email;
+
         String path = request.getServletPath();
         if (path.startsWith("/auth") ||
                 path.startsWith("/swagger-ui") ||
@@ -61,19 +64,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 path.startsWith("/clinics") && request.getMethod().equalsIgnoreCase("GET") ||
                 path.startsWith("/treatments") && request.getMethod().equalsIgnoreCase("GET") ||
                 path.startsWith("/clinics-treatments") && request.getMethod().equalsIgnoreCase("GET")) {
-
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String token = getTokenFromRequest(request);
+        token = getTokenFromRequest(request);
         if (token == null) {
             // Token is missing, send 401 Unauthorized
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "Token JWT faltante en la cabecera de autorización.");
             return;
         }
 
-        final String email;
         try {
             email = jwtService.getUsernameFromToken(token);
         } catch (Exception e) {
@@ -81,16 +82,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized", "El token JWT proporcionado es inválido o ha expirado.");
             return;
         }
-
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailService.loadUserByUsername(email);
             if (jwtService.isTokenValid(token, userDetails)) {
-                var claims = jwtService.getAllClaims(token);
-                var authoritiesFromToken = (List<String>) claims.get("authorities");
 
-                var grantedAuthorities = authoritiesFromToken.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
+
+                var grantedAuthorities = userDetails.getAuthorities();
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, grantedAuthorities);
@@ -105,6 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+
     }
 
     /**
