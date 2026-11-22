@@ -61,25 +61,26 @@ El proyecto incluye:
 
 ## Ejecución local
 
-(tengo que hacer cntenedor)
-
 ### 🔧 Requisitos
 - Java 17
-- Maven 3.8+
+- Docker
 
 ### ▶️ Pasos
 ```bash
-git clone https://github.com/tu-usuario/meditourism.git
+git clone https://github.com/David26044/meditourism.git
 cd meditourism
-./mvnw spring-boot:run
+cp .env.example .env        # y completa tus valores
+docker compose up -d postgres
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
-Una vez ejecutado, puedes acceder a la documentación interactiva de los endpoints en:
+O todo dockerizado (API + base de datos):
+```bash
+docker compose up -d --build
+```
 
-📚 http://localhost:8080/system/api/swagger-ui/index.html
+Documentación de los endpoints: http://localhost:8080/system/api/swagger-ui/index.html
 
+### 👤 Usuario administrador
 
-###Usuario con rol de ADMIN para probar:
-{
-"email":"davidcarrenoprueba@gmail.com",
-  "password": "123456"
-}
+Al arrancar, la app crea un admin con los valores de `ADMIN_EMAIL` y `ADMIN_PASSWORD` de tu `.env` (ver `.env.example`). Si ya existe, no hace nada.
