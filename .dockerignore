@@ -1,0 +1,9 @@
+# Secretos: nunca dentro de la imagen
+.env
+
+# Se genera al compilar; la etapa 1 lo crea de nuevo
+target/
+
+# No hacen falta para compilar
+.git/
+.idea/

@@ -1,29 +1,15 @@
-# Build output
+# Compilado de Maven
 target/
-out/
-build/
 
-# Local environment and secrets
+# Secretos locales (solo se sube la plantilla)
 .env
 .env.*
 !.env.example
-*.local
 
-# Logs
-*.log
-logs/
-
-# IDE/editor files
+# Editores
 .idea/
 *.iml
 .vscode/
-.project
-.classpath
-.settings/
 
-# OS metadata
+# macOS
 .DS_Store
-Thumbs.db
-
-# Maven wrapper runtime files
-.mvn/wrapper/maven-wrapper.jar
