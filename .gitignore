@@ -1,15 +1,11 @@
-# Compilado de Maven
 target/
 
-# Secretos locales (solo se sube la plantilla)
 .env
 .env.*
 !.env.example
 
-# Editores
 .idea/
 *.iml
 .vscode/
 
-# macOS
 .DS_Store
